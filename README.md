@@ -1,7 +1,7 @@
 # Virtual-Pet
 
 ## Setup
-Install dependencies with npm install in each respective /client/pet-app and /server.
+Install dependencies with `npm install` in each respective `/client/pet-app` and `/server`.
 
 ## How To Run
 
