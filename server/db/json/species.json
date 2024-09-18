@@ -68,6 +68,22 @@
       "monster_id": null,
       "image_id": 4,
       "color_id": null
-    }
-  ]
+    },
+  
+    {
+        "id": 6,
+        "species_name": "Creep Vulture",
+        "hunger_mod": 4,
+        "happy_mod": 2,
+        "energy_mod": 5,
+        "clean_mod": 1,
+        "age": 400,
+        "diet_type": 1,
+        "diet_desc": "Carnivore",
+        "monster_id": null,
+        "image_id": 5,
+        "color_id": null
+      }
+
+]
   
