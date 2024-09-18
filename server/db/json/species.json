@@ -1,0 +1,73 @@
+[
+    {
+      "id": 1,
+      "species_name": "Fire hippo",
+      "hunger_mod": 1,
+      "happy_mod": 5,
+      "energy_mod": 4,
+      "clean_mod": 2,
+      "age": 300,
+      "diet_type": 3,
+      "diet_desc": "Omnivore",
+      "monster_id": null,
+      "image_id": 0,
+      "color_id": null
+    },
+    {
+      "id": 2,
+      "species_name": "Skeletal turtle",
+      "hunger_mod": 3,
+      "happy_mod": 3,
+      "energy_mod": 3,
+      "clean_mod": 2,
+      "age": 500,
+      "diet_type": 2,
+      "diet_desc": "Herbivore",
+      "monster_id": null,
+      "image_id": 1,
+      "color_id": null
+    },
+    {
+      "id": 3,
+      "species_name": "Bunny ball",
+      "hunger_mod": 5,
+      "happy_mod": 3,
+      "energy_mod": 3,
+      "clean_mod": 4,
+      "age": 200,
+      "diet_type": 1,
+      "diet_desc": "Carnivore",
+      "monster_id": null,
+      "image_id": 2,
+      "color_id": null
+    },
+    {
+      "id": 4,
+      "species_name": "Fluffy angler",
+      "hunger_mod": 2,
+      "happy_mod": 3,
+      "energy_mod": 4,
+      "clean_mod": 3,
+      "age": 200,
+      "diet_type": 2,
+      "diet_desc": "Herbivore",
+      "monster_id": null,
+      "image_id": 3,
+      "color_id": null
+    },
+    {
+      "id": 5,
+      "species_name": "Cog hybrid",
+      "hunger_mod": 3,
+      "happy_mod": 5,
+      "energy_mod": 4,
+      "clean_mod": 1,
+      "age": 200,
+      "diet_type": 3,
+      "diet_desc": "Omnivore",
+      "monster_id": null,
+      "image_id": 4,
+      "color_id": null
+    }
+  ]
+  
