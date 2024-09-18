@@ -7,4 +7,4 @@ Install dependencies with npm install in each respective /client/pet-app and /se
 
 ### Running Front-end Server
 
-Go to the path: `Virtual-Pet/client/pet-app` and `npm run` in the terminal
+Go to the path: `/client/pet-app` and `npm run` in the terminal
