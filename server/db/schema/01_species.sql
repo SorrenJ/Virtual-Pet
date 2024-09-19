@@ -7,7 +7,7 @@ CREATE TABLE SPECIES (
     happy_mod INT,
     energy_mod INT,
     clean_mod INT,
-    age INT,
+    lifespan INT,
     diet_type INT,
     diet_desc VARCHAR(255),
     monster_id INT,
