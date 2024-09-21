@@ -55,11 +55,11 @@ CREATE TABLE shop (
 -- Toys table
 CREATE TABLE toys (
   id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
   effects VARCHAR(255),
   description VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE,
   
 );
@@ -67,22 +67,21 @@ CREATE TABLE toys (
 -- Toiletries table
 CREATE TABLE tolietries (
   id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
   effects VARCHAR(255),
-  description VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  description VARCHAR(255), 
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE,
 );
 
 -- Foods table
 CREATE TABLE foods (
   id SERIAL PRIMARY KEY,
-  shop_id INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
   effects VARCHAR(255),
-  description VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  description VARCHAR(255),  
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE,
 );
