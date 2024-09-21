@@ -19,7 +19,7 @@ CREATE TABLE inventory (
 CREATE TABLE user_food (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  count INTEGER NOT NULL,
+  count INTEGER DEFAULT 0,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
   item_type_id INTEGER REFERENCES foods(id) ON DELETE CASCADE
@@ -29,7 +29,7 @@ CREATE TABLE user_food (
 CREATE TABLE user_tolietries (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  count INTEGER NOT NULL,
+  count INTEGER DEFAULT 0,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
   item_type_id INTEGER REFERENCES tolietries(id) ON DELETE CASCADE
@@ -39,11 +39,50 @@ CREATE TABLE user_tolietries (
 CREATE TABLE user_toys (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  count INTEGER NOT NULL,
+  count INTEGER DEFAULT 0,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
   item_type_id INTEGER REFERENCES toys(id) ON DELETE CASCADE
 );
+
+
+-- Create a view to calculate toy counts dynamically
+CREATE VIEW user_toy_count AS
+SELECT 
+    user_id, 
+    inventory_id, 
+    item_type_id, 
+    COUNT(*) AS toy_count
+FROM 
+    user_toys
+GROUP BY 
+    user_id, inventory_id, item_type_id;
+
+-- Create a view to calculate toiletry counts dynamically
+CREATE VIEW user_tolietries_count AS
+SELECT 
+    user_id, 
+    inventory_id, 
+    item_type_id, 
+    COUNT(*) AS toiletry_count
+FROM 
+    user_tolietries
+GROUP BY 
+    user_id, inventory_id, item_type_id;
+
+-- Create a view to calculate food counts dynamically
+CREATE VIEW user_food_count AS
+SELECT 
+    user_id, 
+    inventory_id, 
+    item_type_id, 
+    COUNT(*) AS food_count
+FROM 
+    user_food
+GROUP BY 
+    user_id, inventory_id, item_type_id;
+
+
 
 -- Shop table
 CREATE TABLE shop (
