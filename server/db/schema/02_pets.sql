@@ -14,4 +14,5 @@ CREATE TABLE pets (
   happiness INT,
   hunger INT,
   cleanliness INT
+  
 )

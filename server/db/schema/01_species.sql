@@ -10,7 +10,6 @@ CREATE TABLE species (
     lifespan INT,
     diet_type INT,
     diet_desc VARCHAR(255),
-    monster_id INT,
     image_id INT,
     color_id INT,
     FOREIGN KEY (monster_id) REFERENCES monsters(id),
