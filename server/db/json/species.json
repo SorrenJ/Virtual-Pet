@@ -83,6 +83,21 @@
         "monster_id": null,
         "image_id": 5,
         "color_id": null
+      },
+
+      {
+        "id": 7,
+        "species_name": "Slugaboo",
+        "hunger_mod": 3,
+        "happy_mod": 3,
+        "energy_mod": 3,
+        "clean_mod": 3,
+        "age": 300,
+        "diet_type": 3,
+        "diet_desc": "Omnivore",
+        "monster_id": null,
+        "image_id": 6,
+        "color_id": null
       }
 
 ]
