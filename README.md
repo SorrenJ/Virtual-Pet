@@ -19,11 +19,6 @@ run root server directory to start `npm start`
 
 
 ## Database
-
-<<<<<<< HEAD
-
-=======
->>>>>>> backend/adoption-route
 DB_NAME= beastly_bonds_development
 
 1. In psql create db: `CREATE DATABASE beastly_bonds_development;`
@@ -33,9 +28,5 @@ DB_NAME= beastly_bonds_development
 3. After creating database type `\i db/schema/schema.sql` in psql terminal to create the tables
 
 4. To check if tables exist type : `\dt`
-<<<<<<< HEAD
-
-=======
  
->>>>>>> backend/adoption-route
 5. in psql type `\i db/seeds/your_seed.sql` to insert the data to the tables. (replace "your_seed" with the seed file name)
