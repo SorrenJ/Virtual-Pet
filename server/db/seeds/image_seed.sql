@@ -6,4 +6,4 @@ VALUES
 ('image_3_url'),
 ('image_4_url'),
 ('image_5_url'),
-('image_6_url');
+('https://res.cloudinary.com/deszclhtq/image/upload/v1727112791/Yellow_Default_hrgmsk.png');
