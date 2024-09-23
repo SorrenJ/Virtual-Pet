@@ -23,7 +23,12 @@ app.get('/adopt', async (req, res) => {
 
     try {
    // Query the species table
-   const speciesResult = await pool.query('SELECT * FROM species');
+   const speciesResult = await pool.query(`
+      SELECT *
+      FROM species
+      JOIN images ON species.image_id = images.id
+      
+   `);
    const species = speciesResult.rows;
 
    // Query the pets table joined with species
