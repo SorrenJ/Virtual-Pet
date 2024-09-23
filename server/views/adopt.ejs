@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adopt a Species</title>
+</head>
+<body>
+    <h1>Adopt a Species</h1>
+    <ul>
+        <% species.forEach(species => { %>
+            <li>
+                <h2><%= species.species_name %></h2>
+                <p>Hunger Modifier: <%= species.hunger_mod %></p>
+                <p>Happy Modifier: <%= species.happy_mod %></p>
+                <p>Energy Modifier: <%= species.energy_mod %></p>
+                <p>Cleanliness Modifier: <%= species.clean_mod %></p>
+                <p>Lifespan: <%= species.lifespan %></p>
+                <p>Diet Type: <%= species.diet_type %></p>
+                <p>Diet Description: <%= species.diet_desc %></p>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>
