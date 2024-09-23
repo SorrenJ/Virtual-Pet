@@ -21,5 +21,22 @@
             </li>
         <% }) %>
     </ul>
+
+        <h1>Your Pet</h1>
+    <ul>
+        <% pets.forEach(pets => { %>
+            <li>
+                <h2><%= pets.name %></h2>
+                <p>Species: <%= pets.species_name %></p>
+                <p>Age: <%= pets.age %></p>
+                <p>Personality: <%= pets.personality %></p>
+                <p>Diet: <%= pets.diet_desc %></p>
+                <img src="/db/<%= pets.image %>" alt="<%= pets.name %>" width="640" height="480">
+             
+            </li>
+        <% }) %>
+    </ul>
+
+
 </body>
 </html>
