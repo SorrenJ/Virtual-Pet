@@ -8,7 +8,6 @@ CREATE TABLE pets (
   age INT, 
   created_at timestamp,
   image varchar (255),
-  emotion varchar (255),
   personality varchar (255),
   energy INT,
   happiness INT,
