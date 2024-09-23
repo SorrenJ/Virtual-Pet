@@ -12,11 +12,14 @@ Go to the path: `/client/pet-app` and `npm run` in the terminal
 ### Setup and run Back-end Server
 
 install to root server directory `npm i express pg cors`
+
 install to root server directory`npm install --save-dev nodemon`
+
 run root server directory to start `npm start`
 
 
 ## Database
+
 
 DB_NAME= beastly_bonds_development
 
