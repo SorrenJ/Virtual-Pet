@@ -30,4 +30,4 @@ DB_NAME= beastly_bonds_development
 
 4. To check if tables exist type : `\dt`
  
-5. in psql type `\i seeds/your_seed.sql` to insert the data to the tables. (replace "your_seed" with the seed file name)
+5. in psql type `\i db/seeds/your_seed.sql` to insert the data to the tables. (replace "your_seed" with the seed file name)
