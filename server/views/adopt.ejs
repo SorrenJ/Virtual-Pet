@@ -18,6 +18,8 @@
                 <p>Lifespan: <%= species.lifespan %></p>
                 <p>Diet Type: <%= species.diet_type %></p>
                 <p>Diet Description: <%= species.diet_desc %></p>
+                <p>Image:</p>
+                <img src="<%= species.image_url %>" alt="<%= species.species_name %> Image">
             </li>
         <% }) %>
     </ul>
