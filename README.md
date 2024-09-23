@@ -1,5 +1,7 @@
 # Virtual-Pet
 
+We know... we'll delete .env file 
+
 ## Setup
 Install dependencies with `npm install` in each respective `/client/pet-app` and `/server`.
 
