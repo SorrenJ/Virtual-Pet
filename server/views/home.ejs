@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome Home</h1>
+
+    <% if (pet) { %>
+        <h2>Meet <%= pet.name %></h2>
+        <img src="<%= pet.image %>" alt="<%= pet.name %>">
+    <% } else { %>
+        <p>No pets available at the moment.</p>
+    <% } %>
+
+    <h2>Other Data</h2>
+    <p>Data from other tables can be displayed here if needed.</p>
+    <!-- Add more content or tables here as needed -->
+</body>
+</html>

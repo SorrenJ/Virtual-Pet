@@ -177,3 +177,46 @@ app.get('/all_tables', async (req, res) => {
       res.status(500).send('Internal Server Error');
   }
 });
+
+
+app.get('/home', async (req, res) => {
+  try {
+      // Query to get one random pet
+      const petQuery = 'SELECT name, image FROM pets ORDER BY RANDOM() LIMIT 1';
+      const pets = await pool.query(petQuery);
+
+      // Fetch all other tables data
+      const species = await pool.query('SELECT * FROM species');
+      const users = await pool.query('SELECT * FROM users');
+      const inventory = await pool.query('SELECT * FROM inventory');
+      const userFood = await pool.query('SELECT * FROM user_food');
+      const userToiletries = await pool.query('SELECT * FROM user_toiletries');
+      const userToys = await pool.query('SELECT * FROM user_toys');
+      const shop = await pool.query('SELECT * FROM shop');
+      const toys = await pool.query('SELECT * FROM toys');
+      const toiletries = await pool.query('SELECT * FROM toiletries');
+      const foods = await pool.query('SELECT * FROM foods');
+      const images = await pool.query('SELECT * FROM images');
+      const colors = await pool.query('SELECT * FROM colors');
+
+      // Render the EJS template for the home page
+      res.render('home', {
+          pet: pets.rows[0], // Only send the first pet found
+          species: species.rows,
+          users: users.rows,
+          inventory: inventory.rows,
+          userFood: userFood.rows,
+          userToiletries: userToiletries.rows,
+          userToys: userToys.rows,
+          shop: shop.rows,
+          toys: toys.rows,
+          toiletries: toiletries.rows,
+          foods: foods.rows,
+          images: images.rows,
+          colors: colors.rows,
+      });
+  } catch (error) {
+      console.error('Error executing query', error.stack);
+      res.status(500).send('Internal Server Error');
+  }
+});
