@@ -9,7 +9,7 @@ app.use('/db', express.static('db'));
 
 //middleware
 app.use(cors());
-
+app.use(express.json()); // Add this line for JSON parsing
 
 // Set up EJS as the templating engine
 app.set('view engine', 'ejs');
@@ -48,6 +48,48 @@ app.get('/adopt', async (req, res) => {
 
 });
 
+
+app.post('/adopt-pet', async (req, res) => {
+  const { species_id } = req.body;
+  const userId = 1; // Change this to the actual user ID
+
+  try {
+      const newPet = await pool.query(`
+          INSERT INTO pets (user_id, species_id, created_at)
+          VALUES ($1, $2, NOW()) RETURNING *
+      `, [userId, species_id]);
+
+      res.status(201).json(newPet.rows[0]);
+  } catch (err) {
+      console.error('Error inserting pet:', err);
+      res.status(500).send('Server error');
+  }
+});
+
+app.post('/set-pet-name', async (req, res) => {
+  const { pet_id, name } = req.body;
+
+  try {
+      const updatedPet = await pool.query(`
+          UPDATE pets
+          SET name = $1,
+              age = 1,
+              emotion = 'default',
+              personality = 'Gloomy'
+          WHERE id = $2
+          RETURNING *
+      `, [name, pet_id]);
+
+      if (updatedPet.rowCount === 0) {
+          return res.status(404).send('No pet found to update.');
+      }
+
+      res.status(200).json(updatedPet.rows[0]);
+  } catch (err) {
+      console.error('Error setting pet name:', err);
+      res.status(500).send('Server error');
+  }
+});
 app.get('/shop', async (req, res) => {
   try {
     toysResult = await pool.query('SELECT * FROM toys');

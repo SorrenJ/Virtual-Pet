@@ -20,6 +20,7 @@
                 <p>Diet Description: <%= species.diet_desc %></p>
                 <p>Image:</p>
                 <img src="<%= species.image_url %>" alt="<%= species.species_name %> Image">
+                <button onclick="adoptPet(<%= species.id %>)">Adopt This Pet</button>
             </li>
         <% }) %>
     </ul>
@@ -41,4 +42,45 @@
 
 
 </body>
+
+<script>
+    async function adoptPet(speciesId) {
+        const response = await fetch('/adopt-pet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ species_id: speciesId }),
+        });
+
+        if (response.ok) {
+        const adoptedPet = await response.json(); // Get the new pet details
+        const petName = prompt('Enter a name for your new pet:');
+        if (petName) {
+            // Now send the pet name to the server to insert it into the database
+            const petDataResponse = await fetch('/set-pet-name', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pet_id: adoptedPet.id, name: petName }), // Use pet_id
+            });
+
+            if (petDataResponse.ok) {
+                alert('Pet adopted and named successfully!');
+                location.reload(); // Reload the page to see the new pet
+            } else {
+                const errorText = await petDataResponse.text(); // Get error message from response
+                alert(`Error setting pet name: ${errorText}`);
+            }
+        }
+    } else {
+        alert('Error adopting pet.');
+    }
+
+    }
+</script>
+
+
+
 </html>
