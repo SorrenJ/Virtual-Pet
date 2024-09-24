@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data from Hub Route</h1>
+
+    <% const tables = [
+        { name: 'Species', data: species },
+        { name: 'Users', data: users },
+        { name: 'Pets', data: pets },
+        { name: 'Inventory', data: inventory },
+        { name: 'User Food', data: userFood },
+        { name: 'User Toiletries', data: userToiletries },
+        { name: 'User Toys', data: userToys },
+        { name: 'Shop', data: shop },
+        { name: 'Toys', data: toys },
+        { name: 'Toiletries', data: toiletries },
+        { name: 'Foods', data: foods },
+        { name: 'Images', data: images },
+        { name: 'Colors', data: colors }
+    ]; %>
+
+    <% tables.forEach(table => { %>
+        <h2><%= table.name %></h2>
+        <table>
+            <thead>
+                <tr>
+                    <% if (table.data.length > 0) { %>
+                        <% Object.keys(table.data[0]).forEach(column => { %>
+                            <th><%= column %></th>
+                        <% }); %>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% table.data.forEach(row => { %>
+                    <tr>
+                        <% Object.values(row).forEach(value => { %>
+                            <td><%= value %></td>
+                        <% }); %>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% }); %>
+</body>
+</html>
