@@ -17,20 +17,165 @@
             font-size: 2em;
             margin: 20px 0;
         }
+        .inventory, .user-data {
+            display: none; /* Initially hide all tables */
+            margin-top: 20px;
+        }
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
+    <script>
+        function toggleTable(tableId) {
+            const table = document.getElementById(tableId);
+            table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
+        }
+
+        function toggleInventory() {
+            const inventoryTable = document.getElementById('inventoryTable');
+            const userButtons = document.getElementById('userButtons');
+            if (inventoryTable.style.display === 'none' || inventoryTable.style.display === '') {
+                inventoryTable.style.display = 'table'; // Show the inventory table
+                userButtons.style.display = 'block'; // Show user toggle buttons
+            } else {
+                inventoryTable.style.display = 'none'; // Hide the inventory table
+                userButtons.style.display = 'none'; // Hide user toggle buttons
+            }
+        }
+    </script>
 </head>
 <body>
-    <h1>Welcome Home</h1>
-
     <% if (pet) { %>
-        <h2>Meet <%= pet.name %></h2>
-        <img src="<%= pet.image %>" alt="<%= pet.name %>">
+    <h1>Welcome   <%= pet.user_name %> </h1>
+
+
+        <h2>Meet <%= pet.pet_name %></h2>
+        <img src="/db/<%= pet.pet_image %>" alt="<%= pet.pet_name %>">
+        <p>Species: <%= pet.species_name %></p>
+      
+        <p>Hunger Modifier: <%= pet.hunger_mod %></p>
+        <p>Happiness Modifier: <%= pet.happy_mod %></p>
     <% } else { %>
         <p>No pets available at the moment.</p>
     <% } %>
+    <button onclick="toggleInventory()">Toggle Inventory Data</button>
 
-    <h2>Other Data</h2>
-    <p>Data from other tables can be displayed here if needed.</p>
-    <!-- Add more content or tables here as needed -->
+    <div class="inventory" id="inventoryTable">
+        <h2>Inventory Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Money</th>
+                    <th>User ID</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% inventory.forEach(item => { %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td><%= item.money %></td>
+                        <td><%= item.user_id %></td>
+                        <td><%= item.created_at %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="userButtons" style="display: none;">
+        <button onclick="toggleTable('userToysTable')">Toggle User Toys Data</button>
+        <button onclick="toggleTable('userToiletriesTable')">Toggle User Toiletries Data</button>
+        <button onclick="toggleTable('userFoodTable')">Toggle User Food Data</button>
+    </div>
+
+    <div class="user-data" id="userToysTable">
+        <h2>User Toys Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Count</th>
+                    <th>User ID</th>
+                    <th>Inventory ID</th>
+                    <th>Item Type ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% userToys.forEach(item => { %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td><%= item.count %></td>
+                        <td><%= item.user_id %></td>
+                        <td><%= item.inventory_id %></td>
+                        <td><%= item.item_type_id %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="user-data" id="userToiletriesTable">
+        <h2>User Toiletries Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Count</th>
+                    <th>User ID</th>
+                    <th>Inventory ID</th>
+                    <th>Item Type ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% userToiletries.forEach(item => { %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td><%= item.count %></td>
+                        <td><%= item.user_id %></td>
+                        <td><%= item.inventory_id %></td>
+                        <td><%= item.item_type_id %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="user-data" id="userFoodTable">
+        <h2>User Food Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Count</th>
+                    <th>User ID</th>
+                    <th>Inventory ID</th>
+                    <th>Item Type ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% userFood.forEach(item => { %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td><%= item.count %></td>
+                        <td><%= item.user_id %></td>
+                        <td><%= item.inventory_id %></td>
+                        <td><%= item.item_type_id %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

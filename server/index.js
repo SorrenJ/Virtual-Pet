@@ -75,7 +75,8 @@ app.post('/set-pet-name', async (req, res) => {
           SET name = $1,
               age = 1,
               emotion = 'default',
-              personality = 'Gloomy'
+              personality = 'Gloomy',
+              image = 'monster_assets/slugaboo/blue_default.png'
           WHERE id = $2
           RETURNING *
       `, [name, pet_id]);
@@ -182,7 +183,16 @@ app.get('/all_tables', async (req, res) => {
 app.get('/home', async (req, res) => {
   try {
       // Query to get one random pet
-      const petQuery = 'SELECT name, image FROM pets ORDER BY RANDOM() LIMIT 1';
+      const petQuery =  `
+      SELECT p.name AS pet_name, p.image AS pet_image, 
+             s.species_name, s.hunger_mod, s.happy_mod, 
+             u.name AS user_name, u.email
+      FROM pets p
+      JOIN species s ON p.species_id = s.id
+      JOIN users u ON p.user_id = u.id
+      ORDER BY p.created_at DESC
+      LIMIT 1
+  `;
       const pets = await pool.query(petQuery);
 
       // Fetch all other tables data
