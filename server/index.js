@@ -23,7 +23,12 @@ app.get('/adopt', async (req, res) => {
 
     try {
    // Query the species table
-   const speciesResult = await pool.query('SELECT * FROM species');
+   const speciesResult = await pool.query(`
+      SELECT *
+      FROM species
+      JOIN images ON species.image_id = images.id
+      
+   `);
    const species = speciesResult.rows;
 
    // Query the pets table joined with species
@@ -43,4 +48,21 @@ app.get('/adopt', async (req, res) => {
 
 });
 
+app.get('/shop', async (req, res) => {
+  try {
+    toysResult = await pool.query('SELECT * FROM toys');
+    toys = toysResult.rows;
+
+    toiletriesResult = await pool.query('SELECT * FROM toiletries');
+    toiletries = toiletriesResult.rows;
+
+    foodsResult = await pool.query('SELECT * FROM foods');
+    foods = foodsResult.rows; 
+
+    res.render('shop', { toys, toiletries, foods });
+} catch (err) {
+  console.error('Error fetching data:', err);
+  res.status(500).send('Server error');
+}
+})
 
