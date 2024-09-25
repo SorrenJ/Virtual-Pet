@@ -181,49 +181,80 @@ app.get('/all_tables', async (req, res) => {
 
 
 app.get('/home', async (req, res) => {
+  const userId = 1; // Change this as necessary
+
   try {
-      // Query to get one random pet
-      const petQuery =  `
-      SELECT p.name AS pet_name, p.image AS pet_image, 
-             s.species_name, s.hunger_mod, s.happy_mod, 
-             u.name AS user_name, u.email
-      FROM pets p
-      JOIN species s ON p.species_id = s.id
-      JOIN users u ON p.user_id = u.id
-      ORDER BY p.created_at DESC
-      LIMIT 1
-  `;
+      // Query to get the most recent pet with species and user details
+      const petQuery = `
+          SELECT p.name AS pet_name, p.image AS pet_image, 
+                 s.species_name, s.hunger_mod, s.happy_mod, 
+                 u.name AS user_name, u.email
+          FROM pets p
+          JOIN species s ON p.species_id = s.id
+          JOIN users u ON p.user_id = u.id
+          ORDER BY p.created_at DESC
+          LIMIT 1
+      `;
       const pets = await pool.query(petQuery);
 
-      // Fetch all other tables data
-      const species = await pool.query('SELECT * FROM species');
-      const users = await pool.query('SELECT * FROM users');
-      const inventory = await pool.query('SELECT * FROM inventory');
-      const userFood = await pool.query('SELECT * FROM user_food');
-      const userToiletries = await pool.query('SELECT * FROM user_toiletries');
-      const userToys = await pool.query('SELECT * FROM user_toys');
-      const shop = await pool.query('SELECT * FROM shop');
-      const toys = await pool.query('SELECT * FROM toys');
-      const toiletries = await pool.query('SELECT * FROM toiletries');
-      const foods = await pool.query('SELECT * FROM foods');
-      const images = await pool.query('SELECT * FROM images');
-      const colors = await pool.query('SELECT * FROM colors');
+      // Query to get inventory data for the user
+      const inventoryQuery = `
+          SELECT * FROM inventory WHERE user_id = $1
+      `;
+      const inventory = await pool.query(inventoryQuery, [userId]);
+
+      // Queries to get counts from views for the user
+      const userFoodCountQuery = `
+            SELECT food_count FROM user_food_count WHERE user_id = $1
+        `;
+      const userToiletriesCountQuery = `
+          SELECT toiletry_count FROM user_toiletries_count WHERE user_id = $1
+      `;
+      const userToysCountQuery = `
+          SELECT toy_count FROM user_toy_count WHERE user_id = $1
+      `;
+
+      const userFoodCount = await pool.query(userFoodCountQuery, [userId]);
+      const userToiletriesCount = await pool.query(userToiletriesCountQuery, [userId]);
+      const userToysCount = await pool.query(userToysCountQuery, [userId]);
+
+      // Extract counts or default to 0
+      const foodCount = userFoodCount.rows[0] ? userFoodCount.rows[0].food_count : 0;
+      const toiletriesCount = userToiletriesCount.rows[0] ? userToiletriesCount.rows[0].toiletry_count : 0;
+      const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
+
+      // Queries to get user_toys, user_toiletries, and user_foods for the user with names
+      const userFood = await pool.query(`
+          SELECT uf.count, uf.user_id, uf.inventory_id, f.id AS item_type_id, f.name AS food_name
+          FROM user_food uf
+          JOIN foods f ON uf.item_type_id = f.id
+          WHERE uf.user_id = $1
+      `, [userId]);
+      
+      const userToiletries = await pool.query(`
+          SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name
+          FROM user_toiletries ut
+          JOIN toiletries t ON ut.item_type_id = t.id
+          WHERE ut.user_id = $1
+      `, [userId]);
+      
+      const userToys = await pool.query(`
+          SELECT ut.count, ut.user_id, ut.inventory_id, ty.id AS item_type_id, ty.name AS toys_name
+          FROM user_toys ut
+          JOIN toys ty ON ut.item_type_id = ty.id
+          WHERE ut.user_id = $1
+      `, [userId]);
 
       // Render the EJS template for the home page
       res.render('home', {
-          pet: pets.rows[0], // Only send the first pet found
-          species: species.rows,
-          users: users.rows,
+          pet: pets.rows[0],
           inventory: inventory.rows,
+          foodCount,
+          toiletriesCount,
+          toysCount,
           userFood: userFood.rows,
           userToiletries: userToiletries.rows,
           userToys: userToys.rows,
-          shop: shop.rows,
-          toys: toys.rows,
-          toiletries: toiletries.rows,
-          foods: foods.rows,
-          images: images.rows,
-          colors: colors.rows,
       });
   } catch (error) {
       console.error('Error executing query', error.stack);

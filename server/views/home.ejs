@@ -55,14 +55,19 @@
     </script>
 </head>
 <body>
+    <div class="links">
+        <h3>Explore More:</h3>
+        <a href="/home">Go home</a>
+        <a href="/adopt">Adopt a Pet</a>
+        <a href="/shop">Visit the Shop</a>
+        <a href="/all_tables">View All Tables</a>
+    </div>
+
     <% if (pet) { %>
-    <h1>Welcome   <%= pet.user_name %> </h1>
-
-
+    <h1>Welcome <%= pet.user_name %></h1>
         <h2>Meet <%= pet.pet_name %></h2>
         <img src="/db/<%= pet.pet_image %>" alt="<%= pet.pet_name %>">
         <p>Species: <%= pet.species_name %></p>
-      
         <p>Hunger Modifier: <%= pet.hunger_mod %></p>
         <p>Happiness Modifier: <%= pet.happy_mod %></p>
     <% } else { %>
@@ -79,6 +84,9 @@
                     <th>Money</th>
                     <th>User ID</th>
                     <th>Created At</th>
+                    <th>Food Count</th>
+                    <th>Toiletries Count</th>
+                    <th>Toys Count</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,6 +96,9 @@
                         <td><%= item.money %></td>
                         <td><%= item.user_id %></td>
                         <td><%= item.created_at %></td>
+                        <td><%= foodCount %></td>
+                        <td><%= toiletriesCount %></td>
+                        <td><%= toysCount %></td> <!-- Use the total count variable -->
                     </tr>
                 <% }); %>
             </tbody>
@@ -105,21 +116,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Toy Name</th>
                     <th>Count</th>
-                    <th>User ID</th>
-                    <th>Inventory ID</th>
-                    <th>Item Type ID</th>
                 </tr>
             </thead>
             <tbody>
                 <% userToys.forEach(item => { %>
                     <tr>
-                        <td><%= item.id %></td>
+                        <td><%= item.toys_name %></td>
                         <td><%= item.count %></td>
-                        <td><%= item.user_id %></td>
-                        <td><%= item.inventory_id %></td>
-                        <td><%= item.item_type_id %></td>
                     </tr>
                 <% }); %>
             </tbody>
@@ -131,21 +136,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Toiletries Name</th>
                     <th>Count</th>
-                    <th>User ID</th>
-                    <th>Inventory ID</th>
-                    <th>Item Type ID</th>
                 </tr>
             </thead>
             <tbody>
                 <% userToiletries.forEach(item => { %>
                     <tr>
-                        <td><%= item.id %></td>
+                        <td><%= item.toiletries_name %></td>
                         <td><%= item.count %></td>
-                        <td><%= item.user_id %></td>
-                        <td><%= item.inventory_id %></td>
-                        <td><%= item.item_type_id %></td>
                     </tr>
                 <% }); %>
             </tbody>
@@ -157,21 +156,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Food Name</th>
                     <th>Count</th>
-                    <th>User ID</th>
-                    <th>Inventory ID</th>
-                    <th>Item Type ID</th>
                 </tr>
             </thead>
             <tbody>
                 <% userFood.forEach(item => { %>
                     <tr>
-                        <td><%= item.id %></td>
+                        <td><%= item.food_name %></td>
                         <td><%= item.count %></td>
-                        <td><%= item.user_id %></td>
-                        <td><%= item.inventory_id %></td>
-                        <td><%= item.item_type_id %></td>
                     </tr>
                 <% }); %>
             </tbody>
