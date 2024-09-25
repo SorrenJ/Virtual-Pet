@@ -60,12 +60,13 @@ app.get('/shop', async (req, res) => {
     const foods = foodsResult.rows; 
 
     const moneyResult = await pool.query('SELECT money FROM inventory');
-    const money = moneyResult.rows[0].money; 
-    
-    res.render('shop', { toys, toiletries, foods, money });
+    const money = moneyResult.rows[0].money;
+
+    // Send data as JSON response
+    res.json({ toys, toiletries, foods, money });
   } catch (err) {
     console.error('Error fetching data:', err);
-    res.status(500).send('Server error');
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

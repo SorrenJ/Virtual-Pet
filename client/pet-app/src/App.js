@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ShopPage from './routes/shopPage';
-import HomePage from './routes/homePage'; // Create a simple HomePage component
+import HomePage from './routes/homePage'; // Default home page
+import AdoptPage from './routes/adoptPage'; // Default adopt page
 import './App.css';
 
 function App() {
@@ -9,9 +10,10 @@ function App() {
     <Router>
       <div className="App">
         <header className="App-header">
-          <Routes>
+          <Routes> {/* Use Routes to create paths*/}
             <Route path="/" element={<HomePage />} /> {/* Home page */}
             <Route path="/shop" element={<ShopPage />} /> {/* Shop page */}
+            <Route path="/adopt" element={<AdoptPage />} />
           </Routes>
         </header>
       </div>
