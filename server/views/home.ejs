@@ -52,6 +52,34 @@
                 userButtons.style.display = 'none'; // Hide user toggle buttons
             }
         }
+
+
+        async function switchPet() {
+        try {
+            const response = await fetch('/switch-pet', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const newPet = await response.json();
+
+            // Update the UI with the new pet's details
+            document.querySelector('h2').innerText = `Meet ${newPet.pet_name}`;
+            document.querySelector('img').src = `/db/${newPet.pet_image}`;
+            document.querySelector('p').innerText = `Species: ${newPet.species_name}`;
+            // Update other pet details as needed...
+        } catch (error) {
+            console.error('Error switching pet:', error);
+        }
+    }
+
+
     </script>
 </head>
 <body>
@@ -63,16 +91,26 @@
         <a href="/all_tables">View All Tables</a>
     </div>
 
-    <% if (pet) { %>
-    <h1>Welcome <%= pet.user_name %></h1>
-        <h2>Meet <%= pet.pet_name %></h2>
-        <img src="/db/<%= pet.pet_image %>" alt="<%= pet.pet_name %>">
-        <p>Species: <%= pet.species_name %></p>
-        <p>Hunger Modifier: <%= pet.hunger_mod %></p>
-        <p>Happiness Modifier: <%= pet.happy_mod %></p>
+    <% if (pets && pets.length > 0) { %>
+    <h1>Welcome <%=  pets[0].user_name %></h1>
+
+    <h2>Select Your Pet</h2>
+    <select id="petSelector" onchange="selectPet(this.value)">
+        <% pets.forEach(pet => { %>
+            <option value="<%= pet.id %>" <%= pet.id === selectedPet.id ? 'selected' : '' %>><%= pet.pet_name %></option>
+        <% }); %>
+    </select>
+    <div id="petDetails">
+        <h2>Meet <%= selectedPet.pet_name %></h2>
+        <img src="/db/<%= selectedPet.pet_image %>" alt="<%= selectedPet.pet_name %>">
+        <p>Species: <%= selectedPet.species_name %></p>
+        <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
+        <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
+    </div>
     <% } else { %>
         <p>No pets available at the moment.</p>
     <% } %>
+    <button onclick="switchPet()">Switch Pet</button>
     <button onclick="toggleInventory()">Toggle Inventory Data</button>
 
     <div class="inventory" id="inventoryTable">
@@ -171,4 +209,9 @@
         </table>
     </div>
 </body>
+<script>
+    function selectPet(petId) {
+        window.location.href = `/home?selectedPetId=${petId}`;
+    }
+    </script>
 </html>

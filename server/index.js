@@ -182,20 +182,32 @@ app.get('/all_tables', async (req, res) => {
 
 app.get('/home', async (req, res) => {
   const userId = 1; // Change this as necessary
-
+  const selectedPetId = req.query.selectedPetId;
   try {
       // Query to get the most recent pet with species and user details
       const petQuery = `
-          SELECT p.name AS pet_name, p.image AS pet_image, 
-                 s.species_name, s.hunger_mod, s.happy_mod, 
-                 u.name AS user_name, u.email
-          FROM pets p
-          JOIN species s ON p.species_id = s.id
-          JOIN users u ON p.user_id = u.id
-          ORDER BY p.created_at DESC
-          LIMIT 1
+            SELECT p.id, p.name AS pet_name, p.image AS pet_image, 
+           s.species_name, s.hunger_mod, s.happy_mod, 
+           u.name AS user_name, u.email
+    FROM pets p
+    JOIN species s ON p.species_id = s.id
+    JOIN users u ON p.user_id = u.id
+    WHERE p.user_id = $1
+    ORDER BY p.name;
+         
       `;
-      const pets = await pool.query(petQuery);
+      const pets = await pool.query(petQuery, [userId]);
+
+   // If no pets are found, handle that case
+   if (pets.rows.length === 0) {
+    return res.render('home', { pets: [], selectedPet: null });
+}
+
+
+     // Find the selected pet or default to the first pet
+     const selectedPet = selectedPetId
+     ? pets.rows.find(pet => pet.id === parseInt(selectedPetId)) || pets.rows[0]
+     : pets.rows[0];
 
       // Query to get inventory data for the user
       const inventoryQuery = `
@@ -247,17 +259,45 @@ app.get('/home', async (req, res) => {
 
       // Render the EJS template for the home page
       res.render('home', {
-          pet: pets.rows[0],
-          inventory: inventory.rows,
-          foodCount,
-          toiletriesCount,
-          toysCount,
-          userFood: userFood.rows,
-          userToiletries: userToiletries.rows,
-          userToys: userToys.rows,
-      });
+        pets: pets.rows, // Change this to "pets"
+        selectedPet: selectedPet,
+        inventory: inventory.rows,
+        foodCount,
+        toiletriesCount,
+        toysCount,
+        userFood: userFood.rows,
+        userToiletries: userToiletries.rows,
+        userToys: userToys.rows,
+    });
+    
   } catch (error) {
       console.error('Error executing query', error.stack);
       res.status(500).send('Internal Server Error');
   }
+});
+app.get('/switch-pet', async (req, res) => {
+    const userId = 1; // Adjust this as necessary
+
+    try {
+        // Query to get a random pet or the next one (you can modify as needed)
+        const petQuery = `
+            SELECT p.name AS pet_name, p.image AS pet_image, 
+                   s.species_name, s.hunger_mod, s.happy_mod
+            FROM pets p
+            JOIN species s ON p.species_id = s.id
+            WHERE p.user_id = $1
+            ORDER BY RANDOM() 
+            LIMIT 1
+        `;
+        const pets = await pool.query(petQuery, [userId]);
+
+        if (pets.rows.length === 0) {
+            return res.status(404).send({ message: 'No pets available' });
+        }
+
+        res.json(pets.rows[0]);
+    } catch (error) {
+        console.error('Error executing query', error.stack);
+        res.status(500).send('Internal Server Error');
+    }
 });
