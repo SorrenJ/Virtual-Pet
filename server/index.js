@@ -50,19 +50,22 @@ app.get('/adopt', async (req, res) => {
 
 app.get('/shop', async (req, res) => {
   try {
-    toysResult = await pool.query('SELECT * FROM toys');
-    toys = toysResult.rows;
+    const toysResult = await pool.query('SELECT * FROM toys');
+    const toys = toysResult.rows;
 
-    toiletriesResult = await pool.query('SELECT * FROM toiletries');
-    toiletries = toiletriesResult.rows;
+    const toiletriesResult = await pool.query('SELECT * FROM toiletries');
+    const toiletries = toiletriesResult.rows;
 
-    foodsResult = await pool.query('SELECT * FROM foods');
-    foods = foodsResult.rows; 
+    const foodsResult = await pool.query('SELECT * FROM foods');
+    const foods = foodsResult.rows; 
 
-    res.render('shop', { toys, toiletries, foods });
-} catch (err) {
-  console.error('Error fetching data:', err);
-  res.status(500).send('Server error');
-}
-})
+    const moneyResult = await pool.query('SELECT money FROM inventory');
+    const money = moneyResult.rows[0].money; 
+    
+    res.render('shop', { toys, toiletries, foods, money });
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    res.status(500).send('Server error');
+  }
+});
 
