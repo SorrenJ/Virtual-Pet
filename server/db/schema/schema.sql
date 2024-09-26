@@ -85,7 +85,7 @@ CREATE TABLE toys (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
-  effects VARCHAR(255),
+  effects INT,
   description VARCHAR(255),
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
@@ -97,7 +97,7 @@ CREATE TABLE toiletries (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
-  effects VARCHAR(255),
+  effects INT,
   description VARCHAR(255), 
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
@@ -109,7 +109,8 @@ CREATE TABLE foods (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
-  effects VARCHAR(255),
+  effects INT,
+  food_type INT,
   description VARCHAR(255),  
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );

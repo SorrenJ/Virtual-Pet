@@ -37,27 +37,27 @@ VALUES (CURRENT_TIMESTAMP);
 
 
 INSERT INTO foods (name, price, effects, description, shop_id) VALUES
-('Rotting Banana', 5, NULL, '"hello"', 1),
-('Salad', 15, NULL, '"hello"', 1),
-('Can of Beans', 25, NULL, '"hello"', 1),
-('Chicken Leg', 15, NULL, '"hello"', 1),
-('Sushi', 30, NULL, '"hello" ', 1),
-('Apple Pie', 30, NULL, '"hello"', 1),
-('Hamburger', 30, NULL, '"hello" ', 1);
+('Rotting Banana', 5, 5, '"hello"', 1),
+('Salad', 15, 10, '"hello"', 1),
+('Can of Beans', 15, 15, '"hello"', 1),
+('Chicken Leg', 15, 15, '"hello"', 1),
+('Sushi', 30, 20, '"hello" ', 1),
+('Apple Pie', 30, 20, '"hello"', 1),
+('Hamburger', 35, 25, '"hello" ', 1);
 
 INSERT INTO toiletries (name, price, effects, description, shop_id) VALUES
-('Soap', 25, NULL, '"hello"', 1),
-('Hairbrush', 50, NULL, '"hello"', 1),
-('Toilet Paper', 25, NULL, '"hello"', 1),
-('Toothbrush', 40, NULL, '"hello"', 1);
+('Soap', 25, 5, '"hello"', 1),
+('Hairbrush', 50, 35, '"hello"', 1),
+('Toilet Paper', 25, 5, '"hello"', 1),
+('Toothbrush', 40, 30, '"hello"', 1);
 
 INSERT INTO toys (name, price, effects, description, shop_id) VALUES
-('Doll', 100, NULL, '"hello"', 1),
-('Ball', 50, NULL, '"hello"', 1),
-('iPad', 1000, NULL, '"hello"', 1),
-('Paint  set', 150, NULL, '"hello"', 1),
-('Yoyo', 60, NULL, '"hello"', 1),
-('Rubber Ducky', 40, NULL, '"hello" ', 1);
+('Doll', 100, 50, '"hello"', 1),
+('Ball', 50, 25, '"hello"', 1),
+('iPad', 1000, 100, '"hello"', 1),
+('Paint  set', 150, 60, '"hello"', 1),
+('Yoyo', 60, 30, '"hello"', 1),
+('Rubber Ducky', 40, 20, '"hello" ', 1);
 
 
 
