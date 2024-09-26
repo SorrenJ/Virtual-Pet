@@ -9,24 +9,24 @@ DROP TABLE IF EXISTS shop CASCADE;
 DROP TABLE IF EXISTS toys CASCADE;
 DROP TABLE IF EXISTS toiletries CASCADE;
 DROP TABLE IF EXISTS foods CASCADE;
-DROP TABLE IF EXISTS images CASCADE;
+DROP TABLE IF EXISTS moods CASCADE;
 DROP TABLE IF EXISTS colors CASCADE;
+DROP TABLE IF EXISTS sprites CASCADE;
+DROP TABLE IF EXISTS personalities CASCADE;
 
--- Create images table (referenced by species table)
-CREATE TABLE images (
+-- Create moods table
+CREATE TABLE moods (
   id SERIAL PRIMARY KEY,
-  image_url VARCHAR(255) NOT NULL
+  mood_name VARCHAR(255)
 );
-COMMIT;
 
--- Create colors table (referenced by species table)
+-- Create colors table
 CREATE TABLE colors (
   id SERIAL PRIMARY KEY,
   color_name VARCHAR(255) NOT NULL
 );
-COMMIT;
 
--- Create species table (depends on images and colors)
+-- Create species table
 CREATE TABLE species (
     id SERIAL PRIMARY KEY,
     species_name VARCHAR(255) NOT NULL,
@@ -36,13 +36,17 @@ CREATE TABLE species (
     clean_mod INT,
     lifespan INT,
     diet_type INT,
-    diet_desc VARCHAR(255),
-    image_id INT,
-    color_id INT,
-    FOREIGN KEY (image_id) REFERENCES images(id),
-    FOREIGN KEY (color_id) REFERENCES colors(id)
+    diet_desc VARCHAR(255)
 );
-COMMIT;
+
+-- Create sprites table
+CREATE TABLE sprites (
+  id SERIAL PRIMARY KEY,
+  color_id INT REFERENCES colors(id) ON DELETE CASCADE,
+  species_id INT REFERENCES species(id) ON DELETE CASCADE,
+  mood_id INT REFERENCES moods(id) ON DELETE CASCADE,
+  image_url VARCHAR(255)
+  );
 
 -- Create users table
 CREATE TABLE users (
@@ -52,34 +56,43 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   created_at TIMESTAMP
 );
-COMMIT;
 
--- Create pets table (depends on users and species)
+-- Create personalities table
+CREATE TABLE personalities (
+  id SERIAL PRIMARY KEY,
+  personality_name VARCHAR(255) UNIQUE,
+  energy_decay NUMERIC(5, 2), 
+  happiness_decay NUMERIC(5, 2),
+  hunger_decay NUMERIC(5, 2),
+  cleanliness_decay NUMERIC(5, 2)
+);
+
+-- Create pets table
 CREATE TABLE pets (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
   species_id INT REFERENCES species(id) ON DELETE CASCADE,
   name VARCHAR(255),
   age INT, 
-  created_at TIMESTAMP,
+  adopted_at TIMESTAMP,
   image VARCHAR(255),
-  emotion VARCHAR(255),
-  personality VARCHAR(255),
+  mood_id INT REFERENCES moods(id) ON DELETE CASCADE,
+  color_id INT REFERENCES colors(id) ON DELETE CASCADE,
+  personality_id INT REFERENCES personalities(id) ON DELETE CASCADE,
+  update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
   energy INT,
   happiness INT,
   hunger INT,
   cleanliness INT
 );
-COMMIT;
 
--- Shop table
+-- Create shop table
 CREATE TABLE shop (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-COMMIT;
 
--- Toys table
+-- Create toys table
 CREATE TABLE toys (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -89,9 +102,8 @@ CREATE TABLE toys (
   description VARCHAR(255),
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
-COMMIT;
 
--- Toiletries table
+-- Create toiletries table
 CREATE TABLE toiletries (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -101,9 +113,8 @@ CREATE TABLE toiletries (
   description VARCHAR(255), 
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
-COMMIT;
 
--- Foods table
+-- Create foods table
 CREATE TABLE foods (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -114,16 +125,14 @@ CREATE TABLE foods (
   description VARCHAR(255),  
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
-COMMIT;
 
--- Inventory table
+-- Create inventory table
 CREATE TABLE inventory (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   money NUMERIC,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
-COMMIT;
 
 -- Create user food table
 CREATE TABLE user_food (
@@ -134,7 +143,6 @@ CREATE TABLE user_food (
   inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
   item_type_id INTEGER REFERENCES foods(id) ON DELETE CASCADE
 );
-COMMIT;
 
 -- Create user toiletries table
 CREATE TABLE user_toiletries (
@@ -145,7 +153,6 @@ CREATE TABLE user_toiletries (
   inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
   item_type_id INTEGER REFERENCES toiletries(id) ON DELETE CASCADE
 );
-COMMIT;
 
 -- Create user toys table
 CREATE TABLE user_toys (
@@ -156,7 +163,6 @@ CREATE TABLE user_toys (
   inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
   item_type_id INTEGER REFERENCES toys(id) ON DELETE CASCADE
 );
-COMMIT;
 
 -- Drop existing views if they exist
 DROP VIEW IF EXISTS user_food_count;
@@ -172,7 +178,9 @@ SELECT
 FROM 
     user_food
 GROUP BY 
-    user_id, inventory_id;
+
+    user_id, inventory_id, item_type_id;
+
 
 -- Create a view to calculate toiletry counts dynamically
 CREATE VIEW user_toiletries_count AS
@@ -183,7 +191,7 @@ SELECT
 FROM 
     user_toiletries
 GROUP BY 
-    user_id, inventory_id;
+    user_id, inventory_id, item_type_id;
 
 -- Create a view to calculate toy counts dynamically
 CREATE VIEW user_toy_count AS
@@ -194,4 +202,5 @@ SELECT
 FROM 
     user_toys
 GROUP BY 
-    user_id, inventory_id;
+    user_id, inventory_id, item_type_id;
+
