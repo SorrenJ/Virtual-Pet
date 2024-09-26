@@ -98,7 +98,7 @@ CREATE TABLE toys (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
-  effects VARCHAR(255),
+  effects INT,
   description VARCHAR(255),
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
@@ -109,7 +109,7 @@ CREATE TABLE toiletries (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
-  effects VARCHAR(255),
+  effects INT,
   description VARCHAR(255), 
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
@@ -120,7 +120,8 @@ CREATE TABLE foods (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255),
   price NUMERIC,
-  effects VARCHAR(255),
+  effects INT,
+  food_type INT,
   description VARCHAR(255),  
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE
 );
@@ -163,38 +164,43 @@ CREATE TABLE user_toys (
   item_type_id INTEGER REFERENCES toys(id) ON DELETE CASCADE
 );
 
--- Create a view to calculate toy counts dynamically
-CREATE VIEW user_toy_count AS
-SELECT 
-    user_id, 
-    inventory_id, 
-    item_type_id, 
-    COUNT(*) AS toy_count
-FROM 
-    user_toys
-GROUP BY 
-    user_id, inventory_id, item_type_id;
-
--- Create a view to calculate toiletry counts dynamically
-CREATE VIEW user_toiletries_count AS
-SELECT 
-    user_id, 
-    inventory_id, 
-    item_type_id, 
-    COUNT(*) AS toiletry_count
-FROM 
-    user_toiletries
-GROUP BY 
-    user_id, inventory_id, item_type_id;
+-- Drop existing views if they exist
+DROP VIEW IF EXISTS user_food_count;
+DROP VIEW IF EXISTS user_toiletries_count;
+DROP VIEW IF EXISTS user_toy_count;
 
 -- Create a view to calculate food counts dynamically
 CREATE VIEW user_food_count AS
 SELECT 
     user_id, 
     inventory_id, 
-    item_type_id, 
-    COUNT(*) AS food_count
+    SUM(count) AS food_count
 FROM 
     user_food
 GROUP BY 
+
     user_id, inventory_id, item_type_id;
+
+
+-- Create a view to calculate toiletry counts dynamically
+CREATE VIEW user_toiletries_count AS
+SELECT 
+    user_id, 
+    inventory_id, 
+    SUM(count) AS toiletry_count
+FROM 
+    user_toiletries
+GROUP BY 
+    user_id, inventory_id, item_type_id;
+
+-- Create a view to calculate toy counts dynamically
+CREATE VIEW user_toy_count AS
+SELECT 
+    user_id, 
+    inventory_id, 
+    SUM(count) AS toy_count
+FROM 
+    user_toys
+GROUP BY 
+    user_id, inventory_id, item_type_id;
+
