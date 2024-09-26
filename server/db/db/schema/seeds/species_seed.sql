@@ -5,4 +5,3 @@ INSERT INTO species (species_name, hunger_mod, happy_mod, energy_mod, clean_mod,
 ('Fluffy angler', 2, 3, 4, 3, 200, 2, 'Herbivore', NULL, 3, NULL),
 ('Cog hybrid', 3, 5, 4, 1, 200, 3, 'Omnivore', NULL, 4, NULL),
 ('Creep Vulture', 4, 2, 5, 1, 400, 1, 'Carnivore', NULL, 5, NULL);
-('Slugaboo', 3, 3, 3, 3, 300, 3, 'Omnivore', NULL, 6, NULL)

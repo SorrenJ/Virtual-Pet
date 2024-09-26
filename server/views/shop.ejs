@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+</head>
+<body>
+    <div class="links">
+        <h3>Explore More:</h3>
+        <a href="/home">Go home</a>
+        <a href="/adopt">Adopt a Pet</a>
+        <a href="/shop">Visit the Shop</a>
+        <a href="/all_tables">View All Tables</a>
+    </div>
+    <h1>Welcome to the shop</h1>
+    <div>
+      <h2>Your Balance</h2>
+      <p><strong>Money:</strong> $<%= money %></p>
+  </div>
+    <ul>
+      <h1>Toys</h1>
+        <% toys.forEach(toys => { %>
+            <li>
+                <h2><%= toys.name %></h2>
+                <p>Price: $<%= toys.price %></p>
+                <p>Description: <%= toys.description %></p>
+            </li>
+        <% }) %>
+    </ul>
+
+    <ul><h1> Toiletries</h1>
+      <% toiletries.forEach(toiletries => { %>
+          <li>
+              <h2><%= toiletries.name %></h2>
+              <p>Price: $<%= toiletries.price %></p>
+              <p>Description: <%= toiletries.description %></p>
+          </li>
+      <% }) %>
+  </ul>
+
+  <ul><h1> Foods</h1>
+    <% foods.forEach(foods => { %>
+        <li>
+            <h2><%= foods.name %></h2>
+            <p>Price: $<%= foods.price %></p>
+            <p>Description: <%= foods.description %></p>
+        </li>
+    <% }) %>
+</ul>
+
+</body>
+</html>
