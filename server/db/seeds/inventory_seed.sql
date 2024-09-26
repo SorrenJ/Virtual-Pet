@@ -1,2 +1,2 @@
 INSERT INTO inventory (user_id, money) VALUES
-(NULL, 300.0);
+(1, 300.0);
