@@ -36,14 +36,14 @@ INSERT INTO shop (created_at)
 VALUES (CURRENT_TIMESTAMP);
 
 
-INSERT INTO foods (name, price, effects, description, shop_id) VALUES
-('Rotting Banana', 5, 5, '"hello"', 1),
-('Salad', 15, 10, '"hello"', 1),
-('Can of Beans', 15, 15, '"hello"', 1),
-('Chicken Leg', 15, 15, '"hello"', 1),
-('Sushi', 30, 20, '"hello" ', 1),
-('Apple Pie', 30, 20, '"hello"', 1),
-('Hamburger', 35, 25, '"hello" ', 1);
+INSERT INTO foods (name, price, effects, food_type, description, shop_id) VALUES
+('Rotting Banana', 5, 5, 2, '"hello"', 1),
+('Salad', 15, 10, 2, '"hello"', 1),
+('Can of Beans', 15, 15, 2, '"hello"', 1),
+('Chicken Leg', 15, 15, 3, '"hello"', 1),
+('Sushi', 30, 20, 3, '"hello" ', 1),
+('Apple Pie', 30, 20, 2, '"hello"', 1),
+('Hamburger', 35, 25, 3, '"hello" ', 1);
 
 INSERT INTO toiletries (name, price, effects, description, shop_id) VALUES
 ('Soap', 25, 5, '"hello"', 1),
