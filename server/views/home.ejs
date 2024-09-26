@@ -81,6 +81,36 @@
 
 
     </script>
+
+
+<script>
+        async function feedPet(petId, foodId) {
+    try {
+        const response = await fetch('/feed-pet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ petId, foodId }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert(`Error: ${errorData.error}`);
+            return;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Pet fed successfully!');
+            // Optionally refresh the page or update the hunger display
+            location.reload();
+        }
+    } catch (error) {
+        console.error('Error feeding pet:', error);
+    }
+}
+</script>
 </head>
 <body>
     <div class="links">
@@ -106,6 +136,7 @@
         <p>Species: <%= selectedPet.species_name %></p>
         <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
         <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
+        <p>Hunger: <%= selectedPet.hunger %></p>
     </div>
     <% } else { %>
         <p>No pets available at the moment.</p>
@@ -196,6 +227,7 @@
                 <tr>
                     <th>Food Name</th>
                     <th>Count</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -203,6 +235,12 @@
                     <tr>
                         <td><%= item.food_name %></td>
                         <td><%= item.count %></td>
+                        <td><%= item.effect_value %></td>
+                        <td><%= item.count %></td>
+                        <td>
+                            <button onclick="feedPet(<%= selectedPet.id %>, <%= item.item_type_id %>)" 
+                                    <% if (item.count <= 0) { %>disabled<% } %>>Feed</button>
+                        </td>
                     </tr>
                 <% }); %>
             </tbody>
@@ -213,5 +251,11 @@
     function selectPet(petId) {
         window.location.href = `/home?selectedPetId=${petId}`;
     }
+
+
+
     </script>
+
+
+
 </html>

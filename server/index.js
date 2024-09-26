@@ -76,8 +76,14 @@ app.post('/set-pet-name', async (req, res) => {
               age = 1,
               emotion = 'default',
               personality = 'Gloomy',
-              image = 'monster_assets/slugaboo/blue_default.png'
-          WHERE id = $2
+              image = 'monster_assets/slugaboo/blue_default.png',
+              energy = 100,
+              happiness = 100,
+              hunger = 100,
+              cleanliness = 100
+
+
+            WHERE id = $2
           RETURNING *
       `, [name, pet_id]);
 
@@ -188,6 +194,7 @@ app.get('/home', async (req, res) => {
       const petQuery = `
             SELECT p.id, p.name AS pet_name, p.image AS pet_image, 
            s.species_name, s.hunger_mod, s.happy_mod, 
+           p.hunger,
            u.name AS user_name, u.email
     FROM pets p
     JOIN species s ON p.species_id = s.id
@@ -282,7 +289,8 @@ app.get('/switch-pet', async (req, res) => {
         // Query to get a random pet or the next one (you can modify as needed)
         const petQuery = `
             SELECT p.name AS pet_name, p.image AS pet_image, 
-                   s.species_name, s.hunger_mod, s.happy_mod
+                   s.species_name, s.hunger_mod, s.happy_mod,
+                   p.hunger,
             FROM pets p
             JOIN species s ON p.species_id = s.id
             WHERE p.user_id = $1
@@ -299,5 +307,52 @@ app.get('/switch-pet', async (req, res) => {
     } catch (error) {
         console.error('Error executing query', error.stack);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/feed-pet', async (req, res) => {
+    const { petId, foodId } = req.body; // Get petId and foodId from the request body
+    const userId = 1; // Use the actual userId from your session or request
+
+    try {
+        // Get the food's effect value and count
+        const foodQuery = `
+           SELECT f.effects AS effect, uf.count 
+    FROM foods f
+    JOIN user_food uf ON f.id = uf.item_type_id
+    WHERE uf.user_id = $1 AND uf.item_type_id = $2
+        `;
+        const foodResult = await pool.query(foodQuery, [userId, foodId]);
+        
+        if (foodResult.rows.length === 0) {
+            return res.status(400).json({ error: 'Food not found or not enough count' });
+        }
+
+        const { effect, count } = foodResult.rows[0];
+
+        if (count <= 0) {
+            return res.status(400).json({ error: 'No food left to feed' });
+        }
+
+        // Update the pet's hunger
+        const updateHungerQuery = `
+            UPDATE pets
+            SET hunger = COALESCE(hunger) + $1
+            WHERE id = $2
+        `;
+        await pool.query(updateHungerQuery, [effect, petId]);
+
+        // Decrease the food count
+        const decreaseFoodCountQuery = `
+            UPDATE user_food
+            SET count = count - 1
+            WHERE user_id = $1 AND item_type_id = $2
+        `;
+        await pool.query(decreaseFoodCountQuery, [userId, foodId]);
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error feeding pet:', error.stack);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
