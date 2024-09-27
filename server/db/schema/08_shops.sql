@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS shop CASCADE;
+
+-- Create shop table
+CREATE TABLE shop (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
