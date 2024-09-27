@@ -10,5 +10,5 @@ CREATE TABLE foods (
   food_type INT,
   description VARCHAR(255),  
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE,
-  toy_image VARCHAR(255)
+  food_image VARCHAR(255)
 );
