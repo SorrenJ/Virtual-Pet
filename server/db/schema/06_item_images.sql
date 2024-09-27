@@ -56,6 +56,7 @@ CREATE TABLE foods (
   name VARCHAR(255),
   price NUMERIC,
   effects VARCHAR(255),
+  food_type INT,
   description VARCHAR(255),  
   shop_id INTEGER REFERENCES shop(id) ON DELETE CASCADE,
   food_image VARCHAR(255)
