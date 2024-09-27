@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS inventory CASCADE;
+
+-- Create inventory table
+CREATE TABLE inventory (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  money NUMERIC,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
