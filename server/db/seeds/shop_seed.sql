@@ -1,2 +1,0 @@
-INSERT INTO shop (created_at) 
-VALUES (CURRENT_TIMESTAMP);
