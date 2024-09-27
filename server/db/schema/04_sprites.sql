@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS sprites CASCADE;
+
+CREATE TABLE sprites (
+  id SERIAL PRIMARY KEY,
+  color_id INT REFERENCES colors(id) ON DELETE CASCADE,
+  species_id INT REFERENCES species(id) ON DELETE CASCADE,
+  mood_id INT REFERENCES moods(id) ON DELETE CASCADE,
+  image_url VARCHAR(255)
+  );

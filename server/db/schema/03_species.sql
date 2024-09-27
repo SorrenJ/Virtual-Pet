@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS species CASCADE;
 
+-- Create species table
 CREATE TABLE species (
     id SERIAL PRIMARY KEY,
     species_name VARCHAR(255) NOT NULL,
@@ -10,9 +11,5 @@ CREATE TABLE species (
     lifespan INT,
     diet_type INT,
     diet_desc VARCHAR(255),
-    image_id INT,
-    color_id INT,
-    FOREIGN KEY (monster_id) REFERENCES pets(id),
-    FOREIGN KEY (image_id) REFERENCES images(id),
-    FOREIGN KEY (color_id) REFERENCES colors(id)
+    image VARCHAR(255)
 );

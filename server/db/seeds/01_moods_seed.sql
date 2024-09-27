@@ -1,12 +1,3 @@
-INSERT INTO colors (color_name)
-VALUES 
-('yellow'), 
-('red'), 
-('blue'), 
-('green'), 
-('purple'), 
-('orange');
-
 INSERT INTO moods (mood_name)
 VALUES 
 ('default'), 
