@@ -75,7 +75,7 @@ CREATE TABLE pets (
   name VARCHAR(255),
   age INT, 
   adopted_at TIMESTAMP,
-  image VARCHAR(255),
+  sprite_id INT REFERENCES sprite(id) ON DELETE CASCADE,
   mood_id INT REFERENCES moods(id) ON DELETE CASCADE,
   color_id INT REFERENCES colors(id) ON DELETE CASCADE,
   personality_id INT REFERENCES personalities(id) ON DELETE CASCADE,
