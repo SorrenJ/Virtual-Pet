@@ -28,15 +28,18 @@ app.get('/adopt', async (req, res) => {
         const speciesResult = await pool.query(`
             SELECT *
             FROM species
-            JOIN images ON species.image_id = images.id
-        `);
+            `);
         const species = speciesResult.rows;
 
         // Query the pets table joined with species
         const petsResult = await pool.query(`
-            SELECT pets.*, species.species_name, species.diet_desc
+            SELECT pets.*, species.species_name, species.diet_desc, moods.mood_name AS mood_name, colors.color_name as color_name, sprites.image_url, personalities.personality_name
             FROM pets
             JOIN species ON pets.species_id = species.id
+            JOIN moods ON pets.mood_id = moods.id
+            JOIN colors on pets.color_id = colors.id
+            JOIN sprites on pets.sprite_id = sprites.id
+            JOIN personalities on pets.personality_id = personalities.id
         `);
         const pets = petsResult.rows;
 
