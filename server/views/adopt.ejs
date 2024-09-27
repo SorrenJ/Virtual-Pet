@@ -26,7 +26,7 @@
                 <p>Diet Type: <%= species.diet_type %></p>
                 <p>Diet Description: <%= species.diet_desc %></p>
                 <p>Image:</p>
-                <img src="<%= species.image_url %>" alt="<%= species.species_name %> Image">
+                <img src="<%= species.image %>" alt="<%= species.species_name %> Image">
                 <button onclick="adoptPet(<%= species.id %>)">Adopt This Pet</button>
             </li>
         <% }) %>
@@ -41,7 +41,10 @@
                 <p>Age: <%= pets.age %></p>
                 <p>Personality: <%= pets.personality %></p>
                 <p>Diet: <%= pets.diet_desc %></p>
-                <img src="/db/<%= pets.image_url %>" alt="<%= pets.name %>" width="640" height="480">
+                <p>Personality: <%= pets.personality_name %></p>
+                <p>Mood: <%= pets.mood_name %></p>
+                <p>Color: <%= pets.color_name %></p>
+                <img src="<%= pets.image_url %>" alt="<%= pets.name %>" width="640" height="480">
              
             </li>
         <% }) %>
