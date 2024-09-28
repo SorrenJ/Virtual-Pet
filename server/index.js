@@ -297,101 +297,101 @@ app.get('/all_tables', async (req, res) => {
 
 
 app.get('/home', async (req, res) => {
-  const userId = 1; // Change this as necessary
-  const selectedPetId = req.query.selectedPetId;
-  try {
-      // Query to get the most recent pet with species and user details
+    const userId = 1; // Hardcoded user ID for now
+    const selectedPetId = req.query.selectedPetId;
+  
+    try {
+      // Query to get pets with their sprite and species details
       const petQuery = `
-            SELECT p.id, p.name AS pet_name, p.image AS pet_image, 
-           s.species_name, s.hunger_mod, s.happy_mod, 
-           p.hunger,
-           u.name AS user_name, u.email
-    FROM pets p
-    JOIN species s ON p.species_id = s.id
-    JOIN users u ON p.user_id = u.id
-    WHERE p.user_id = $1
-    ORDER BY p.name;
-         
+        SELECT p.id, p.name AS pet_name, s.species_name, s.hunger_mod, s.happy_mod, 
+               p.hunger, u.name AS user_name, u.email, sp.image_url AS pet_image
+        FROM pets p
+        JOIN species s ON p.species_id = s.id
+        JOIN users u ON p.user_id = u.id
+        JOIN sprites sp ON p.sprite_id = sp.id  -- Fetch image_url from sprites
+        WHERE p.user_id = $1
+        ORDER BY p.name;
       `;
+      
       const pets = await pool.query(petQuery, [userId]);
-
-   // If no pets are found, handle that case
-   if (pets.rows.length === 0) {
-    return res.render('home', { pets: [], selectedPet: null });
-}
-
-
-     // Find the selected pet or default to the first pet
-     const selectedPet = selectedPetId
-     ? pets.rows.find(pet => pet.id === parseInt(selectedPetId)) || pets.rows[0]
-     : pets.rows[0];
-
+  
+      // If no pets are found, handle that case
+      if (pets.rows.length === 0) {
+        return res.render('home', { pets: [], selectedPet: null });
+      }
+  
+      // Find the selected pet or default to the first pet
+      const selectedPet = selectedPetId
+        ? pets.rows.find(pet => pet.id === parseInt(selectedPetId)) || pets.rows[0]
+        : pets.rows[0];
+  
       // Query to get inventory data for the user
       const inventoryQuery = `
-          SELECT * FROM inventory WHERE user_id = $1
+        SELECT * FROM inventory WHERE user_id = $1
       `;
       const inventory = await pool.query(inventoryQuery, [userId]);
-
+  
       // Queries to get counts from views for the user
       const userFoodCountQuery = `
-            SELECT food_count FROM user_food_count WHERE user_id = $1
-        `;
+        SELECT food_count FROM user_food_count WHERE user_id = $1
+      `;
       const userToiletriesCountQuery = `
-          SELECT toiletry_count FROM user_toiletries_count WHERE user_id = $1
+        SELECT toiletry_count FROM user_toiletries_count WHERE user_id = $1
       `;
       const userToysCountQuery = `
-          SELECT toy_count FROM user_toy_count WHERE user_id = $1
+        SELECT toy_count FROM user_toy_count WHERE user_id = $1
       `;
-
+  
       const userFoodCount = await pool.query(userFoodCountQuery, [userId]);
       const userToiletriesCount = await pool.query(userToiletriesCountQuery, [userId]);
       const userToysCount = await pool.query(userToysCountQuery, [userId]);
-
+  
       // Extract counts or default to 0
       const foodCount = userFoodCount.rows[0] ? userFoodCount.rows[0].food_count : 0;
       const toiletriesCount = userToiletriesCount.rows[0] ? userToiletriesCount.rows[0].toiletry_count : 0;
       const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
-
+  
       // Queries to get user_toys, user_toiletries, and user_foods for the user with names
       const userFood = await pool.query(`
-          SELECT uf.count, uf.user_id, uf.inventory_id, f.id AS item_type_id, f.name AS food_name
-          FROM user_food uf
-          JOIN foods f ON uf.item_type_id = f.id
-          WHERE uf.user_id = $1
+        SELECT uf.count, uf.user_id, uf.inventory_id, f.id AS item_type_id, f.name AS food_name
+        FROM user_food uf
+        JOIN foods f ON uf.item_type_id = f.id
+        WHERE uf.user_id = $1
       `, [userId]);
-      
+  
       const userToiletries = await pool.query(`
-          SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name
-          FROM user_toiletries ut
-          JOIN toiletries t ON ut.item_type_id = t.id
-          WHERE ut.user_id = $1
+        SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name
+        FROM user_toiletries ut
+        JOIN toiletries t ON ut.item_type_id = t.id
+        WHERE ut.user_id = $1
       `, [userId]);
-      
+  
       const userToys = await pool.query(`
-          SELECT ut.count, ut.user_id, ut.inventory_id, ty.id AS item_type_id, ty.name AS toys_name
-          FROM user_toys ut
-          JOIN toys ty ON ut.item_type_id = ty.id
-          WHERE ut.user_id = $1
+        SELECT ut.count, ut.user_id, ut.inventory_id, ty.id AS item_type_id, ty.name AS toys_name
+        FROM user_toys ut
+        JOIN toys ty ON ut.item_type_id = ty.id
+        WHERE ut.user_id = $1
       `, [userId]);
-
+  
       // Render the EJS template for the home page
       res.render('home', {
-        pets: pets.rows, // Change this to "pets"
-        selectedPet: selectedPet,
-        inventory: inventory.rows,
+        pets: pets.rows, // List of pets
+        selectedPet: selectedPet, // The currently selected pet
+        inventory: inventory.rows, // Inventory data
         foodCount,
         toiletriesCount,
         toysCount,
         userFood: userFood.rows,
         userToiletries: userToiletries.rows,
         userToys: userToys.rows,
-    });
-    
-  } catch (error) {
+      });
+  
+    } catch (error) {
       console.error('Error executing query', error.stack);
       res.status(500).send('Internal Server Error');
-  }
-});
+    }
+  });
+  
 app.get('/switch-pet', async (req, res) => {
     const userId = 1; // Adjust this as necessary
 

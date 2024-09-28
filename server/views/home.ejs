@@ -132,7 +132,7 @@
     </select>
     <div id="petDetails">
         <h2>Meet <%= selectedPet.pet_name %></h2>
-        <img src="/db/<%= selectedPet.pet_image %>" alt="<%= selectedPet.pet_name %>">
+        <img src="<%= selectedPet.pet_image %>" alt="<%= selectedPet.pet_name %>">
         <p>Species: <%= selectedPet.species_name %></p>
         <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
         <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
