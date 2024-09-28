@@ -33,13 +33,13 @@ app.get('/adopt', async (req, res) => {
 
         // Query the pets table joined with species
         const petsResult = await pool.query(`
-            SELECT pets.*, species.species_name, species.diet_desc, moods.mood_name AS mood_name, colors.color_name as color_name, sprites.image_url, personalities.personality_name
+            SELECT pets.*, species.species_name, species.diet_desc, moods.mood_name, colors.color_name, sprites.image_url, personalities.personality_name
             FROM pets
             JOIN species ON pets.species_id = species.id
             JOIN moods ON pets.mood_id = moods.id
-            JOIN colors on pets.color_id = colors.id
-            JOIN sprites on pets.sprite_id = sprites.id
-            JOIN personalities on pets.personality_id = personalities.id
+            JOIN colors ON pets.color_id = colors.id
+            JOIN sprites ON pets.sprite_id = sprites.id
+            JOIN personalities ON pets.personality_id = personalities.id
         `);
         const pets = petsResult.rows;
 
@@ -52,58 +52,81 @@ app.get('/adopt', async (req, res) => {
 });
 
 
-// Shop route
-
 
 app.post('/adopt-pet', async (req, res) => {
-  const { species_id } = req.body;
-  const userId = 1; // Change this to the actual user ID
+    const userId = 1; // Hardcoded user ID
 
-  try {
-      const newPet = await pool.query(`
-          INSERT INTO pets (user_id, species_id, created_at)
-          VALUES ($1, $2, NOW()) RETURNING *
-      `, [userId, species_id]);
+    try {
+        // Fetch the appropriate sprite_id based on hardcoded species_id = 7, mood, and color
+        const spriteResult = await pool.query(`
+            SELECT id
+            FROM sprites
+            WHERE species_id = 7  -- Hardcoded species_id to 7
+              AND color_id = (SELECT id FROM colors WHERE color_name = 'blue' LIMIT 1) 
+              AND mood_id = (SELECT id FROM moods WHERE mood_name = 'default' LIMIT 1)
+            LIMIT 1
+        `);  // No parameters passed
 
-      res.status(201).json(newPet.rows[0]);
-  } catch (err) {
-      console.error('Error inserting pet:', err);
-      res.status(500).send('Server error');
-  }
+        if (spriteResult.rows.length === 0) {
+            return res.status(400).json({ error: 'No matching sprite found for the given species and color.' });
+        }
+
+        const sprite_id = spriteResult.rows[0].id;  // Get the first matching sprite
+
+        // Insert the new pet (without name initially)
+        const newPetResult = await pool.query(`
+            INSERT INTO pets 
+            (user_id, species_id, age, adopted_at, sprite_id, mood_id, color_id, personality_id, update_time, energy, happiness, hunger, cleanliness)
+            VALUES 
+            (
+              $1,    -- user_id
+              7,     -- Hardcoded species_id to 7
+              1,     -- Hardcoded age
+              NOW(), -- adopted_at (current timestamp)
+              $2,    -- sprite_id
+              (SELECT id FROM moods WHERE mood_name = 'default' LIMIT 1), 
+              (SELECT id FROM colors WHERE color_name = 'blue' LIMIT 1), 
+              (SELECT id FROM personalities WHERE personality_name = 'Gloomy' LIMIT 1), 
+              NOW(), 
+              100, 100, 100, 100
+            )
+            RETURNING *
+        `, [userId, sprite_id]);  // Parameters passed
+
+        const newPet = newPetResult.rows[0];  // Get the newly created pet
+
+        res.status(201).json(newPet);  // Send the newly created pet back to the client
+    } catch (err) {
+        console.error('Error inserting pet:', err.message);
+        res.status(500).send('Server error');
+    }
 });
+
 
 app.post('/set-pet-name', async (req, res) => {
-  const { pet_id, name } = req.body;
+    const { pet_id, name } = req.body;
 
-  try {
-      const updatedPet = await pool.query(`
-          UPDATE pets
-          SET name = $1,
-              age = 1,
-              emotion = 'default',
-              personality = 'Gloomy',
-              image = 'monster_assets/slugaboo/blue_default.png',
-              energy = 100,
-              happiness = 100,
-              hunger = 100,
-              cleanliness = 100
-
-
+    try {
+        // Update the pet's name based on the pet_id
+        const updatedPetResult = await pool.query(`
+            UPDATE pets
+            SET 
+                name = $1,
+                update_time = CURRENT_TIMESTAMP
             WHERE id = $2
-          RETURNING *
-      `, [name, pet_id]);
+            RETURNING *
+        `, [name, pet_id]);
 
-      if (updatedPet.rowCount === 0) {
-          return res.status(404).send('No pet found to update.');
-      }
+        if (updatedPetResult.rowCount === 0) {
+            return res.status(404).send('No pet found to update.');
+        }
 
-      res.status(200).json(updatedPet.rows[0]);
-  } catch (err) {
-      console.error('Error setting pet name:', err);
-      res.status(500).send('Server error');
-  }
+        res.status(200).json(updatedPetResult.rows[0]);
+    } catch (err) {
+        console.error('Error setting pet name:', err);
+        res.status(500).send('Server error');
+    }
 });
-
 app.get('/shop', async (req, res) => {
     try {
         const toysResult = await pool.query('SELECT * FROM toys');
