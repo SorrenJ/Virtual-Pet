@@ -6,13 +6,10 @@ const pool = require('./db/db'); // Import the pool from db/db.js
 
 // Middleware
 app.use(cors());
-
 app.use(express.json()); // Add this line to parse JSON bodies
 
 // Serve static files from the "db" directory
 app.use('/db', express.static('db'));
-
-
 
 // Set up EJS as the templating engine
 app.set('view engine', 'ejs');
@@ -634,4 +631,27 @@ app.post('/play-with-pet', async (req, res) => {
         console.error('Error playing with pet:', error.stack);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+// Convert score to money
+app.post('/api/convert-score', async (req, res) => {
+  const { userId, score } = req.body;
+  const moneyPerScore = 10;
+  const moneyEarned = score * moneyPerScore;
+
+  try {
+    await pool.query(
+      `UPDATE inventory 
+       SET money = money + $1 
+       WHERE user_id = $2`,
+      [moneyEarned, userId]
+    );
+
+    const moneyResult = await pool.query('SELECT money FROM inventory WHERE user_id = $1', [userId]);
+    const money = moneyResult.rows[0] ? moneyResult.rows[0].money : 0;
+    res.json({ money });
+  } catch (error) {
+    console.error('Error converting score:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
