@@ -226,74 +226,69 @@ app.post('/add-money', async (req, res) => {
 });
 
 // Route to get all data from all tables
+// Route to get all data from all tables
 app.get('/all_tables', async (req, res) => {
-  try {
-    const speciesQuery = 'SELECT * FROM species';
-    const usersQuery = 'SELECT * FROM users';
-    const petsQuery = 'SELECT * FROM pets';
-    const inventoryQuery = 'SELECT * FROM inventory';
-    const userFoodQuery = 'SELECT * FROM user_food';
-    const userToiletriesQuery = 'SELECT * FROM user_toiletries';
-    const userToysQuery = 'SELECT * FROM user_toys';
-    const shopQuery = 'SELECT * FROM shop';
-    const toysQuery = 'SELECT * FROM toys';
-    const toiletriesQuery = 'SELECT * FROM toiletries';
-    const foodsQuery = 'SELECT * FROM foods';
-    const imagesQuery = 'SELECT * FROM images';
-    const colorsQuery = 'SELECT * FROM colors';
-
-    const species = await pool.query(speciesQuery);
-    const users = await pool.query(usersQuery);
-    const pets = await pool.query(petsQuery);
-    const inventory = await pool.query(inventoryQuery);
-    const userFood = await pool.query(userFoodQuery);
-    const userToiletries = await pool.query(userToiletriesQuery);
-    const userToys = await pool.query(userToysQuery);
-    const shop = await pool.query(shopQuery);
-    const toys = await pool.query(toysQuery);
-    const toiletries = await pool.query(toiletriesQuery);
-    const foods = await pool.query(foodsQuery);
-    const images = await pool.query(imagesQuery);
-    const colors = await pool.query(colorsQuery);
-
-    // Send all data back in a single response
-    // res.json({
-    //   species: species.rows,
-    //   users: users.rows,
-    //   pets: pets.rows,
-    //   inventory: inventory.rows,
-    //   userFood: userFood.rows,
-    //   userToiletries: userToiletries.rows,
-    //   userToys: userToys.rows,
-    //   shop: shop.rows,
-    //   toys: toys.rows,
-    //   toiletries: toiletries.rows,
-    //   foods: foods.rows,
-    //   images: images.rows,
-    //   colors: colors.rows,
-    // });
-      
-        // Render the EJS template
-        res.render('all_tables', {
-          species: species.rows,
-          users: users.rows,
-          pets: pets.rows,
-          inventory: inventory.rows,
-          userFood: userFood.rows,
-          userToiletries: userToiletries.rows,
-          userToys: userToys.rows,
-          shop: shop.rows,
-          toys: toys.rows,
-          toiletries: toiletries.rows,
-          foods: foods.rows,
-          images: images.rows,
-          colors: colors.rows,
+    try {
+      // Queries for all tables
+      const speciesQuery = 'SELECT * FROM species';
+      const usersQuery = 'SELECT * FROM users';
+      const petsQuery = 'SELECT * FROM pets';
+      const moodsQuery = 'SELECT * FROM moods';
+      const spritesQuery = 'SELECT * FROM sprites';  // Added sprites query
+      const colorsQuery = 'SELECT * FROM colors';
+      const personalitiesQuery = 'SELECT * FROM personalities';  // Added personalities query
+  
+      const inventoryQuery = 'SELECT * FROM inventory';
+      const userFoodQuery = 'SELECT * FROM user_food';
+      const userToiletriesQuery = 'SELECT * FROM user_toiletries';
+      const userToysQuery = 'SELECT * FROM user_toys';
+      const shopQuery = 'SELECT * FROM shop';
+      const toysQuery = 'SELECT * FROM toys';
+      const toiletriesQuery = 'SELECT * FROM toiletries';
+      const foodsQuery = 'SELECT * FROM foods';
+  
+      // Execute all queries
+      const species = await pool.query(speciesQuery);
+      const users = await pool.query(usersQuery);
+      const pets = await pool.query(petsQuery);
+      const moods = await pool.query(moodsQuery);
+      const sprites = await pool.query(spritesQuery);  // Fetch sprites data
+      const colors = await pool.query(colorsQuery);
+      const personalities = await pool.query(personalitiesQuery);  // Fetch personalities data
+  
+      const inventory = await pool.query(inventoryQuery);
+      const userFood = await pool.query(userFoodQuery);
+      const userToiletries = await pool.query(userToiletriesQuery);
+      const userToys = await pool.query(userToysQuery);
+      const shop = await pool.query(shopQuery);
+      const toys = await pool.query(toysQuery);
+      const toiletries = await pool.query(toiletriesQuery);
+      const foods = await pool.query(foodsQuery);
+  
+      // Render the EJS template and pass all the data to the template
+      res.render('all_tables', {
+        species: species.rows,
+        users: users.rows,
+        pets: pets.rows,
+        moods: moods.rows,
+        sprites: sprites.rows,  // Pass sprites data to the view
+        colors: colors.rows,
+        personalities: personalities.rows,  // Pass personalities data to the view
+        inventory: inventory.rows,
+        userFood: userFood.rows,
+        userToiletries: userToiletries.rows,
+        userToys: userToys.rows,
+        shop: shop.rows,
+        toys: toys.rows,
+        toiletries: toiletries.rows,
+        foods: foods.rows
       });
-  } catch (error) {
+    } catch (error) {
       console.error('Error executing query', error.stack);
       res.status(500).send('Internal Server Error');
-  }
-});
+    }
+  });
+  
 
 
 app.get('/home', async (req, res) => {
