@@ -17,6 +17,11 @@
             font-size: 2em;
             margin: 20px 0;
         }
+
+        .hidden-details {
+            display: none;
+        }
+        
         .inventory, .user-data {
             display: none; /* Initially hide all tables */
             margin-top: 20px;
@@ -36,6 +41,17 @@
         }
     </style>
     <script>
+         function toggleDetails() {
+            const details = document.getElementById('hiddenDetails');
+            const button = document.getElementById('toggleButton');
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+                button.innerText = 'Hide Details';
+            } else {
+                details.style.display = 'none';
+                button.innerText = 'Show More Details';
+            }
+        }
         function toggleTable(tableId) {
             const table = document.getElementById(tableId);
             table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
@@ -185,6 +201,26 @@
         <p>Hunger: <%= selectedPet.hunger %></p>
         <p>Cleanliness: <%= selectedPet.cleanliness %></p>
         <p>Happiness: <%= selectedPet.happiness %></p>
+    
+    
+        <button id="toggleButton" onclick="toggleDetails()">Show More Details</button>
+
+        <!-- Hidden section for extra pet details -->
+        <div id="hiddenDetails" class="hidden-details">
+            <p>Species: <%= selectedPet.species_name %></p>
+            <p>Mood: <%= selectedPet.mood_name %></p>
+            <p>Color: <%= selectedPet.color_name %></p>
+            <p>Personality: <%= selectedPet.personality_name %></p>
+            <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
+            <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
+            <p>Energy Modifier: <%= selectedPet.energy_mod %></p>
+            <p>Cleanliness Modifier: <%= selectedPet.clean_mod %></p>
+            <p>Lifespan: <%= selectedPet.lifespan %></p>
+            <p>Diet Type: <%= selectedPet.diet_type %></p>
+            <p>Diet Description: <%= selectedPet.diet_desc %></p>
+        </div>
+    
+    
     </div>
     <% } else { %>
         <p>No pets available at the moment.</p>
