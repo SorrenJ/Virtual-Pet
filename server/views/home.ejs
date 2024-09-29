@@ -129,6 +129,33 @@
                 console.error('Error cleaning pet:', error);
             }
         }
+
+    async function playWithPet(petId, toyId) {
+        try {
+            const response = await fetch('/play-with-pet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ petId, toyId }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert(`Error: ${errorData.error}`);
+            return;
+        }
+
+            const data = await response.json();
+        if (data.success) {
+            alert('Pet played with successfully!');
+            location.reload();
+        }
+        } catch (error) {
+            console.error('Error playing with pet:', error);
+        }
+    }
+
     </script>
 </head>
 <body>
@@ -159,6 +186,7 @@
         <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
         <p>Hunger: <%= selectedPet.hunger %></p>
         <p>Cleanliness: <%= selectedPet.cleanliness %></p>
+        <p>Happiness: <%= selectedPet.happiness %></p>
     </div>
     <% } else { %>
         <p>No pets available at the moment.</p>
@@ -210,6 +238,7 @@
                 <tr>
                     <th>Toy Name</th>
                     <th>Count</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -221,6 +250,10 @@
                         </td>
                         <td><%= item.toys_name %></td>
                         <td><%= item.count %></td>
+                        <td>
+                            <button onclick="playWithPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                                <% if (item.count <= 0) { %>disabled<% } %>>Play</button>
+                        </td>
                     </tr>
                 <% }); %>
             </tbody>
