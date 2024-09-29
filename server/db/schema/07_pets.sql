@@ -16,5 +16,5 @@ CREATE TABLE pets (
   energy INT,
   happiness INT,
   hunger INT,
-  cleanliness INT
+  cleanliness INT 
 );

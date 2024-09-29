@@ -304,7 +304,7 @@ app.get('/home', async (req, res) => {
       // Query to get pets with their sprite and species details
       const petQuery = `
         SELECT p.id, p.name AS pet_name, s.species_name, s.hunger_mod, s.happy_mod, 
-               p.hunger, u.name AS user_name, u.email, sp.image_url AS pet_image
+               p.hunger, p.cleanliness, u.name AS user_name, u.email, sp.image_url AS pet_image
         FROM pets p
         JOIN species s ON p.species_id = s.id
         JOIN users u ON p.user_id = u.id
@@ -428,12 +428,20 @@ app.post('/feed-pet', async (req, res) => {
     const userId = 1; // Use the actual userId from your session or request
 
     try {
+        // First, update the pet's hunger to a default value (e.g., 100) if it is NULL
+        const hungerFixQuery = `
+            UPDATE pets
+            SET hunger = 100
+            WHERE id = $1 AND hunger IS NULL;
+        `;
+        await pool.query(hungerFixQuery, [petId]);
+
         // Get the food's effect value and count
         const foodQuery = `
            SELECT f.effects AS effect, uf.count 
-    FROM foods f
-    JOIN user_food uf ON f.id = uf.item_type_id
-    WHERE uf.user_id = $1 AND uf.item_type_id = $2
+           FROM foods f
+           JOIN user_food uf ON f.id = uf.item_type_id
+           WHERE uf.user_id = $1 AND uf.item_type_id = $2;
         `;
         const foodResult = await pool.query(foodQuery, [userId, foodId]);
         
@@ -447,11 +455,11 @@ app.post('/feed-pet', async (req, res) => {
             return res.status(400).json({ error: 'No food left to feed' });
         }
 
-        // Update the pet's hunger
+        // Update the pet's hunger by adding the food's effect
         const updateHungerQuery = `
             UPDATE pets
-            SET hunger = COALESCE(hunger) + $1
-            WHERE id = $2
+            SET hunger = hunger + $1
+            WHERE id = $2;
         `;
         await pool.query(updateHungerQuery, [effect, petId]);
 
@@ -459,13 +467,69 @@ app.post('/feed-pet', async (req, res) => {
         const decreaseFoodCountQuery = `
             UPDATE user_food
             SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2
+            WHERE user_id = $1 AND item_type_id = $2;
         `;
         await pool.query(decreaseFoodCountQuery, [userId, foodId]);
 
         res.json({ success: true });
     } catch (error) {
         console.error('Error feeding pet:', error.stack);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.post('/clean-pet', async (req, res) => {
+    const { petId, toiletriesId } = req.body; // Get petId and toiletriesId from the request body
+    const userId = 1; // Use the actual userId from your session or request
+
+    try {
+        // First, update any pets with NULL cleanliness to 100 (cleanliness fix)
+        const cleanlinessFixQuery = `
+            UPDATE pets
+            SET cleanliness = 100
+            WHERE id = $1 AND cleanliness IS NULL;
+        `;
+        await pool.query(cleanlinessFixQuery, [petId]);
+
+        // Get the toiletries' effect value and count
+        const toiletriesQuery = `
+           SELECT effects AS effect, ut.count 
+           FROM toiletries t
+           JOIN user_toiletries ut ON t.id = ut.item_type_id
+           WHERE ut.user_id = $1 AND ut.item_type_id = $2
+        `;
+        const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId]);
+
+        if (toiletriesResult.rows.length === 0) {
+            return res.status(400).json({ error: 'Toiletry not found or not enough count' });
+        }
+
+        const { effect, count } = toiletriesResult.rows[0];
+
+        if (count <= 0) {
+            return res.status(400).json({ error: 'No toiletry left to use' });
+        }
+
+        // Update the pet's cleanliness using the toiletries' effect
+        const updateCleanlinessQuery = `
+            UPDATE pets
+            SET cleanliness = COALESCE(cleanliness, 0) + $1
+            WHERE id = $2;
+        `;
+        await pool.query(updateCleanlinessQuery, [effect, petId]);
+
+        // Decrease the toiletries count
+        const decreaseToiletryCountQuery = `
+            UPDATE user_toiletries
+            SET count = count - 1
+            WHERE user_id = $1 AND item_type_id = $2;
+        `;
+        await pool.query(decreaseToiletryCountQuery, [userId, toiletriesId]);
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error cleaning pet:', error.stack);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
