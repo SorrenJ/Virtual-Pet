@@ -348,11 +348,14 @@ app.get('/home', async (req, res) => {
   
       // Queries to get user_toys, user_toiletries, and user_foods for the user with names
       const userFood = await pool.query(`
-        SELECT uf.count, uf.user_id, uf.inventory_id, f.id AS item_type_id, f.name AS food_name
+        SELECT uf.count, uf.user_id, uf.inventory_id, 
+               f.id AS item_type_id, f.name AS food_name, f.food_image AS "foodImage"
         FROM user_food uf
         JOIN foods f ON uf.item_type_id = f.id
         WHERE uf.user_id = $1
       `, [userId]);
+      
+      console.log(userFood.rows); // LOG this to check if foodImage is fetched
   
       const userToiletries = await pool.query(`
         SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name
@@ -380,7 +383,7 @@ app.get('/home', async (req, res) => {
         userToiletries: userToiletries.rows,
         userToys: userToys.rows,
       });
-  
+
     } catch (error) {
       console.error('Error executing query', error.stack);
       res.status(500).send('Internal Server Error');

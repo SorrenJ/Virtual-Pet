@@ -36,6 +36,7 @@
         }
     </style>
     <script>
+        
         function toggleTable(tableId) {
             const table = document.getElementById(tableId);
             table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
@@ -225,6 +226,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Food Image</th>
                     <th>Food Name</th>
                     <th>Count</th>
                     <th>Action</th>
@@ -233,6 +235,15 @@
             <tbody>
                 <% userFood.forEach(item => { %>
                     <tr>
+                        
+                            <td>
+                                <p>Image URL: <%= item.foodImage %></p> <!-- This will display the actual URL -->
+                                <img src="<%= item.foodImage %>" alt="<%= item.food_name %>" width="100">
+
+                              </td>
+                     
+                          
+
                         <td><%= item.food_name %></td>
                         <td><%= item.count %></td>
                         <td><%= item.effect_value %></td>
@@ -242,12 +253,15 @@
                                     <% if (item.count <= 0) { %>disabled<% } %>>Feed</button>
                         </td>
                     </tr>
+                    
                 <% }); %>
+                
             </tbody>
         </table>
     </div>
 </body>
 <script>
+   
     function selectPet(petId) {
         window.location.href = `/home?selectedPetId=${petId}`;
     }
