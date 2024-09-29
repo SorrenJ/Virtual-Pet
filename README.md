@@ -38,3 +38,17 @@ DB_NAME= beastly_bonds_development
 7. You might find yourself needing to deleting th data from a table you can `DELETE FROM your_table_name`
 
 8. To reset the serial id from a table you can `ALTER SEQUENCE your_table_name_id_seq RESTART WITH 1;`
+
+Alternatively you can run our bash script files in the terminal to insert all schemas and seed files located in their respective directories (with specified exceptions in the scripts).
+
+For the schemas:
+
+1. Set the correct permissions: `chmod +x server/insert_schemas.sh`
+
+2. Run `./server/insert_schemas.sh`
+
+Now for the seeds:
+
+1. Set the correct permissions: `chmod +x server/insert_seeds.sh`
+
+2. Run `./server/insert_seeds.sh`
