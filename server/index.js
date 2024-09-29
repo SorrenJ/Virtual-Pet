@@ -303,15 +303,62 @@ app.get('/home', async (req, res) => {
     try {
       // Query to get pets with their sprite and species details
       const petQuery = `
-        SELECT p.id, p.name AS pet_name, s.species_name, s.hunger_mod, s.happy_mod, 
-               p.hunger, p.cleanliness, p.happiness, u.name AS user_name, u.email, sp.image_url AS pet_image
-        FROM pets p
-        JOIN species s ON p.species_id = s.id
-        JOIN users u ON p.user_id = u.id
-        JOIN sprites sp ON p.sprite_id = sp.id  -- Fetch image_url from sprites
-        WHERE p.user_id = $1
-        ORDER BY p.name;
-      `;
+      SELECT 
+        -- From pets table
+        p.id AS pet_id, 
+        p.user_id, 
+        p.species_id, 
+        p.name AS pet_name, 
+        p.age, 
+        p.adopted_at, 
+        p.sprite_id, 
+        p.mood_id, 
+        p.color_id, 
+        p.personality_id, 
+        p.update_time, 
+        p.energy, 
+        p.happiness, 
+        p.hunger, 
+        p.cleanliness,
+    
+        -- From species table
+        s.species_name, 
+        s.hunger_mod, 
+        s.happy_mod, 
+        s.energy_mod, 
+        s.clean_mod, 
+        s.lifespan, 
+        s.diet_type, 
+        s.diet_desc, 
+        s.image AS species_image,
+    
+        -- From users table
+        u.name AS user_name, 
+        u.email,
+    
+        -- From sprites table
+        sp.image_url AS pet_image,
+    
+        -- From moods table
+        m.mood_name, 
+    
+        -- From colors table
+        c.color_name,
+    
+        -- From personalities table
+        per.personality_name
+    
+      FROM pets p
+      JOIN species s ON p.species_id = s.id
+      JOIN users u ON p.user_id = u.id
+      JOIN sprites sp ON p.sprite_id = sp.id  -- Fetch image_url from sprites
+      JOIN moods m ON p.mood_id = m.id  -- Fetch mood from moods table
+      JOIN colors c ON p.color_id = c.id  -- Fetch color from colors table
+      JOIN personalities per ON p.personality_id = per.id  -- Fetch personality from personalities table
+      WHERE p.user_id = $1
+      ORDER BY p.name;
+    `;
+    
       
       const pets = await pool.query(petQuery, [userId]);
   
