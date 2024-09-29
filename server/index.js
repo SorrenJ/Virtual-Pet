@@ -54,20 +54,24 @@ app.get('/adopt', async (req, res) => {
 
 
 app.post('/adopt-pet', async (req, res) => {
-    const userId = 1; // Hardcoded user ID
+    const { species_id, color_id } = req.body;  // Get species_id and color_id from the request
+    const userId = 1;  // Hardcoded user ID for now
+
+    console.log('Received species_id:', species_id, 'and color_id:', color_id);  // Debug log
 
     try {
-        // Fetch the appropriate sprite_id based on hardcoded species_id = 7, mood, and color
+        // Fetch the appropriate sprite_id based on the selected species_id, mood, and color
         const spriteResult = await pool.query(`
             SELECT id
             FROM sprites
-            WHERE species_id = 7  -- Hardcoded species_id to 7
-              AND color_id = (SELECT id FROM colors WHERE color_name = 'blue' LIMIT 1) 
+            WHERE species_id = $1
+              AND color_id = $2  -- Use the selected color_id from the request
               AND mood_id = (SELECT id FROM moods WHERE mood_name = 'default' LIMIT 1)
             LIMIT 1
-        `);  // No parameters passed
+        `, [species_id, color_id]);  // Pass both species_id and color_id as parameters
 
         if (spriteResult.rows.length === 0) {
+            console.log('No matching sprite found for the given species and color.');
             return res.status(400).json({ error: 'No matching sprite found for the given species and color.' });
         }
 
@@ -80,18 +84,18 @@ app.post('/adopt-pet', async (req, res) => {
             VALUES 
             (
               $1,    -- user_id
-              7,     -- Hardcoded species_id to 7
+              $2,    -- species_id
               1,     -- Hardcoded age
               NOW(), -- adopted_at (current timestamp)
-              $2,    -- sprite_id
+              $3,    -- sprite_id
               (SELECT id FROM moods WHERE mood_name = 'default' LIMIT 1), 
-              (SELECT id FROM colors WHERE color_name = 'blue' LIMIT 1), 
+              $4,    -- color_id from the request
               (SELECT id FROM personalities WHERE personality_name = 'Gloomy' LIMIT 1), 
               NOW(), 
               100, 100, 100, 100
             )
             RETURNING *
-        `, [userId, sprite_id]);  // Parameters passed
+        `, [userId, species_id, sprite_id, color_id]);  // Use species_id, sprite_id, and color_id as parameters
 
         const newPet = newPetResult.rows[0];  // Get the newly created pet
 
@@ -101,6 +105,7 @@ app.post('/adopt-pet', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
 
 
 app.post('/set-pet-name', async (req, res) => {

@@ -36,7 +36,6 @@
         }
     </style>
     <script>
-        
         function toggleTable(tableId) {
             const table = document.getElementById(tableId);
             table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
@@ -54,64 +53,56 @@
             }
         }
 
-
         async function switchPet() {
-        try {
-            const response = await fetch('/switch-pet', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
+            try {
+                const response = await fetch('/switch-pet', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-            });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+                const newPet = await response.json();
+
+                // Update the UI with the new pet's details
+                document.querySelector('h2').innerText = `Meet ${newPet.pet_name}`;
+                document.querySelector('img').src = `/db/${newPet.pet_image}`;
+                document.querySelector('p').innerText = `Species: ${newPet.species_name}`;
+            } catch (error) {
+                console.error('Error switching pet:', error);
             }
-
-            const newPet = await response.json();
-
-            // Update the UI with the new pet's details
-            document.querySelector('h2').innerText = `Meet ${newPet.pet_name}`;
-            document.querySelector('img').src = `/db/${newPet.pet_image}`;
-            document.querySelector('p').innerText = `Species: ${newPet.species_name}`;
-            // Update other pet details as needed...
-        } catch (error) {
-            console.error('Error switching pet:', error);
         }
-    }
 
-
-    </script>
-
-
-<script>
         async function feedPet(petId, foodId) {
-    try {
-        const response = await fetch('/feed-pet', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ petId, foodId }),
-        });
+            try {
+                const response = await fetch('/feed-pet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ petId, foodId }),
+                });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            alert(`Error: ${errorData.error}`);
-            return;
-        }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
 
-        const data = await response.json();
-        if (data.success) {
-            alert('Pet fed successfully!');
-            // Optionally refresh the page or update the hunger display
-            location.reload();
+                const data = await response.json();
+                if (data.success) {
+                    alert('Pet fed successfully!');
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error feeding pet:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error feeding pet:', error);
-    }
-}
-</script>
+    </script>
 </head>
 <body>
     <div class="links">
@@ -123,7 +114,7 @@
     </div>
 
     <% if (pets && pets.length > 0) { %>
-    <h1>Welcome <%=  pets[0].user_name %></h1>
+    <h1>Welcome <%= pets[0].user_name %></h1>
 
     <h2>Select Your Pet</h2>
     <select id="petSelector" onchange="selectPet(this.value)">
@@ -131,8 +122,10 @@
             <option value="<%= pet.id %>" <%= pet.id === selectedPet.id ? 'selected' : '' %>><%= pet.pet_name %></option>
         <% }); %>
     </select>
+
     <div id="petDetails">
         <h2>Meet <%= selectedPet.pet_name %></h2>
+        <!-- Display the selected pet's sprite image -->
         <img src="<%= selectedPet.pet_image %>" alt="<%= selectedPet.pet_name %>">
         <p>Species: <%= selectedPet.species_name %></p>
         <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
@@ -142,6 +135,7 @@
     <% } else { %>
         <p>No pets available at the moment.</p>
     <% } %>
+
     <button onclick="switchPet()">Switch Pet</button>
     <button onclick="toggleInventory()">Toggle Inventory Data</button>
 
@@ -168,7 +162,7 @@
                         <td><%= item.created_at %></td>
                         <td><%= foodCount %></td>
                         <td><%= toiletriesCount %></td>
-                        <td><%= toysCount %></td> <!-- Use the total count variable -->
+                        <td><%= toysCount %></td>
                     </tr>
                 <% }); %>
             </tbody>
@@ -235,41 +229,26 @@
             <tbody>
                 <% userFood.forEach(item => { %>
                     <tr>
-                        
-                            <td>
-                                <p>Image URL: <%= item.foodImage %></p> <!-- This will display the actual URL -->
-                                <img src="<%= item.foodImage %>" alt="<%= item.food_name %>" width="100">
-
-                              </td>
-                     
-                          
-
+                        <td>
+                            <p>Image URL: <%= item.foodImage %></p>
+                            <img src="<%= item.foodImage %>" alt="<%= item.food_name %>" width="100">
+                        </td>
                         <td><%= item.food_name %></td>
                         <td><%= item.count %></td>
-                        <td><%= item.effect_value %></td>
-                        <td><%= item.count %></td>
                         <td>
-                            <button onclick="feedPet(<%= selectedPet.id %>, <%= item.item_type_id %>)" 
-                                    <% if (item.count <= 0) { %>disabled<% } %>>Feed</button>
+                            <button onclick="feedPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                                <% if (item.count <= 0) { %>disabled<% } %>>Feed</button>
                         </td>
                     </tr>
-                    
                 <% }); %>
-                
             </tbody>
         </table>
     </div>
+
 </body>
 <script>
-   
     function selectPet(petId) {
         window.location.href = `/home?selectedPetId=${petId}`;
     }
-
-
-
-    </script>
-
-
-
+</script>
 </html>
