@@ -363,14 +363,14 @@ app.get('/home', async (req, res) => {
       console.log(userFood.rows); // LOG this to check if foodImage is fetched
   
       const userToiletries = await pool.query(`
-        SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name
+        SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name, t.toiletry_image AS "toiletryImage"
         FROM user_toiletries ut
         JOIN toiletries t ON ut.item_type_id = t.id
         WHERE ut.user_id = $1
       `, [userId]);
   
       const userToys = await pool.query(`
-        SELECT ut.count, ut.user_id, ut.inventory_id, ty.id AS item_type_id, ty.name AS toys_name
+        SELECT ut.count, ut.user_id, ut.inventory_id, ty.id AS item_type_id, ty.name AS toys_name, ty.toy_image AS "toyImage"
         FROM user_toys ut
         JOIN toys ty ON ut.item_type_id = ty.id
         WHERE ut.user_id = $1

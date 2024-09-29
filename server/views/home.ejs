@@ -187,6 +187,10 @@
             <tbody>
                 <% userToys.forEach(item => { %>
                     <tr>
+                        <td>
+                            <p>Image URL: <%= item.toyImage %></p>
+                            <img src="<%= item.toyImage %>" alt="<%= item.toys_name %>" width="100">
+                        </td>
                         <td><%= item.toys_name %></td>
                         <td><%= item.count %></td>
                     </tr>
@@ -207,6 +211,8 @@
             <tbody>
                 <% userToiletries.forEach(item => { %>
                     <tr>
+                        <td><p>Image URL: <%= item.toiletryImage %></p>
+                            <img src="<%= item.toiletryImage %>" alt="<%= item.toiletries_name %>" width="100"></td>
                         <td><%= item.toiletries_name %></td>
                         <td><%= item.count %></td>
                     </tr>
