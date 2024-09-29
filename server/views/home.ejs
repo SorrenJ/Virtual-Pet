@@ -17,6 +17,11 @@
             font-size: 2em;
             margin: 20px 0;
         }
+
+        .hidden-details {
+            display: none;
+        }
+        
         .inventory, .user-data {
             display: none; /* Initially hide all tables */
             margin-top: 20px;
@@ -36,6 +41,17 @@
         }
     </style>
     <script>
+         function toggleDetails() {
+            const details = document.getElementById('hiddenDetails');
+            const button = document.getElementById('toggleButton');
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+                button.innerText = 'Hide Details';
+            } else {
+                details.style.display = 'none';
+                button.innerText = 'Show More Details';
+            }
+        }
         function toggleTable(tableId) {
             const table = document.getElementById(tableId);
             table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
@@ -102,6 +118,60 @@
                 console.error('Error feeding pet:', error);
             }
         }
+
+
+        async function cleanPet(petId, toiletriesId) {
+            try {
+                const response = await fetch('/clean-pet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ petId, toiletriesId }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Pet cleaned successfully!');
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error cleaning pet:', error);
+            }
+        }
+
+    async function playWithPet(petId, toyId) {
+        try {
+            const response = await fetch('/play-with-pet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ petId, toyId }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert(`Error: ${errorData.error}`);
+            return;
+        }
+
+            const data = await response.json();
+        if (data.success) {
+            alert('Pet played with successfully!');
+            location.reload();
+        }
+        } catch (error) {
+            console.error('Error playing with pet:', error);
+        }
+    }
+
     </script>
 </head>
 <body>
@@ -127,10 +197,30 @@
         <h2>Meet <%= selectedPet.pet_name %></h2>
         <!-- Display the selected pet's sprite image -->
         <img src="<%= selectedPet.pet_image %>" alt="<%= selectedPet.pet_name %>">
-        <p>Species: <%= selectedPet.species_name %></p>
-        <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
-        <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
+        <p>Energy: <%= selectedPet.energy %></p>
         <p>Hunger: <%= selectedPet.hunger %></p>
+        <p>Cleanliness: <%= selectedPet.cleanliness %></p>
+        <p>Happiness: <%= selectedPet.happiness %></p>
+    
+    
+        <button id="toggleButton" onclick="toggleDetails()">Show More Details</button>
+
+        <!-- Hidden section for extra pet details -->
+        <div id="hiddenDetails" class="hidden-details">
+            <p>Species: <%= selectedPet.species_name %></p>
+            <p>Mood: <%= selectedPet.mood_name %></p>
+            <p>Color: <%= selectedPet.color_name %></p>
+            <p>Personality: <%= selectedPet.personality_name %></p>
+            <p>Hunger Modifier: <%= selectedPet.hunger_mod %></p>
+            <p>Happiness Modifier: <%= selectedPet.happy_mod %></p>
+            <p>Energy Modifier: <%= selectedPet.energy_mod %></p>
+            <p>Cleanliness Modifier: <%= selectedPet.clean_mod %></p>
+            <p>Lifespan: <%= selectedPet.lifespan %></p>
+            <p>Diet Type: <%= selectedPet.diet_type %></p>
+            <p>Diet Description: <%= selectedPet.diet_desc %></p>
+        </div>
+    
+    
     </div>
     <% } else { %>
         <p>No pets available at the moment.</p>
@@ -182,6 +272,7 @@
                 <tr>
                     <th>Toy Name</th>
                     <th>Count</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -193,6 +284,10 @@
                         </td>
                         <td><%= item.toys_name %></td>
                         <td><%= item.count %></td>
+                        <td>
+                            <button onclick="playWithPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                                <% if (item.count <= 0) { %>disabled<% } %>>Play</button>
+                        </td>
                     </tr>
                 <% }); %>
             </tbody>
@@ -206,6 +301,7 @@
                 <tr>
                     <th>Toiletries Name</th>
                     <th>Count</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -215,6 +311,11 @@
                             <img src="<%= item.toiletryImage %>" alt="<%= item.toiletries_name %>" width="100"></td>
                         <td><%= item.toiletries_name %></td>
                         <td><%= item.count %></td>
+                    
+                        <td>
+                            <button onclick="cleanPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                                <% if (item.count <= 0) { %>disabled<% } %>>Clean</button>
+                        </td>
                     </tr>
                 <% }); %>
             </tbody>
