@@ -27,6 +27,16 @@
                 <p>Diet Description: <%= species.diet_desc %></p>
                 <p>Image:</p>
                 <img src="<%= species.image %>" alt="<%= species.species_name %> Image">
+                
+                            <!-- Dropdown to select color -->
+            <label for="color-<%= species.id %>">Select Color:</label>
+            <select id="color-<%= species.id %>">
+                <option value="1">Blue</option>  <!-- Replace with dynamic values if needed -->
+                <option value="2">Red</option>
+                <option value="3">Green</option>
+            </select>
+
+                
                 <button onclick="adoptPet(<%= species.id %>)">Adopt This Pet</button>
             </li>
         <% }) %>
@@ -55,12 +65,16 @@
 
 <script>
     async function adoptPet(speciesId) {
+    // Get the selected color_id from the dropdown
+    const colorDropdown = document.getElementById(`color-${speciesId}`);
+    const colorId = colorDropdown.value;  // Get the selected color_id
+
     const response = await fetch('/adopt-pet', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ species_id: speciesId }),  // Send the selected species ID
+        body: JSON.stringify({ species_id: speciesId, color_id: colorId }),  // Send both species_id and color_id
     });
 
     if (response.ok) {
@@ -85,6 +99,8 @@
             }
         }
     } else {
+        const errorText = await response.text();  // Get the error from response
+        console.log('Error:', errorText);  // Log the error to debug
         alert('Error adopting pet.');
     }
 }
