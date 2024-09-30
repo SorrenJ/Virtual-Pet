@@ -5,14 +5,13 @@ require('dotenv').config();
 const pool = require('./db/db'); // Import the pool from db/db.js
 
 // Middleware
-app.use(cors());
-
+app.use(cors({
+  origin: 'http://localhost:3000' // Allow only this origin
+}));
 app.use(express.json()); // Add this line to parse JSON bodies
 
 // Serve static files from the "db" directory
 app.use('/db', express.static('db'));
-
-
 
 // Set up EJS as the templating engine
 app.set('view engine', 'ejs');
@@ -20,6 +19,16 @@ app.set('view engine', 'ejs');
 app.listen(5000, () => {
     console.log("Server started on port 5000");
 });
+
+// Routes
+const convertScoreRoutes = require('./routes/convert-score')
+app.use('/api/convert-score', convertScoreRoutes);
+
+const petApiRoute = require('./routes/pet_api')
+app.use('/api/pets', petApiRoute);
+
+const speciesApiRoute = require('./routes/species_api')
+app.use('/api/species', speciesApiRoute)
 
 // Adoption route
 app.get('/adopt', async (req, res) => {
@@ -635,3 +644,5 @@ app.post('/play-with-pet', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// Convert score to money
