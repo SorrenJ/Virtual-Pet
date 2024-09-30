@@ -307,6 +307,7 @@ app.get('/all_tables', async (req, res) => {
 
 app.get('/home', async (req, res) => {
     const userId = 1; // Hardcoded user ID for now
+    console.log(`Current User ID in /home route: ${userId}`); // Add logging here
     const selectedPetId = req.query.selectedPetId;
   
     try {
@@ -378,9 +379,17 @@ app.get('/home', async (req, res) => {
   
       // Find the selected pet or default to the first pet
       const selectedPet = selectedPetId
-        ? pets.rows.find(pet => pet.id === parseInt(selectedPetId)) || pets.rows[0]
-        : pets.rows[0];
-  
+      ? pets.rows.find(pet => pet.pet_id === parseInt(selectedPetId))
+      : pets.rows[0];
+
+  if (!selectedPet) {
+      return res.status(404).send('Pet not found');
+  }
+
+
+    
+       console.log('Selected Pet:', selectedPet );
+      
       // Query to get inventory data for the user
       const inventoryQuery = `
         SELECT * FROM inventory WHERE user_id = $1
@@ -435,7 +444,7 @@ app.get('/home', async (req, res) => {
       // Render the EJS template for the home page
       res.render('home', {
         pets: pets.rows, // List of pets
-        selectedPet: selectedPet, // The currently selected pet
+        selectedPet, // Pass the correct selected pet
         inventory: inventory.rows, // Inventory data
         foodCount,
         toiletriesCount,
@@ -443,6 +452,8 @@ app.get('/home', async (req, res) => {
         userFood: userFood.rows,
         userToiletries: userToiletries.rows,
         userToys: userToys.rows,
+        petId: selectedPet.pet_id // Pass the selected petId explicitly
+
       });
 
     } catch (error) {
@@ -450,41 +461,15 @@ app.get('/home', async (req, res) => {
       res.status(500).send('Internal Server Error');
     }
   });
-  
-app.get('/switch-pet', async (req, res) => {
-    const userId = 1; // Adjust this as necessary
+ 
 
-    try {
-        // Query to get a random pet or the next one (you can modify as needed)
-        const petQuery = `
-            SELECT p.name AS pet_name, p.image AS pet_image, 
-                   s.species_name, s.hunger_mod, s.happy_mod,
-                   p.hunger,
-            FROM pets p
-            JOIN species s ON p.species_id = s.id
-            WHERE p.user_id = $1
-            ORDER BY RANDOM() 
-            LIMIT 1
-        `;
-        const pets = await pool.query(petQuery, [userId]);
-
-        if (pets.rows.length === 0) {
-            return res.status(404).send({ message: 'No pets available' });
-        }
-
-        res.json(pets.rows[0]);
-    } catch (error) {
-        console.error('Error executing query', error.stack);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.post('/feed-pet', async (req, res) => {
+  app.post('/feed-pet', async (req, res) => {
     const { petId, foodId } = req.body; // Get petId and foodId from the request body
     const userId = 1; // Use the actual userId from your session or request
+    console.log(`Feeding pet. User ID: ${userId}, Pet ID: ${petId}, Food ID: ${foodId}`); // Log these values
 
     try {
-        // First, update the pet's hunger to a default value (e.g., 100) if it is NULL
+        // Ensure pet's hunger is initialized to 100 if it's currently NULL
         const hungerFixQuery = `
             UPDATE pets
             SET hunger = 100
@@ -492,34 +477,45 @@ app.post('/feed-pet', async (req, res) => {
         `;
         await pool.query(hungerFixQuery, [petId]);
 
-        // Get the food's effect value and count
+        // Get the food's effect value, count, and pet's current hunger
         const foodQuery = `
-           SELECT f.effects AS effect, uf.count 
+           SELECT f.id AS foodId, f.effects AS effect, uf.count, p.hunger
            FROM foods f
            JOIN user_food uf ON f.id = uf.item_type_id
+           JOIN pets p ON p.id = $3
            WHERE uf.user_id = $1 AND uf.item_type_id = $2;
         `;
-        const foodResult = await pool.query(foodQuery, [userId, foodId]);
-        
+        const foodResult = await pool.query(foodQuery, [userId, foodId, petId]);
+
+        // Log the query result to check what's being returned
+        console.log('Food Query Result:', foodResult.rows);
+
         if (foodResult.rows.length === 0) {
+            console.log(`No food found for user ${userId} or food count is zero.`);
             return res.status(400).json({ error: 'Food not found or not enough count' });
         }
 
-        const { effect, count } = foodResult.rows[0];
+        let { effect, count, hunger } = foodResult.rows[0];
+
+        // Ensure effect and hunger are valid numbers (fallback to 0 if not)
+        effect = effect || 0;
+        hunger = hunger || 0;
 
         if (count <= 0) {
             return res.status(400).json({ error: 'No food left to feed' });
         }
 
-        // Update the pet's hunger by adding the food's effect
-        const updateHungerQuery = `
-            UPDATE pets
-            SET hunger = hunger + $1
-            WHERE id = $2;
-        `;
-        await pool.query(updateHungerQuery, [effect, petId]);
+        // Update the pet's hunger by adding the food's effect, ensuring hunger doesn't exceed 200
+        const newHunger = Math.min(hunger + effect, 200); // Adjust max hunger to 200
 
-        // Decrease the food count
+        const updateHungerQuery = `
+           UPDATE pets
+           SET hunger = $1
+           WHERE id = $2;
+       `;
+        await pool.query(updateHungerQuery, [newHunger, petId]);
+
+        // Decrease the food count in user_food
         const decreaseFoodCountQuery = `
             UPDATE user_food
             SET count = count - 1
@@ -533,6 +529,7 @@ app.post('/feed-pet', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 
 app.post('/clean-pet', async (req, res) => {
