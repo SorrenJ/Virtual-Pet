@@ -5,7 +5,9 @@ require('dotenv').config();
 const pool = require('./db/db'); // Import the pool from db/db.js
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000' // Allow only this origin
+}));
 app.use(express.json()); // Add this line to parse JSON bodies
 
 // Serve static files from the "db" directory
@@ -17,6 +19,16 @@ app.set('view engine', 'ejs');
 app.listen(5000, () => {
     console.log("Server started on port 5000");
 });
+
+// Routes
+const convertScoreRoutes = require('./routes/convert-score')
+app.use('/api/convert-score', convertScoreRoutes);
+
+const petApiRoute = require('./routes/pet_api')
+app.use('/api/pets', petApiRoute);
+
+const speciesApiRoute = require('./routes/species_api')
+app.use('/api/species', speciesApiRoute)
 
 // Adoption route
 app.get('/adopt', async (req, res) => {
@@ -634,24 +646,3 @@ app.post('/play-with-pet', async (req, res) => {
 });
 
 // Convert score to money
-app.post('/api/convert-score', async (req, res) => {
-  const { userId, score } = req.body;
-  const moneyPerScore = 10;
-  const moneyEarned = score * moneyPerScore;
-
-  try {
-    await pool.query(
-      `UPDATE inventory 
-       SET money = money + $1 
-       WHERE user_id = $2`,
-      [moneyEarned, userId]
-    );
-
-    const moneyResult = await pool.query('SELECT money FROM inventory WHERE user_id = $1', [userId]);
-    const money = moneyResult.rows[0] ? moneyResult.rows[0].money : 0;
-    res.json({ money });
-  } catch (error) {
-    console.error('Error converting score:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
