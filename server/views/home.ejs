@@ -17,11 +17,9 @@
             font-size: 2em;
             margin: 20px 0;
         }
-
         .hidden-details {
             display: none;
         }
-        
         .inventory, .user-data {
             display: none; /* Initially hide all tables */
             margin-top: 20px;
@@ -40,139 +38,138 @@
             background-color: #f2f2f2;
         }
     </style>
-    <script>
-         function toggleDetails() {
-            const details = document.getElementById('hiddenDetails');
-            const button = document.getElementById('toggleButton');
-            if (details.style.display === 'none' || details.style.display === '') {
-                details.style.display = 'block';
-                button.innerText = 'Hide Details';
-            } else {
-                details.style.display = 'none';
-                button.innerText = 'Show More Details';
-            }
-        }
-        function toggleTable(tableId) {
-            const table = document.getElementById(tableId);
-            table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
-        }
-
-        function toggleInventory() {
-            const inventoryTable = document.getElementById('inventoryTable');
-            const userButtons = document.getElementById('userButtons');
-            if (inventoryTable.style.display === 'none' || inventoryTable.style.display === '') {
-                inventoryTable.style.display = 'table'; // Show the inventory table
-                userButtons.style.display = 'block'; // Show user toggle buttons
-            } else {
-                inventoryTable.style.display = 'none'; // Hide the inventory table
-                userButtons.style.display = 'none'; // Hide user toggle buttons
-            }
-        }
-
-        async function switchPet() {
-            try {
-                const response = await fetch('/switch-pet', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const newPet = await response.json();
-
-                // Update the UI with the new pet's details
-                document.querySelector('h2').innerText = `Meet ${newPet.pet_name}`;
-                document.querySelector('img').src = `/db/${newPet.pet_image}`;
-                document.querySelector('p').innerText = `Species: ${newPet.species_name}`;
-            } catch (error) {
-                console.error('Error switching pet:', error);
-            }
-        }
-
-        async function feedPet(petId, foodId) {
-            try {
-                const response = await fetch('/feed-pet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ petId, foodId }),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(`Error: ${errorData.error}`);
-                    return;
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Pet fed successfully!');
-                    location.reload();
-                }
-            } catch (error) {
-                console.error('Error feeding pet:', error);
-            }
-        }
-
-
-        async function cleanPet(petId, toiletriesId) {
-            try {
-                const response = await fetch('/clean-pet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ petId, toiletriesId }),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(`Error: ${errorData.error}`);
-                    return;
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Pet cleaned successfully!');
-                    location.reload();
-                }
-            } catch (error) {
-                console.error('Error cleaning pet:', error);
-            }
-        }
-
-    async function playWithPet(petId, toyId) {
-        try {
-            const response = await fetch('/play-with-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ petId, toyId }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            alert(`Error: ${errorData.error}`);
-            return;
-        }
-
-            const data = await response.json();
-        if (data.success) {
-            alert('Pet played with successfully!');
-            location.reload();
-        }
-        } catch (error) {
-            console.error('Error playing with pet:', error);
-        }
-    }
-
-    </script>
+        <script>
+            function toggleDetails() {
+               const details = document.getElementById('hiddenDetails');
+               const button = document.getElementById('toggleButton');
+               if (details.style.display === 'none' || details.style.display === '') {
+                   details.style.display = 'block';
+                   button.innerText = 'Hide Details';
+               } else {
+                   details.style.display = 'none';
+                   button.innerText = 'Show More Details';
+               }
+           }
+    
+           function toggleTable(tableId) {
+               const table = document.getElementById(tableId);
+               table.style.display = table.style.display === 'none' || table.style.display === '' ? 'table' : 'none';
+           }
+    
+           function toggleInventory() {
+               const inventoryTable = document.getElementById('inventoryTable');
+               const userButtons = document.getElementById('userButtons');
+               if (inventoryTable.style.display === 'none' || inventoryTable.style.display === '') {
+                   inventoryTable.style.display = 'table'; // Show the inventory table
+                   userButtons.style.display = 'block'; // Show user toggle buttons
+               } else {
+                   inventoryTable.style.display = 'none'; // Hide the inventory table
+                   userButtons.style.display = 'none'; // Hide user toggle buttons
+               }
+           }
+    
+           async function switchPet() {
+               try {
+                   const response = await fetch('/switch-pet', {
+                       method: 'GET',
+                       headers: {
+                           'Content-Type': 'application/json'
+                       }
+                   });
+    
+                   if (!response.ok) {
+                       throw new Error('Network response was not ok');
+                   }
+    
+                   const newPet = await response.json();
+    
+                   // Update the UI with the new pet's details
+                   document.querySelector('h2').innerText = `Meet ${newPet.pet_name}`;
+                   document.querySelector('img').src = `/db/${newPet.pet_image}`;
+                   document.querySelector('p').innerText = `Species: ${newPet.species_name}`;
+               } catch (error) {
+                   console.error('Error switching pet:', error);
+               }
+           }
+    
+           async function feedPet(petId, foodId) {
+               try {
+                   const response = await fetch('/feed-pet', {
+                       method: 'POST',
+                       headers: {
+                           'Content-Type': 'application/json',
+                       },
+                       body: JSON.stringify({ petId, foodId }),
+                   });
+    
+                   if (!response.ok) {
+                       const errorData = await response.json();
+                       alert(`Error: ${errorData.error}`);
+                       return;
+                   }
+    
+                   const data = await response.json();
+                   if (data.success) {
+                       alert('Pet fed successfully!');
+                       location.reload();
+                   }
+               } catch (error) {
+                   console.error('Error feeding pet:', error);
+               }
+           }
+    
+           async function cleanPet(petId, toiletriesId) {
+               try {
+                   const response = await fetch('/clean-pet', {
+                       method: 'POST',
+                       headers: {
+                           'Content-Type': 'application/json',
+                       },
+                       body: JSON.stringify({ petId, toiletriesId }),
+                   });
+    
+                   if (!response.ok) {
+                       const errorData = await response.json();
+                       alert(`Error: ${errorData.error}`);
+                       return;
+                   }
+    
+                   const data = await response.json();
+                   if (data.success) {
+                       alert('Pet cleaned successfully!');
+                       location.reload();
+                   }
+               } catch (error) {
+                   console.error('Error cleaning pet:', error);
+               }
+           }
+    
+           async function playWithPet(petId, toyId) {
+               try {
+                   const response = await fetch('/play-with-pet', {
+                       method: 'POST',
+                       headers: {
+                           'Content-Type': 'application/json',
+                       },
+                       body: JSON.stringify({ petId, toyId }),
+                   });
+    
+                   if (!response.ok) {
+                       const errorData = await response.json();
+                       alert(`Error: ${errorData.error}`);
+                       return;
+                   }
+    
+                   const data = await response.json();
+                   if (data.success) {
+                       alert('Pet played with successfully!');
+                       location.reload();
+                   }
+               } catch (error) {
+                   console.error('Error playing with pet:', error);
+               }
+           }
+       </script>
 </head>
 <body>
     <div class="links">
@@ -189,9 +186,11 @@
     <h2>Select Your Pet</h2>
     <select id="petSelector" onchange="selectPet(this.value)">
         <% pets.forEach(pet => { %>
-            <option value="<%= pet.id %>" <%= pet.id === selectedPet.id ? 'selected' : '' %>><%= pet.pet_name %></option>
+            <option value="<%= pet.pet_id %>" <%= pet.pet_id === selectedPet.pet_id ? 'selected' : '' %>><%= pet.pet_name %></option>
         <% }); %>
     </select>
+    
+    
 
     <div id="petDetails">
         <h2>Meet <%= selectedPet.pet_name %></h2>
@@ -202,7 +201,7 @@
         <p>Cleanliness: <%= selectedPet.cleanliness %></p>
         <p>Happiness: <%= selectedPet.happiness %></p>
     
-    
+        <button onclick="selectPet(1)">Test Select Pet Function</button>
         <button id="toggleButton" onclick="toggleDetails()">Show More Details</button>
 
         <!-- Hidden section for extra pet details -->
@@ -219,8 +218,6 @@
             <p>Diet Type: <%= selectedPet.diet_type %></p>
             <p>Diet Description: <%= selectedPet.diet_desc %></p>
         </div>
-    
-    
     </div>
     <% } else { %>
         <p>No pets available at the moment.</p>
@@ -285,8 +282,9 @@
                         <td><%= item.toys_name %></td>
                         <td><%= item.count %></td>
                         <td>
-                            <button onclick="playWithPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                            <button onclick="playWithPet(`<%= petId || 0 %>`, `<%= item.item_type_id || 0 %>`)"
                                 <% if (item.count <= 0) { %>disabled<% } %>>Play</button>
+                            
                         </td>
                     </tr>
                 <% }); %>
@@ -307,14 +305,16 @@
             <tbody>
                 <% userToiletries.forEach(item => { %>
                     <tr>
-                        <td><p>Image URL: <%= item.toiletryImage %></p>
+                        <td>
+                            <p>Image URL: <%= item.toiletryImage %></p>
                             <img src="<%= item.toiletryImage %>" alt="<%= item.toiletries_name %>" width="100"></td>
                         <td><%= item.toiletries_name %></td>
                         <td><%= item.count %></td>
                     
                         <td>
-                            <button onclick="cleanPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                            <button onclick="cleanPet('<%= petId || 0 %>', '<%= item.item_type_id || 0 %>')"
                                 <% if (item.count <= 0) { %>disabled<% } %>>Clean</button>
+                            
                         </td>
                     </tr>
                 <% }); %>
@@ -343,8 +343,9 @@
                         <td><%= item.food_name %></td>
                         <td><%= item.count %></td>
                         <td>
-                            <button onclick="feedPet(<%= selectedPet.id %>, <%= item.item_type_id %>)"
+                            <button onclick="feedPet('<%= petId || 0 %>', '<%= item.item_type_id || 0 %>')"
                                 <% if (item.count <= 0) { %>disabled<% } %>>Feed</button>
+                            
                         </td>
                     </tr>
                 <% }); %>
@@ -352,10 +353,23 @@
         </table>
     </div>
 
+
+
+
+    <script defer>
+    window.onload = function() {
+        document.getElementById('petSelector').addEventListener('change', function() {
+            selectPet(this.value);
+        });
+    };
+
+        function selectPet(petId) {
+            console.log('Selected Pet ID:', petId); // Add this line to see what value is passed
+            window.location.href = `/home?selectedPetId=${petId}`;
+        }
+        </script>
+        
 </body>
-<script>
-    function selectPet(petId) {
-        window.location.href = `/home?selectedPetId=${petId}`;
-    }
-</script>
+
+
 </html>
