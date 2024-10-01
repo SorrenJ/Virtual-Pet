@@ -30,6 +30,36 @@ app.use('/api/pets', petApiRoute);
 const speciesApiRoute = require('./routes/species_api')
 app.use('/api/species', speciesApiRoute)
 
+
+
+
+// New route to fetch latest pet stats
+app.get('/api/pets-stats', async (req, res) => {
+    const userId = 1; // Hardcoded user ID for now
+    try {
+        // Query to fetch updated pet stats
+        const petStatsQuery = `
+        SELECT 
+          p.id AS pet_id, 
+          p.energy, 
+          p.happiness, 
+          p.hunger, 
+          p.cleanliness
+        FROM pets p
+        WHERE p.user_id = $1
+        `;
+        const result = await pool.query(petStatsQuery, [userId]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching pet stats:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
+
+
+
 // Function to decrement pet stats
 const decrementPetStats = async () => {
     try {
@@ -75,7 +105,7 @@ const decrementPetStats = async () => {
 // Run the decrement function every 60 seconds (1 minute)
 setInterval(() => {
     decrementPetStats();
-}, 60000); // Runs every minute
+}, 6000); // Runs every minute/10
 
 // Adoption route
 app.get('/adopt', async (req, res) => {
