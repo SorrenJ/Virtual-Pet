@@ -1,286 +1,263 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import MathGame from '../components/mathGame'; // Import the MathGame component
+import React, { useState, useEffect } from 'react';
+import UserToysTable from '../components/UserToysTable'; // Adjust the import path as necessary
+import UserToiletriesTable from '../components/UserToiletriesTable'; // Adjust the import path as necessary
+import UserFoodTable from '../components/UserFoodTable'; // Adjust the import path as necessary
 
-const HomePage = () => {
-  const [playGame, setPlayGame] = useState(false); // State to control game visibility
-  const userId = 1; // Example user ID; replace with actual user ID logic
+function HomePage() {
+    const [pets, setPets] = useState([]);
+    const [selectedPet, setSelectedPet] = useState(null);
+    const [inventory, setInventory] = useState([]);
+    const [userFood, setUserFood] = useState([]);
+    const [userToiletries, setUserToiletries] = useState([]);
+    const [userToys, setUserToys] = useState([]);
+    const [foodCount, setFoodCount] = useState(0);
+    const [toiletriesCount, setToiletriesCount] = useState(0);
+    const [toysCount, setToysCount] = useState(0);
+    const [detailsVisible, setDetailsVisible] = useState(false);
+    const [inventoryVisible, setInventoryVisible] = useState(false);
+    const [userToysVisible, setUserToysVisible] = useState(false);
+    const [userToiletriesVisible, setUserToiletriesVisible] = useState(false);
+    const [userFoodVisible, setUserFoodVisible] = useState(false);
 
-  // Define the necessary state variables
-  const [pets, setPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null);
-  const [inventory, setInventory] = useState({});
-  const [userFood, setUserFood] = useState([]);
-  const [userToiletries, setUserToiletries] = useState([]);
-  const [userToys, setUserToys] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/home');
+                const data = await response.json();
+                setPets(data.pets);
+                setSelectedPet(data.selectedPet);
+                setInventory(data.inventory);
+                setFoodCount(data.foodCount);
+                setToiletriesCount(data.toiletriesCount);
+                setToysCount(data.toysCount);
+                setUserFood(data.userFood);
+                setUserToiletries(data.userToiletries);
+                setUserToys(data.userToys);
+            } catch (error) {
+                console.error('Error fetching home data:', error);
+            }
+        };
 
-  // Define state for counts
-  const [foodCount, setFoodCount] = useState(0);
-  const [toiletriesCount, setToiletriesCount] = useState(0);
-  const [toysCount, setToysCount] = useState(0);
+        fetchData();
+    }, []);
 
-  const [showDetails, setShowDetails] = useState(false);
-  const [showInventory, setShowInventory] = useState(false);
-  const [showUserToys, setShowUserToys] = useState(false);
-  const [showUserToiletries, setShowUserToiletries] = useState(false);
-  const [showUserFood, setShowUserFood] = useState(false);
+    const toggleDetails = () => {
+        setDetailsVisible(!detailsVisible);
+    };
 
-  // Fetch the initial pet data and inventory when the component mounts
-  useEffect(() => {
-    fetchHomeData();
-    fetchInventory();
-  }, []);
+    const toggleInventory = () => {
+        setInventoryVisible(!inventoryVisible);
+    };
 
-  const fetchHomeData = async () => {
-    try {
-      const res = await axios.get('/api/home');
-      const { pets, selectedPet, inventory, userFood, userToiletries, userToys } = res.data;
-      setPets(pets);
-      setSelectedPet(selectedPet);
-      setInventory(inventory);
-      setUserFood(userFood);
-      setUserToiletries(userToiletries);
-      setUserToys(userToys);
-    } catch (error) {
-      console.error('Error fetching home data', error);
-    }
-  };
+    const toggleUserToys = () => {
+        setUserToysVisible(!userToysVisible);
+    };
 
-  // Fetch inventory from the API and update state
-  const fetchInventory = async () => {
-    try {
-      const response = await axios.get('/api/home');
-      const inventoryData = response.data;
-      setInventory(inventoryData.inventory || []);  // Ensure it's an array or set an empty array
-      setFoodCount(inventoryData.foodCount || 0);
-      setToiletriesCount(inventoryData.toiletriesCount || 0);
-      setToysCount(inventoryData.toysCount || 0);
-    } catch (error) {
-      console.error('Error fetching inventory:', error);
-    }
-  }; // <--- Missing closing brace here
+    const toggleUserToiletries = () => {
+        setUserToiletriesVisible(!userToiletriesVisible);
+    };
 
-  const handleSelectPet = (petId) => {
-    const selected = pets.find(pet => pet.pet_id === parseInt(petId));
-    setSelectedPet(selected);
-  };
+    const toggleUserFood = () => {
+        setUserFoodVisible(!userFoodVisible);
+    };
 
-  const handleAction = async (petId, itemId, actionType) => {
-    try {
-      let endpoint = '';
-      if (actionType === 'feed') endpoint = '/api/feed-pet';
-      else if (actionType === 'clean') endpoint = '/api/clean-pet';
-      else if (actionType === 'play') endpoint = '/api/play-with-pet';
-  
-      // Ensure petId and itemId are valid
-      if (!petId || !itemId) {
-        alert("Invalid pet or item selected");
-        return;
-      }
-  
-      const response = await axios.post(endpoint, { petId, foodId: itemId }); // Assuming itemId refers to foodId for feed
-      alert(`Pet ${actionType}ed successfully!`);
-      fetchHomeData(); // Refresh the state after the action
-    } catch (error) {
-      console.error(`Error performing ${actionType} action`, error);
-      const errorMessage = error.response?.data?.error || 'An unknown error occurred';
-      alert(`Error: ${errorMessage}`);
-    }
-  };
-  
+    const selectPet = async (petId) => {
+        try {
+            const response = await fetch(`/api/home?selectedPetId=${petId}`);
+            const newSelectedPet = await response.json();
+            setSelectedPet(newSelectedPet.selectedPet);
+        } catch (error) {
+            console.error('Error selecting pet:', error);
+        }
+    };
 
-  return (
-    <div>
-      <h1>Welcome to Beastly Bonds! Adopting a monster has never been easier!</h1>
-      <div style={{ marginBottom: '10px' }}>
-        <Link to="/shop">Go to Shop</Link>
-      </div>
-      <div>
-        <Link to="/adopt">Go to Adopt</Link>
-      </div>
-      <div>
-        <button onClick={() => setPlayGame(!playGame)}>
-          {playGame ? 'Cancel Game' : 'Play Math Game'}
-        </button>
-      </div>
+    const switchPet = async () => {
+        try {
+            const response = await fetch('/switch-pet');
+            const newPet = await response.json();
+            setSelectedPet(newPet);
+        } catch (error) {
+            console.error('Error switching pet:', error);
+        }
+    };
 
-      {playGame && <MathGame userId={userId} />} {/* Render MathGame if playGame is true */}
+    const feedPet = async (petId, foodId) => {
+        try {
+            const response = await fetch('/api/feed-pet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ petId, foodId }),
+            });
 
-      {pets.length > 0 && selectedPet ? (
-        <>
-          <h1>Welcome {pets[0].user_name}</h1>
-          <h2>Select Your Pet</h2>
-          <select value={selectedPet.pet_id} onChange={(e) => handleSelectPet(e.target.value)}>
-            {pets.map(pet => (
-              <option key={pet.pet_id} value={pet.pet_id}>{pet.pet_name}</option>
-            ))}
-          </select>
+            if (response.ok) {
+                const updatedPet = await response.json(); // Get updated pet details
+                setSelectedPet(updatedPet.updatedPet); // Set the updated pet details
+                alert('Pet fed successfully!');
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error}`);
+            }
+        } catch (error) {
+            console.error('Error feeding pet:', error);
+        }
+    };
 
-          <div id="petDetails">
-            <h2>Meet {selectedPet.pet_name}</h2>
-            <img src={selectedPet.pet_image} alt={selectedPet.pet_name} style={{ maxWidth: '300px', borderRadius: '10px' }} />
-            <p>Energy: {selectedPet.energy}</p>
-            <p>Happiness: {selectedPet.happiness}</p>
-            <p>Hunger: {selectedPet.hunger}</p>
-            <p>Cleanliness: {selectedPet.cleanliness}</p>
+    const cleanPet = async (petId, toiletriesId) => {
+        try {
+            const response = await fetch('/api/clean-pet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ petId, toiletriesId }),
+            });
 
-            <button onClick={() => setShowDetails(!showDetails)}>
-              {showDetails ? 'Hide Details' : 'Show More Details'}
-            </button>
+            if (response.ok) {
+                const updatedPet = await response.json();
+                setSelectedPet(updatedPet.updatedPet);
+                alert('Pet cleaned successfully!');
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error}`);
+            }
+        } catch (error) {
+            console.error('Error cleaning pet:', error);
+        }
+    };
 
-            {showDetails && (
-              <div>
-                <p>Species: {selectedPet.species_name}</p>
-                <p>Mood: {selectedPet.mood_name}</p>
-                <p>Color: {selectedPet.color_name}</p>
-                <p>Personality: {selectedPet.personality_name}</p>
-                <p>Hunger Modifier: {selectedPet.hunger_mod}</p>
-                <p>Happiness Modifier: {selectedPet.happy_mod}</p>
-                <p>Energy Modifier: {selectedPet.energy_mod}</p>
-                <p>Cleanliness Modifier: {selectedPet.clean_mod}</p>
-                <p>Lifespan: {selectedPet.lifespan}</p>
-                <p>Diet Type: {selectedPet.diet_type}</p>
-                <p>Diet Description: {selectedPet.diet_desc}</p>
-              </div>
+    const playWithPet = async (petId, toyId) => {
+        try {
+            const response = await fetch('/api/play-with-pet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ petId, toyId }),
+            });
+
+            if (response.ok) {
+                const updatedPet = await response.json();
+                setSelectedPet(updatedPet.updatedPet);
+                alert('Pet played with successfully!');
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error}`);
+            }
+        } catch (error) {
+            console.error('Error playing with pet:', error);
+        }
+    };
+
+    return (
+        <div>
+            <div className="links">
+                <h3>Explore More:</h3>
+                <a href="/home">Go home</a>
+                <a href="/adopt">Adopt a Pet</a>
+                <a href="/shop">Visit the Shop</a>
+                <a href="/all_tables">View All Tables</a>
+            </div>
+
+            {pets.length > 0 ? (
+                <>
+                    <h1>Welcome {pets[0].user_name}</h1>
+
+                    <h2>Select Your Pet</h2>
+                    <select id="petSelector" onChange={(e) => selectPet(e.target.value)}>
+                        {pets.map(pet => (
+                            <option key={pet.pet_id} value={pet.pet_id}>
+                                {pet.pet_name}
+                            </option>
+                        ))}
+                    </select>
+
+                    {selectedPet && (
+                        <div id="petDetails">
+                            <h2>Meet {selectedPet.pet_name}</h2>
+                            <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <p>Energy: <span id={`energy-${selectedPet.pet_id}`}>{selectedPet.energy}</span></p>
+                            <p>Happiness: <span id={`happiness-${selectedPet.pet_id}`}>{selectedPet.happiness}</span></p>
+                            <p>Hunger: <span id={`hunger-${selectedPet.pet_id}`}>{selectedPet.hunger}</span></p>
+                            <p>Cleanliness: <span id={`cleanliness-${selectedPet.pet_id}`}>{selectedPet.cleanliness}</span></p>
+
+                            <button onClick={toggleDetails}>
+                                {detailsVisible ? 'Hide Details' : 'Show More Details'}
+                            </button>
+
+                            {detailsVisible && (
+                                <div className="hidden-details">
+                                    <p>Species: {selectedPet.species_name}</p>
+                                    <p>Mood: {selectedPet.mood_name}</p>
+                                    <p>Color: {selectedPet.color_name}</p>
+                                    <p>Personality: {selectedPet.personality_name}</p>
+                                    <p>Hunger Modifier: {selectedPet.hunger_mod}</p>
+                                    <p>Happiness Modifier: {selectedPet.happy_mod}</p>
+                                    <p>Energy Modifier: {selectedPet.energy_mod}</p>
+                                    <p>Cleanliness Modifier: {selectedPet.clean_mod}</p>
+                                    <p>Lifespan: {selectedPet.lifespan}</p>
+                                    <p>Diet Type: {selectedPet.diet_type}</p>
+                                    <p>Diet Description: {selectedPet.diet_desc}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <button onClick={switchPet}>Switch Pet</button>
+                    <button onClick={toggleInventory}>
+                        {inventoryVisible ? 'Hide Inventory Data' : 'Toggle Inventory Data'}
+                    </button>
+
+                    {inventoryVisible && (
+                        <div className="inventory" id="inventoryTable">
+                            <h2>Inventory Data</h2>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Money</th>
+                                        <th>User ID</th>
+                                        <th>Created At</th>
+                                        <th>Food Count</th>
+                                        <th>Toiletries Count</th>
+                                        <th>Toys Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {inventory.map(item => (
+                                        <tr key={item.id}>
+                                            <td>{item.id}</td>
+                                            <td>{item.money}</td>
+                                            <td>{item.user_id}</td>
+                                            <td>{item.created_at}</td>
+                                            <td>{foodCount}</td>
+                                            <td>{toiletriesCount}</td>
+                                            <td>{toysCount}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    <div id="userButtons" style={{ display: inventoryVisible ? 'block' : 'none' }}>
+                        <button onClick={toggleUserToys}>Toggle User Toys Data</button>
+                        <button onClick={toggleUserToiletries}>Toggle User Toiletries Data</button>
+                        <button onClick={toggleUserFood}>Toggle User Food Data</button>
+                    </div>
+
+                    {userToysVisible && (
+                        <UserToysTable userToys={userToys} playWithPet={playWithPet} />
+                    )}
+
+                    {userToiletriesVisible && (
+                        <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} />
+                    )}
+
+                    {userFoodVisible && (
+                        <UserFoodTable userFood={userFood} feedPet={feedPet} />
+                    )}
+                </>
+            ) : (
+                <p>No pets available at the moment.</p>
             )}
-          </div>
-
-          <button onClick={() => setShowInventory(!showInventory)}>Toggle Inventory Data</button>
-
-          {showInventory && (
-            <div className="inventory">
-              <h2>Inventory Data</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Money</th>
-                    <th>User ID</th>
-                    <th>Created At</th>
-                    <th>Food Count</th>
-                    <th>Toiletries Count</th>
-                    <th>Toys Count</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.isArray(inventory) && inventory.map(item => (
-                    <tr key={item.id}>
-                      <td>{item.id}</td>
-                      <td>{item.money}</td>
-                      <td>{item.user_id}</td>
-                      <td>{item.created_at}</td>
-                      <td>{foodCount}</td>
-                      <td>{toiletriesCount}</td>
-                      <td>{toysCount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          <div id="userButtons">
-            <button onClick={() => setShowUserToys(!showUserToys)}>Toggle User Toys Data</button>
-            <button onClick={() => setShowUserToiletries(!showUserToiletries)}>Toggle User Toiletries Data</button>
-            <button onClick={() => setShowUserFood(!showUserFood)}>Toggle User Food Data</button>
-          </div>
-
-          {showUserToys && (
-            <div className="user-data" id="userToysTable">
-              <h2>User Toys Data</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Toy Image</th>
-                    <th>Toy Name</th>
-                    <th>Count</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userToys.map(item => (
-                    <tr key={item.item_type_id}>
-                      <td><img src={item.toyImage} alt={item.toys_name} width="100" /></td>
-                      <td>{item.toys_name}</td>
-                      <td>{item.count}</td>
-                      <td>
-                        <button onClick={() => handleAction(selectedPet.pet_id, item.item_type_id, 'play')} disabled={item.count <= 0}>
-                          Play
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {showUserToiletries && (
-            <div className="user-data" id="userToiletriesTable">
-              <h2>User Toiletries Data</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Toiletry Image</th>
-                    <th>Toiletries Name</th>
-                    <th>Count</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userToiletries.map(item => (
-                    <tr key={item.item_type_id}>
-                      <td><img src={item.toiletryImage} alt={item.toiletries_name} width="100" /></td>
-                      <td>{item.toiletries_name}</td>
-                      <td>{item.count}</td>
-                      <td>
-                        <button onClick={() => handleAction(selectedPet.pet_id, item.item_type_id, 'clean')} disabled={item.count <= 0}>
-                          Clean
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {showUserFood && (
-            <div className="user-data" id="userFoodTable">
-              <h2>User Food Data</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Food Image</th>
-                    <th>Food Name</th>
-                    <th>Count</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userFood.map(item => (
-                    <tr key={item.item_type_id}>
-                      <td><img src={item.foodImage} alt={item.food_name} width="100" /></td>
-                      <td>{item.food_name}</td>
-                      <td>{item.count}</td>
-                      <td>
-                        <button onClick={() => handleAction(selectedPet.pet_id, item.item_type_id, 'feed')} disabled={item.count <= 0}>
-                          Feed
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      ) : (
-        <p>No pets available at the moment.</p>
-      )}
-    </div>
-  );
-};
+        </div>
+    );
+}
 
 export default HomePage;
