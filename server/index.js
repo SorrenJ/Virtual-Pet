@@ -300,7 +300,7 @@ app.get('/all_tables', async (req, res) => {
       const personalitiesQuery = 'SELECT * FROM personalities';  // Added personalities query
   
       const inventoryQuery = 'SELECT * FROM inventory';
-      const userFoodQuery = 'SELECT * FROM user_food';
+      const userFoodQuery = 'SELECT * FROM user_foods';
       const userToiletriesQuery = 'SELECT * FROM user_toiletries';
       const userToysQuery = 'SELECT * FROM user_toys';
       const shopQuery = 'SELECT * FROM shop';
@@ -466,11 +466,11 @@ app.get('/home', async (req, res) => {
       const toiletriesCount = userToiletriesCount.rows[0] ? userToiletriesCount.rows[0].toiletry_count : 0;
       const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
   
-      // Queries to get user_toys, user_toiletries, and user_foods for the user with names
+      // Queries to get user_toys, user_toiletries, and user_foodss for the user with names
       const userFood = await pool.query(`
         SELECT uf.count, uf.user_id, uf.inventory_id, 
                f.id AS item_type_id, f.name AS food_name, f.food_image AS "foodImage"
-        FROM user_food uf
+        FROM user_foods uf
         JOIN foods f ON uf.item_type_id = f.id
         WHERE uf.user_id = $1
       `, [userId]);
@@ -533,7 +533,7 @@ app.get('/home', async (req, res) => {
         const foodQuery = `
            SELECT f.id AS foodId, f.effects AS effect, uf.count, p.hunger
            FROM foods f
-           JOIN user_food uf ON f.id = uf.item_type_id
+           JOIN user_foods uf ON f.id = uf.item_type_id
            JOIN pets p ON p.id = $3
            WHERE uf.user_id = $1 AND uf.item_type_id = $2;
         `;
@@ -567,9 +567,9 @@ app.get('/home', async (req, res) => {
        `;
         await pool.query(updateHungerQuery, [newHunger, petId]);
 
-        // Decrease the food count in user_food
+        // Decrease the food count in user_foods
         const decreaseFoodCountQuery = `
-            UPDATE user_food
+            UPDATE user_foods
             SET count = count - 1
             WHERE user_id = $1 AND item_type_id = $2;
         `;

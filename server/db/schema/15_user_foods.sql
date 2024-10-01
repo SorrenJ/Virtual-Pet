@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS user_food CASCADE;
+DROP TABLE IF EXISTS user_foods CASCADE;
 
-CREATE TABLE user_food (
+CREATE TABLE user_foods (
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   count INTEGER DEFAULT 0,
@@ -18,7 +18,7 @@ SELECT
     inventory_id, 
     SUM(count) AS food_count
 FROM 
-    user_food
+    user_foods
 GROUP BY 
 
     user_id, inventory_id, item_type_id;
