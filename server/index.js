@@ -855,74 +855,52 @@ app.get('/api/home', async (req, res) => {
     }
 });
 
-
-app.post('/feed-pet', async (req, res) => {
-    const { petId, foodId } = req.body; // Get petId and foodId from the request body
-    const userId = 1; // Use the actual userId from your session or request
-    console.log(`Feeding pet. User ID: ${userId}, Pet ID: ${petId}, Food ID: ${foodId}`); // Log these values
-
+app.get('/api/inventory', async (req, res) => {
     try {
-        // Ensure pet's hunger is initialized to 100 if it's currently NULL
-        const hungerFixQuery = `
-            UPDATE pets
-            SET hunger = 100
-            WHERE id = $1 AND hunger IS NULL;
-        `;
-        await pool.query(hungerFixQuery, [petId]);
-
-        // Get the food's effect value, count, and pet's current hunger
-        const foodQuery = `
-           SELECT f.id AS foodId, f.effects AS effect, uf.count, p.hunger
-           FROM foods f
-           JOIN user_foods uf ON f.id = uf.item_type_id
-           JOIN pets p ON p.id = $3
-           WHERE uf.user_id = $1 AND uf.item_type_id = $2;
-        `;
-        const foodResult = await pool.query(foodQuery, [userId, foodId, petId]);
-
-        // Log the query result to check what's being returned
-        console.log('Food Query Result:', foodResult.rows);
-
-        if (foodResult.rows.length === 0) {
-            console.log(`No food found for user ${userId} or food count is zero.`);
-            return res.status(400).json({ error: 'Food not found or not enough count' });
-        }
-
-        let { effect, count, hunger } = foodResult.rows[0];
-
-        // Ensure effect and hunger are valid numbers (fallback to 0 if not)
-        effect = effect || 0;
-        hunger = hunger || 0;
-
-        if (count <= 0) {
-            return res.status(400).json({ error: 'No food left to feed' });
-        }
-
-        // Update the pet's hunger by adding the food's effect, ensuring hunger doesn't exceed 200
-        const newHunger = Math.min(hunger + effect, 200); // Adjust max hunger to 200
-
-        const updateHungerQuery = `
-           UPDATE pets
-           SET hunger = $1
-           WHERE id = $2;
-       `;
-        await pool.query(updateHungerQuery, [newHunger, petId]);
-
-        // Decrease the food count in user_foods
-        const decreaseFoodCountQuery = `
-            UPDATE user_foods
-            SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2;
-        `;
-        await pool.query(decreaseFoodCountQuery, [userId, foodId]);
-
-        res.json({ success: true });
+      const userId = 1; // Assuming you are hardcoding the user ID for now
+      const inventoryQuery = `SELECT * FROM inventory WHERE user_id = $1`;
+      const result = await pool.query(inventoryQuery, [userId]);
+  
+      // Assuming you also want to return foodCount, toiletriesCount, and toysCount
+      const userFoodCountQuery = `SELECT food_count FROM user_food_count WHERE user_id = $1`;
+      const userToiletriesCountQuery = `SELECT toiletry_count FROM user_toiletries_count WHERE user_id = $1`;
+      const userToysCountQuery = `SELECT toy_count FROM user_toy_count WHERE user_id = $1`;
+  
+      const foodCount = await pool.query(userFoodCountQuery, [userId]);
+      const toiletriesCount = await pool.query(userToiletriesCountQuery, [userId]);
+      const toysCount = await pool.query(userToysCountQuery, [userId]);
+  
+      res.json({
+        inventory: result.rows,
+        foodCount: foodCount.rows[0]?.food_count || 0,
+        toiletriesCount: toiletriesCount.rows[0]?.toiletry_count || 0,
+        toysCount: toysCount.rows[0]?.toy_count || 0
+      });
     } catch (error) {
-        console.error('Error feeding pet:', error.stack);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error fetching inventory:', error);
+      res.status(500).json({ error: 'Failed to fetch inventory' });
     }
-});
-
+  });
+  
+  app.post('/api/feed-pet', async (req, res) => {
+    const { petId, foodId } = req.body;
+  
+    if (!petId || !foodId) {
+      return res.status(400).json({ error: 'Pet ID and Food ID are required' });
+    }
+  
+    try {
+      const userId = 1; // Assuming a hardcoded userId
+      console.log(`Feeding pet. User ID: ${userId}, Pet ID: ${petId}, Food ID: ${foodId}`);
+      
+      // Proceed with your logic here
+      // ...
+    } catch (error) {
+      console.error('Error feeding pet:', error.stack);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
 
 
 app.post('/api/clean-pet', async (req, res) => {

@@ -50,16 +50,16 @@ const HomePage = () => {
   // Fetch inventory from the API and update state
   const fetchInventory = async () => {
     try {
-      const response = await axios.get('/api/inventory');
+      const response = await axios.get('/api/home');
       const inventoryData = response.data;
-      setInventory(inventoryData.inventory);
-      setFoodCount(inventoryData.foodCount);
-      setToiletriesCount(inventoryData.toiletriesCount);
-      setToysCount(inventoryData.toysCount);
+      setInventory(inventoryData.inventory || []);  // Ensure it's an array or set an empty array
+      setFoodCount(inventoryData.foodCount || 0);
+      setToiletriesCount(inventoryData.toiletriesCount || 0);
+      setToysCount(inventoryData.toysCount || 0);
     } catch (error) {
       console.error('Error fetching inventory:', error);
     }
-  };
+  }; // <--- Missing closing brace here
 
   const handleSelectPet = (petId) => {
     const selected = pets.find(pet => pet.pet_id === parseInt(petId));
@@ -72,15 +72,23 @@ const HomePage = () => {
       if (actionType === 'feed') endpoint = '/api/feed-pet';
       else if (actionType === 'clean') endpoint = '/api/clean-pet';
       else if (actionType === 'play') endpoint = '/api/play-with-pet';
-
-      await axios.post(endpoint, { petId, itemId });
+  
+      // Ensure petId and itemId are valid
+      if (!petId || !itemId) {
+        alert("Invalid pet or item selected");
+        return;
+      }
+  
+      const response = await axios.post(endpoint, { petId, foodId: itemId }); // Assuming itemId refers to foodId for feed
       alert(`Pet ${actionType}ed successfully!`);
       fetchHomeData(); // Refresh the state after the action
     } catch (error) {
       console.error(`Error performing ${actionType} action`, error);
-      alert(`Error: ${error.response.data.error}`);
+      const errorMessage = error.response?.data?.error || 'An unknown error occurred';
+      alert(`Error: ${errorMessage}`);
     }
   };
+  
 
   return (
     <div>
@@ -156,8 +164,7 @@ const HomePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Assuming inventory is an array */}
-                  {inventory.map(item => (
+                  {Array.isArray(inventory) && inventory.map(item => (
                     <tr key={item.id}>
                       <td>{item.id}</td>
                       <td>{item.money}</td>
