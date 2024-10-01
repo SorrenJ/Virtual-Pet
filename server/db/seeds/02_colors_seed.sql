@@ -4,5 +4,5 @@ VALUES
 ('red'), 
 ('blue'), 
 ('green'), 
-('purple'), 
+('pink'), 
 ('orange');
