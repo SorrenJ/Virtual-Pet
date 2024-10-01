@@ -39,6 +39,29 @@
         }
     </style>
         <script>
+
+// Function to fetch updated pet stats from the server
+async function fetchPetStats() {
+        try {
+            const response = await fetch('/api/pets-stats');
+            const petStats = await response.json();
+
+            // Loop through each pet and update the displayed stats in the DOM
+            petStats.forEach(pet => {
+                document.getElementById(`energy-${pet.pet_id}`).innerText = pet.energy;
+                document.getElementById(`happiness-${pet.pet_id}`).innerText = pet.happiness;
+                document.getElementById(`hunger-${pet.pet_id}`).innerText = pet.hunger;
+                document.getElementById(`cleanliness-${pet.pet_id}`).innerText = pet.cleanliness;
+            });
+        } catch (error) {
+            console.error('Error fetching pet stats:', error);
+        }
+    }
+
+    // Fetch pet stats every 0.1 seconds
+    setInterval(fetchPetStats, 10);
+
+
             function toggleDetails() {
                const details = document.getElementById('hiddenDetails');
                const button = document.getElementById('toggleButton');
@@ -196,10 +219,11 @@
         <h2>Meet <%= selectedPet.pet_name %></h2>
         <!-- Display the selected pet's sprite image -->
         <img src="<%= selectedPet.pet_image %>" alt="<%= selectedPet.pet_name %>">
-        <p>Energy: <%= selectedPet.energy %></p>
-        <p>Hunger: <%= selectedPet.hunger %></p>
-        <p>Cleanliness: <%= selectedPet.cleanliness %></p>
-        <p>Happiness: <%= selectedPet.happiness %></p>
+         <!-- Stats with unique IDs for dynamic updates -->
+         <p>Energy: <span id="energy-<%= selectedPet.pet_id %>"><%= selectedPet.energy %></span></p>
+         <p>Happiness: <span id="happiness-<%= selectedPet.pet_id %>"><%= selectedPet.happiness %></span></p>
+         <p>Hunger: <span id="hunger-<%= selectedPet.pet_id %>"><%= selectedPet.hunger %></span></p>
+         <p>Cleanliness: <span id="cleanliness-<%= selectedPet.pet_id %>"><%= selectedPet.cleanliness %></span></p>
     
         <button onclick="selectPet(1)">Test Select Pet Function</button>
         <button id="toggleButton" onclick="toggleDetails()">Show More Details</button>

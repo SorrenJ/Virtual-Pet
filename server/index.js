@@ -30,6 +30,83 @@ app.use('/api/pets', petApiRoute);
 const speciesApiRoute = require('./routes/species_api')
 app.use('/api/species', speciesApiRoute)
 
+
+
+
+// New route to fetch latest pet stats
+app.get('/api/pets-stats', async (req, res) => {
+    const userId = 1; // Hardcoded user ID for now
+    try {
+        // Query to fetch updated pet stats
+        const petStatsQuery = `
+        SELECT 
+          p.id AS pet_id, 
+          p.energy, 
+          p.happiness, 
+          p.hunger, 
+          p.cleanliness
+        FROM pets p
+        WHERE p.user_id = $1
+        `;
+        const result = await pool.query(petStatsQuery, [userId]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching pet stats:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
+
+
+
+// Function to decrement pet stats
+const decrementPetStats = async () => {
+    try {
+        // Query to fetch all pets with their current stats and personality decay rates
+        const query = `
+        SELECT p.id AS pet_id, p.energy, p.happiness, p.hunger, p.cleanliness, 
+               per.energy_decay, per.happiness_decay, per.hunger_decay, per.cleanliness_decay
+        FROM pets p
+        JOIN personalities per ON p.personality_id = per.id
+        `;
+        const result = await pool.query(query);
+        const pets = result.rows;
+
+        // Loop through each pet and apply the decrements
+        for (const pet of pets) {
+            const newEnergy = Math.max(Math.floor(pet.energy - pet.energy_decay), 0);
+            const newHappiness = Math.max(Math.floor(pet.happiness - pet.happiness_decay), 0);
+            const newHunger = Math.max(Math.floor(pet.hunger - pet.hunger_decay), 0);
+            const newCleanliness = Math.max(Math.floor(pet.cleanliness - pet.cleanliness_decay), 0);
+
+  // Log old and new stats
+  console.log(`Pet ID: ${pet.pet_id}`);
+  console.log(`Old Energy: ${pet.energy}, New Energy: ${newEnergy}`);
+  console.log(`Old Happiness: ${pet.happiness}, New Happiness: ${newHappiness}`);
+  console.log(`Old Hunger: ${pet.hunger}, New Hunger: ${newHunger}`);
+  console.log(`Old Cleanliness: ${pet.cleanliness}, New Cleanliness: ${newCleanliness}`);
+
+            // Update the pet stats in the database
+            const updateQuery = `
+            UPDATE pets 
+            SET energy = $1, happiness = $2, hunger = $3, cleanliness = $4
+            WHERE id = $5
+            `;
+            await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
+            console.log(`Updated stats for Pet ID: ${pet.pet_id}`);
+        }
+        console.log('Pet stats updated successfully.');
+    } catch (error) {
+        console.error('Error decrementing pet stats:', error);
+    }
+};
+
+// Run the decrement function every 60 seconds (1 minute)
+setInterval(() => {
+    decrementPetStats();
+}, 6000); // Runs every minute/10
+
 // Adoption route
 app.get('/adopt', async (req, res) => {
     try {
@@ -253,7 +330,7 @@ app.get('/all_tables', async (req, res) => {
       const personalitiesQuery = 'SELECT * FROM personalities';  // Added personalities query
   
       const inventoryQuery = 'SELECT * FROM inventory';
-      const userFoodQuery = 'SELECT * FROM user_food';
+      const userFoodQuery = 'SELECT * FROM user_foods';
       const userToiletriesQuery = 'SELECT * FROM user_toiletries';
       const userToysQuery = 'SELECT * FROM user_toys';
       const shopQuery = 'SELECT * FROM shop';
@@ -311,7 +388,10 @@ app.get('/home', async (req, res) => {
     const selectedPetId = req.query.selectedPetId;
   
     try {
-      // Query to get pets with their sprite and species details
+     
+
+     
+        // Query to get pets with their sprite and species details
       const petQuery = `
       SELECT 
         -- From pets table
@@ -416,11 +496,11 @@ app.get('/home', async (req, res) => {
       const toiletriesCount = userToiletriesCount.rows[0] ? userToiletriesCount.rows[0].toiletry_count : 0;
       const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
   
-      // Queries to get user_toys, user_toiletries, and user_foods for the user with names
+      // Queries to get user_toys, user_toiletries, and user_foodss for the user with names
       const userFood = await pool.query(`
         SELECT uf.count, uf.user_id, uf.inventory_id, 
                f.id AS item_type_id, f.name AS food_name, f.food_image AS "foodImage"
-        FROM user_food uf
+        FROM user_foods uf
         JOIN foods f ON uf.item_type_id = f.id
         WHERE uf.user_id = $1
       `, [userId]);
@@ -455,7 +535,9 @@ app.get('/home', async (req, res) => {
         petId: selectedPet.pet_id // Pass the selected petId explicitly
 
       });
-
+         // Decrement pet stats before fetching updated data
+         await decrementPetStats();
+     
     } catch (error) {
       console.error('Error executing query', error.stack);
       res.status(500).send('Internal Server Error');
@@ -481,7 +563,7 @@ app.get('/home', async (req, res) => {
         const foodQuery = `
            SELECT f.id AS foodId, f.effects AS effect, uf.count, p.hunger
            FROM foods f
-           JOIN user_food uf ON f.id = uf.item_type_id
+           JOIN user_foods uf ON f.id = uf.item_type_id
            JOIN pets p ON p.id = $3
            WHERE uf.user_id = $1 AND uf.item_type_id = $2;
         `;
@@ -515,9 +597,9 @@ app.get('/home', async (req, res) => {
        `;
         await pool.query(updateHungerQuery, [newHunger, petId]);
 
-        // Decrease the food count in user_food
+        // Decrease the food count in user_foods
         const decreaseFoodCountQuery = `
-            UPDATE user_food
+            UPDATE user_foods
             SET count = count - 1
             WHERE user_id = $1 AND item_type_id = $2;
         `;
