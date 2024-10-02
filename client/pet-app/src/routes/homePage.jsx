@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import UserToysTable from '../components/UserToysTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserFoodTable from '../components/UserFoodTable';
 
 const HomePage = () => {
+    const { id } = useParams(); // Get dynamic param like /home/:id
+    const location = useLocation(); // Get the current route
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null);
     const [inventory, setInventory] = useState([]);
@@ -15,29 +18,48 @@ const HomePage = () => {
     const [toysCount, setToysCount] = useState(0);
     const [visibleTable, setVisibleTable] = useState(null); // To manage which table is visible
     const [inventoryVisible, setInventoryVisible] = useState(false); // Add this back
+
+    // Fetch data when the component is mounted or when the route (id or location) changes
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [id, location]);
+
+    // Fetch data based on the current route
     const fetchData = async () => {
         try {
-            const petsResponse = await fetch('/api/pets');
-            const petsData = await petsResponse.json();
-            setPets(petsData); // Set the pets state after fetching
-
+            // Fetch the general home data
             const response = await fetch('/api/home');
+    
+            // Check if the response is OK (status 200-299)
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+    
+            // Try parsing the JSON body
             const data = await response.json();
-            setSelectedPet(data.selectedPet);
-            setInventory(data.inventory);
-            setFoodCount(data.foodCount);
-            setToiletriesCount(data.toiletriesCount);
-            setToysCount(data.toysCount);
-            setUserFood(data.userFood);
-            setUserToiletries(data.userToiletries);
-            setUserToys(data.userToys);
+    
+            // Check if we received valid data
+            if (!data) {
+                throw new Error('No data received from the server');
+            }
+    
+            // Set state with the received data
+            setPets(data.pets || []);
+            setSelectedPet(data.selectedPet || null);
+            setInventory(data.inventory || []);
+            setFoodCount(data.foodCount || 0);
+            setToiletriesCount(data.toiletriesCount || 0);
+            setToysCount(data.toysCount || 0);
+            setUserFood(data.userFood || []);
+            setUserToiletries(data.userToiletries || []);
+            setUserToys(data.userToys || []);
+    
         } catch (error) {
+            // Log detailed error for debugging
             console.error('Error fetching home data:', error);
         }
     };
+    
 
     // Fetch updated pet stats from the server
     const fetchPetStats = async () => {
@@ -149,100 +171,101 @@ const HomePage = () => {
 
     return (
         <div>
- <h3>Explore More:</h3>
+            <h3>Explore More:</h3>
             <a href="/home">Go home</a>
-            <a href="/adopt">Adopt a Pet</a>
+            <a href="/home/adopt">Adopt a Pet</a>
             <a href="/shop">Visit the Shop</a>
             <a href="/all_tables">View All Tables</a>
+
             {pets.length > 0 ? (
-    <>
-        <h1>Welcome {pets[0].user_name}</h1>
+                <>
+                    <h1>Welcome {pets[0].user_name}</h1>
 
-        <h2>Select Your Pet</h2>
-        <select
-            id="petSelector"
-            value={selectedPet?.pet_id || ''}
-            onChange={(e) => setSelectedPet(pets.find(p => p.pet_id === parseInt(e.target.value)))}
-        >
-            {pets.map((pet) => (
-                <option
-                    key={pet.pet_id}
-                    value={pet.pet_id}
-                >
-                    {pet.pet_name}
-                </option>
-            ))}
-        </select>
-
-        {selectedPet && (
-            <div id="petDetails">
-                <h2>Meet {selectedPet.pet_name}</h2>
-                <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
-                <p>Energy: {selectedPet.energy}</p>
-                <p>Happiness: {selectedPet.happiness}</p>
-                <p>Hunger: {selectedPet.hunger}</p>
-                <p>Cleanliness: {selectedPet.cleanliness}</p>
-            </div>
-        )}
-    </>
-) : (
-    <p>No pets available at the moment.</p>
-)}
-        <button onClick={toggleInventory}>
-            {inventoryVisible ? 'Hide Inventory Data' : 'Show Inventory Data'}
-        </button>
-
-        {inventoryVisible && (
-            <div className="inventory" id="inventoryTable">
-                <h2>Inventory Data</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Money</th>
-                            <th>User ID</th>
-                            <th>Created At</th>
-                            <th>Food Count</th>
-                            <th>Toiletries Count</th>
-                            <th>Toys Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {inventory.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.id}</td>
-                                <td>{item.money}</td>
-                                <td>{item.user_id}</td>
-                                <td>{item.created_at}</td>
-                                <td>{foodCount}</td>
-                                <td>{toiletriesCount}</td>
-                                <td>{toysCount}</td>
-                            </tr>
+                    <h2>Select Your Pet</h2>
+                    <select
+                        id="petSelector"
+                        value={selectedPet?.pet_id || ''}
+                        onChange={(e) => setSelectedPet(pets.find(p => p.pet_id === parseInt(e.target.value)))}
+                    >
+                        {pets.map((pet) => (
+                            <option
+                                key={pet.pet_id}
+                                value={pet.pet_id}
+                            >
+                                {pet.pet_name}
+                            </option>
                         ))}
-                    </tbody>
-                </table>
+                    </select>
 
-                <div id="userButtons">
-                    <button onClick={() => setVisibleTable('userToysTable')}>Toggle User Toys Data</button>
-                    <button onClick={() => setVisibleTable('userToiletriesTable')}>Toggle User Toiletries Data</button>
-                    <button onClick={() => setVisibleTable('userFoodTable')}>Toggle User Food Data</button>
+                    {selectedPet && (
+                        <div id="petDetails">
+                            <h2>Meet {selectedPet.pet_name}</h2>
+                            <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <p>Energy: {selectedPet.energy}</p>
+                            <p>Happiness: {selectedPet.happiness}</p>
+                            <p>Hunger: {selectedPet.hunger}</p>
+                            <p>Cleanliness: {selectedPet.cleanliness}</p>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <p>No pets available at the moment.</p>
+            )}
+
+            <button onClick={toggleInventory}>
+                {inventoryVisible ? 'Hide Inventory Data' : 'Show Inventory Data'}
+            </button>
+
+            {inventoryVisible && (
+                <div className="inventory" id="inventoryTable">
+                    <h2>Inventory Data</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Money</th>
+                                <th>User ID</th>
+                                <th>Created At</th>
+                                <th>Food Count</th>
+                                <th>Toiletries Count</th>
+                                <th>Toys Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {inventory.map((item) => (
+                                <tr key={item.id}>
+                                    <td>{item.id}</td>
+                                    <td>{item.money}</td>
+                                    <td>{item.user_id}</td>
+                                    <td>{item.created_at}</td>
+                                    <td>{foodCount}</td>
+                                    <td>{toiletriesCount}</td>
+                                    <td>{toysCount}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    <div id="userButtons">
+                        <button onClick={() => setVisibleTable('userToysTable')}>Toggle User Toys Data</button>
+                        <button onClick={() => setVisibleTable('userToiletriesTable')}>Toggle User Toiletries Data</button>
+                        <button onClick={() => setVisibleTable('userFoodTable')}>Toggle User Food Data</button>
+                    </div>
                 </div>
-            </div>
-        )}
+            )}
 
-        {/* Conditionally render the table components based on the visibleTable state */}
-        {visibleTable === 'userToysTable' && (
-            <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />
-        )}
+            {visibleTable === 'userToysTable' && (
+                <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />
+            )}
 
-        {visibleTable === 'userToiletriesTable' && (
-            <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />
-        )}
+            {visibleTable === 'userToiletriesTable' && (
+                <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />
+            )}
 
-        {visibleTable === 'userFoodTable' && (
-            <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />
-        )}
-    </div>
+            {visibleTable === 'userFoodTable' && (
+                <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />
+            )}
+        </div>
     );
 };
 
