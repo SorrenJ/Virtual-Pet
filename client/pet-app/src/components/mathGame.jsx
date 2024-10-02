@@ -66,11 +66,11 @@ const MathGame = ({ userId }) => {
     const correctAnswer = num1 + num2;
     if (parseInt(answer) === correctAnswer) {
       setScore((prevScore) => prevScore + 1);
-      console.log('Correct answer! Updating mood to happy (3)');
+      
       const updatedPet = await updateImageAndMood(userId, 3); // Update mood to happy (mood_id 3)
       setPet(updatedPet); // Update pet with happy image
     } else {
-      console.log('Wrong answer! Updating mood to angry (11)');
+      
       const updatedPet = await updateImageAndMood(userId, 11); // Update mood to angry (mood_id 11)
       setPet(updatedPet); // Update pet with angry image
     }
