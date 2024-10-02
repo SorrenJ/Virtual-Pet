@@ -14,7 +14,7 @@ const FeedPetPage = () => {
     // Fetch data for pets and user food
     const fetchData = async () => {
         try {
-            const response = await fetch('/api/home');
+            const response = await fetch(`/api/home?selectedPetId=${selectedPet?selectedPet.pet_id:1}`);
             const data = await response.json();
 
             setPets(data.pets || []);
@@ -74,7 +74,11 @@ const FeedPetPage = () => {
                     <select
                         id="petSelector"
                         value={selectedPet?.pet_id || ''}
-                        onChange={(e) => setSelectedPet(pets.find(p => p.pet_id === parseInt(e.target.value)))}
+                        onChange={(e) => {
+                            console.log("selected your pet")
+                            return setSelectedPet(pets.find(p => p.pet_id === parseInt(e.target.value)) ) 
+                      
+                        } }
                     >
                         {pets.map((pet) => (
                             <option
@@ -121,7 +125,7 @@ const FeedPetPage = () => {
                                 <td>{item.count}</td>
                                 <td>
                                     <button
-                                        onClick={() => feedPet(selectedPet?.pet_id, item.item_type_id)}
+                                        onClick={() => feedPet(selectedPet?.pet_id, item.id)}
                                         disabled={item.count <= 0}
                                     >
                                         Feed

@@ -128,7 +128,7 @@ router.get('/', async (req, res) => {
         const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
 
         const userFood = await pool.query(`
-            SELECT uf.count, f.name AS food_name, f.food_image AS "foodImage"
+            SELECT uf.count, uf.item_type_id, uf.id, f.name AS food_name, f.food_image AS "foodImage"
             FROM user_foods uf
             JOIN foods f ON uf.item_type_id = f.id
             WHERE uf.user_id = $1
