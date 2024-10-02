@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
+const bodyParser = require('body-parser');
+const cors = require('cors');
+router.use(bodyParser.json());
+router.use(cors());
 
 const pool = require('../db/db'); // Import the pool from db/db.js
 

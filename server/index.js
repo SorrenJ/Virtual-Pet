@@ -1,12 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-
 const app = express();
+const bodyParser = require('body-parser');
 require('dotenv').config(); // Load environment variables from the .env file
 
 // Import the pool from db.js to handle PostgreSQL queries
 const pool = require('./db/db'); 
-
+app.use(bodyParser.json());
 // Middleware
 
 // Enable CORS to allow requests from localhost:3000 (your React frontend)
@@ -44,7 +44,7 @@ const homeApiRoute = require('./routes/home_api');
 const cleanApiRoute = require('./routes/clean_pet_api');
 const feedApiRoute = require('./routes/feed_pet_api');
 const playApiRoute = require('./routes/play_with_pet_api');
-// const itemApiRoute = require('./routes/inventory_api');
+const itemApiRoute = require('./routes/inventory_api');
 const statsApiRoute = require('./routes/pets_stats_api');
 
 // Register routes
@@ -55,6 +55,7 @@ app.use('/api/home', homeApiRoute);
 app.use('/api/clean-pet', cleanApiRoute);
 app.use('/api/feed-pet', feedApiRoute);
 app.use('/api/play-with-pet', playApiRoute);
+app.use('/api/inventory', itemApiRoute);
 app.use('/api/pets-stats', statsApiRoute);
 
 
