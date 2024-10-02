@@ -165,56 +165,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// New route to fetch latest pet stats
-router.get('/pets-stats', async (req, res) => {
-    const userId = 1; // Hardcoded user ID for now
-    try {
-        const petStatsQuery = `
-        SELECT 
-            p.id AS pet_id, 
-            p.energy, 
-            p.happiness, 
-            p.hunger, 
-            p.cleanliness
-        FROM pets p
-        WHERE p.user_id = $1
-        `;
-        const result = await pool.query(petStatsQuery, [userId]);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching pet stats:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
 
-// Get inventory data for the user
-router.get('/inventory', async (req, res) => {
-    try {
-        const userId = 1; // Hardcoded user ID for now
-        const inventoryQuery = `SELECT * FROM inventory WHERE user_id = $1`;
-        const result = await pool.query(inventoryQuery, [userId]);
 
-        const userFoodCountQuery = `SELECT food_count FROM user_food_count WHERE user_id = $1`;
-        const userToiletriesCountQuery = `SELECT toiletry_count FROM user_toiletries_count WHERE user_id = $1`;
-        const userToysCountQuery = `SELECT toy_count FROM user_toy_count WHERE user_id = $1`;
-
-        const foodCount = await pool.query(userFoodCountQuery, [userId]);
-        const toiletriesCount = await pool.query(userToiletriesCountQuery, [userId]);
-        const toysCount = await pool.query(userToysCountQuery, [userId]);
-
-        res.json({
-            inventory: result.rows,
-            foodCount: foodCount.rows[0]?.food_count || 0,
-            toiletriesCount: toiletriesCount.rows[0]?.toiletry_count || 0,
-            toysCount: toysCount.rows[0]?.toy_count || 0
-        });
-    } catch (error) {
-        console.error('Error fetching inventory:', error);
-        res.status(500).json({ error: 'Failed to fetch inventory' });
-    }
-});
-
-// Additional routes for feeding, cleaning, and playing with pets would be similarly structured
-// POST routes to modify pet stats (feeding, cleaning, playing, etc.)
 
 module.exports = router;

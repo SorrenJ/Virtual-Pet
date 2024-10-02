@@ -29,12 +29,22 @@ const convertScoreRoutes = require('./routes/convert-score');
 const petApiRoute = require('./routes/pet_api');
 const speciesApiRoute = require('./routes/species_api');
 const homeApiRoute = require('./routes/home_api');
+const cleanApiRoute = require('./routes/clean_pet_api');
+const feedApiRoute = require('./routes/feed_pet_api');
+const playApiRoute = require('./routes/play_with_pet_api');
+// const itemApiRoute = require('./routes/inventory_api');
+const statsApiRoute = require('./routes/pets_stats_api');
 
 // Register routes
 app.use('/api/convert-score', convertScoreRoutes);
 app.use('/api/pets', petApiRoute);
 app.use('/api/species', speciesApiRoute);
 app.use('/api/home', homeApiRoute);
+app.use('/api/clean-pet', cleanApiRoute);
+app.use('/api/feed-pet', feedApiRoute);
+app.use('/api/play-with-pet', playApiRoute);
+app.use('/api/play-with-pet', playApiRoute);
+app.use('/api/pets-stats', statsApiRoute);
 
 // Start the server on port 5000
 const PORT = process.env.PORT || 5000;
