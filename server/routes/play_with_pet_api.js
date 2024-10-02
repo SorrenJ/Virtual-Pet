@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const cors = require("cors");
+
 
 const pool = require('../db/db'); // Import the pool from db/db.js
 
 // Enable CORS for cross-origin requests
-router.use(cors());
+
 
 
 

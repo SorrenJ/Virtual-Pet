@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const cors = require("cors");
-require('dotenv').config();
+
 const pool = require('../db/db'); // Import the pool from db/db.js
 
-// Enable CORS for cross-origin requests
-router.use(cors());
 
 
 router.post('/clean-pet', async (req, res) => {
@@ -62,3 +59,5 @@ router.post('/clean-pet', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+// Export the router
+module.exports = router;

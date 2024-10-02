@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+
 const app = express();
 require('dotenv').config(); // Load environment variables from the .env file
 
@@ -22,6 +23,17 @@ app.use('/db', express.static('db'));
 // Set up EJS as the templating engine (if needed)
 app.set('view engine', 'ejs');
 
+
+
+// Create a router
+const router = express.Router();
+
+// Middleware to be applied to all routes
+router.use((req, res, next) => {
+    console.log(`Request URL: ${req.originalUrl}, Request Method: ${req.method}`);
+    next(); // Continue to the next middleware or route handler
+});
+
 // Routes
 
 // Importing routes from separate files
@@ -43,8 +55,11 @@ app.use('/api/home', homeApiRoute);
 app.use('/api/clean-pet', cleanApiRoute);
 app.use('/api/feed-pet', feedApiRoute);
 app.use('/api/play-with-pet', playApiRoute);
-app.use('/api/play-with-pet', playApiRoute);
 app.use('/api/pets-stats', statsApiRoute);
+
+
+// Use the router in the app
+app.use(router);
 
 // Start the server on port 5000
 const PORT = process.env.PORT || 5000;
