@@ -43,9 +43,9 @@ const decrementPetStats = async () => {
 };
 
 // Run the decrement function every 60 seconds (1 minute)
-setInterval(() => {
-    decrementPetStats();
-}, 60000);
+// setInterval(() => {
+//     decrementPetStats();
+// }, 60000);
 
 // Get home data including pets and inventory
 router.get('/', async (req, res) => {

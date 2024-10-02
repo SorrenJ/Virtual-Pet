@@ -54,6 +54,8 @@ const HomePage = () => {
             setUserToiletries(data.userToiletries || []);
             setUserToys(data.userToys || []);
     
+            console.log('Fetched userFood data in HomePage:', data.userFood);
+            
         } catch (error) {
             // Log detailed error for debugging
             console.error('Error fetching home data:', error);
@@ -91,6 +93,11 @@ const HomePage = () => {
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
         try {
+            console.log('Feeding pet:', petId, 'with food:', foodId);  // Debug
+            if (!petId || !foodId) {
+                throw new Error('Missing petId or foodId');
+            }
+    
             const response = await fetch('/api/feed-pet', {
                 method: 'POST',
                 headers: {
@@ -98,13 +105,14 @@ const HomePage = () => {
                 },
                 body: JSON.stringify({ petId, foodId }),
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
+                console.error('Error response:', errorData);  // Log the error response
                 alert(`Error: ${errorData.error}`);
                 return;
             }
-
+    
             const data = await response.json();
             if (data.success) {
                 alert('Pet fed successfully!');
@@ -114,7 +122,8 @@ const HomePage = () => {
             console.error('Error feeding pet:', error);
         }
     };
-
+    
+    
     // Function to handle cleaning the pet
     const cleanPet = async (petId, toiletriesId) => {
         try {

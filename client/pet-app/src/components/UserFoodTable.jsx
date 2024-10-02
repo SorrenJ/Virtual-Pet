@@ -1,6 +1,18 @@
 import React from 'react';
 
 const UserFoodTable = ({ userFood, feedPet, selectedPet }) => {
+    
+    console.log('UserFoodTable received userFood:', userFood);
+    console.log('UserFoodTable received selectedPet:', selectedPet);
+    
+    const handleFeedPet = (petId, foodId) => {
+        if (!petId || !foodId) {
+            console.error('Missing petId or foodId');
+            return;
+        }
+        feedPet(petId, foodId);
+    };
+
     return (
         <div className="user-data" id="userFoodTable">
             <h2>User Food Data</h2>
@@ -14,14 +26,18 @@ const UserFoodTable = ({ userFood, feedPet, selectedPet }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {userFood.map((item) => (
-                        <tr key={item.item_type_id}>
+                    {userFood.map((item, index) => (
+                        <tr key={item.item_type_id || item.id || index}>
                             <td><img src={item.food_image} alt={item.food_name} width="100" /></td>
                             <td>{item.food_name}</td>
                             <td>{item.count}</td>
                             <td>
                                 <button
-                                    onClick={() => feedPet(selectedPet.pet_id, item.item_type_id)}
+                                    onClick={() => {
+                                        console.log('Selected Pet ID:', selectedPet?.pet_id);  // Debug
+                                        console.log('Food ID:', item.item_type_id);  // Debug
+                                        handleFeedPet(selectedPet?.pet_id, item.item_type_id);
+                                    }}
                                     disabled={item.count <= 0}
                                 >
                                     Feed
@@ -34,6 +50,8 @@ const UserFoodTable = ({ userFood, feedPet, selectedPet }) => {
         </div>
     );
 };
+
+
 
 
 export default UserFoodTable;
