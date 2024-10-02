@@ -32,7 +32,7 @@ VALUES
 (2, 1, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727816846/Slugaboo_Red_Clean.png'),
 (2, 1, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727816854/Slugaboo_Red_Angry.png'),
 (2, 1, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727816766/Slugaboo_Red_Sad.png'),
-(2, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727816773/Slugaboo_Red_Pet.png');
+(2, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727816773/Slugaboo_Red_Pet.png'),
 
 
 -- Blue Slugaboo
@@ -48,7 +48,7 @@ VALUES
 (3, 1, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818666/Slugaboo_Blue_Clean.png'),
 (3, 1, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818683/Slugaboo_Blue_Angry.png'),
 (3, 1, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818381/Slugaboo_Blue_Sad.png'),
-(3, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818389/Slugaboo_Blue_Pet.png');
+(3, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818389/Slugaboo_Blue_Pet.png'),
 
 
 -- Green Slugaboo
@@ -64,7 +64,7 @@ VALUES
 (4, 1, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818331/Slugaboo_Green_Clean.png'),
 (4, 1, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818340/Slugaboo_Green_Angry.png'),
 (4, 1, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818178/Slugaboo_Green_Sad.png'),
-(4, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818186/Slugaboo_Green_Pet.png');
+(4, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818186/Slugaboo_Green_Pet.png'),
 
 
 -- Slugaboo Pink Sprites
@@ -80,7 +80,7 @@ VALUES
 (5, 1, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727817978/Slugaboo_Pink_Clean.png'),
 (5, 1, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727817986/Slugaboo_Pink_Angry.png'),
 (5, 1, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727817493/Slugaboo_Pink_Sad.png'),
-(5, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727817637/Slugaboo_Pink_Pet.png');
+(5, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727817637/Slugaboo_Pink_Pet.png'),
 
 
 -- Orange Slugaboo
@@ -96,7 +96,7 @@ VALUES
 (6, 1, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818107/Slugaboo_Orange_Clean.png'),
 (6, 1, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818115/Slugaboo_Orange_Angry.png'),
 (6, 1, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818040/Slugaboo_Orange_Sad.png'),
-(6, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818052/Slugaboo_Orange_Pet.png');
+(6, 1, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727818052/Slugaboo_Orange_Pet.png'),
 
 -- Hippostyx Sprites
 -- Yellow Hippostyx
@@ -112,7 +112,7 @@ VALUES
 (1, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813828/Hippostyx_Clean.png'),
 (1, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
 (1, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
-(1, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png');
+(1, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
 
 -- Red Hippostyx
 (2, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
@@ -127,7 +127,7 @@ VALUES
 (2, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813828/Hippostyx_Clean.png'),
 (2, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
 (2, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
-(2, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png');
+(2, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
 
 -- Blue Hippostyx
 (3, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
@@ -142,7 +142,7 @@ VALUES
 (3, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813828/Hippostyx_Clean.png'),
 (3, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
 (3, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
-(3, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png');
+(3, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
 
 -- Green Hippostyx
 (4, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
@@ -157,7 +157,7 @@ VALUES
 (4, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813828/Hippostyx_Clean.png'),
 (4, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
 (4, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
-(4, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png');
+(4, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
 
 -- Pink Hippostyx
 (5, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
@@ -172,7 +172,7 @@ VALUES
 (5, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813828/Hippostyx_Clean.png'),
 (5, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
 (5, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
-(5, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png');
+(5, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
 
 -- Orange Hippostyx
 (6, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
