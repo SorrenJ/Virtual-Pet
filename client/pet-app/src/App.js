@@ -4,6 +4,8 @@ import ShopPage from './routes/shopPage';
 import HomePage from './routes/homePage'; // Default home page
 import AdoptPage from './routes/adoptPage'; // Default adopt page
 import FeedPetPage from './routes/feedPetPage'; 
+import PlayPetPage from './routes/playPetPage'; 
+import CleanPetPage from './routes/cleanPetPage'; 
 import './App.css';
 
 function App() {
