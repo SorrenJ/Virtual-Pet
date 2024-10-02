@@ -1,10 +1,16 @@
+// src/pages/HomePage.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import MathGame from '../components/mathGame'; // Import the MathGame component
+import MathModal from './mathModal'; // Import MathModal component
 
 const HomePage = () => {
-  const [playGame, setPlayGame] = useState(false); // State to control game visibility
+  const [playGame, setPlayGame] = useState(false); // State to control modal visibility
   const userId = 1; // Example user ID; replace with actual user ID logic
+
+  // Function to toggle the modal
+  const toggleModal = () => {
+    setPlayGame(!playGame);
+  };
 
   return (
     <div>
@@ -16,15 +22,15 @@ const HomePage = () => {
         <Link to="/adopt">Go to Adopt</Link>
       </div>
       <div>
-        <button onClick={() => setPlayGame(!playGame)}>
+        <button onClick={toggleModal}>
           {playGame ? 'Cancel Game' : 'Play Math Game'}
         </button>
       </div>
 
-      {playGame && <MathGame userId={userId} />} {/* Render MathGame if playGame is true */}
+      {/* Render MathModal component */}
+      <MathModal isOpen={playGame} onRequestClose={toggleModal} userId={userId} />
     </div>
   );
 };
 
 export default HomePage;
-
