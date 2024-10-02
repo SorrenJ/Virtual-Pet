@@ -28,8 +28,10 @@ const petApiRoute = require('./routes/pet_api')
 app.use('/api/pets', petApiRoute);
 
 const speciesApiRoute = require('./routes/species_api')
-app.use('/api/species', speciesApiRoute)
+app.use('/api/species', speciesApiRoute);
 
+const userPetsApi = require('./routes/user_pet_api');
+app.use('/api/pets', userPetsApi);
 
 
 
