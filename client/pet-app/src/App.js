@@ -7,6 +7,7 @@ import FeedPetPage from './routes/feedPetPage';
 import PlayPetPage from './routes/playPetPage'; 
 import CleanPetPage from './routes/cleanPetPage'; 
 import HomeTesterPage from './routes/homeTesterPage'; 
+import NavBar from './routes/navBar';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     <Router>
       <div className="App">
         <header className="App-header">
+        <NavBar />
           <Routes> {/* Use Routes to create paths*/}
             <Route path="/" element={<HomePage />} /> {/* Home page */}
             <Route path="/shop" element={<ShopPage />} /> {/* Shop page */}
