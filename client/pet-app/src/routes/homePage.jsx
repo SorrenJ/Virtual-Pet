@@ -18,18 +18,48 @@ const HomePage = () => {
     const [visibleComponent, setVisibleComponent] = useState(null); // To handle component visibility
 
     // Fetch data when the component is mounted
-    useEffect(() => {
+     // Fetch data when the component is mounted
+     useEffect(() => {
         fetchData();
+
+        // Set up a periodic update for pet stats (every 60 seconds)
+        const intervalId = setInterval(() => {
+            fetchData(false);  // Call fetchData without resetting the selected pet
+        }, 6000); // 60 seconds
+
+        // Cleanup the interval when the component unmounts
+        return () => clearInterval(intervalId);
     }, []);
 
+    // UseEffect that tracks changes in the pets array and ensures the selectedPet is not reset unnecessarily
+    useEffect(() => {
+        if (!selectedPet && pets.length > 0) {
+            // Only set the first pet if selectedPet is null (first render case)
+            setSelectedPet(pets[0]);
+        }
+    }, [pets]); // This effect only runs when pets array changes
     // Fetch data for pets and user food
-    const fetchData = async () => {
+    const fetchData = async (resetSelectedPet = true) => {
         try {
             const response = await fetch(`/api/home?selectedPetId=${selectedPet ? selectedPet.pet_id : 1}`);
             const data = await response.json();
 
             setPets(data.pets || []);
-            setSelectedPet(data.selectedPet || null);
+
+
+
+            // Don't reset the selected pet when fetchData is called periodically
+            if (resetSelectedPet && data.pets.length > 0) {
+                setSelectedPet(data.selectedPet || data.pets[0] || null);
+            } else if (!resetSelectedPet && selectedPet) {
+                // Update selectedPet stats without switching the pet
+                const updatedPet = data.pets.find(pet => pet.pet_id === selectedPet.pet_id);
+                if (updatedPet) {
+                    setSelectedPet(updatedPet);
+                }
+            }
+
+        
             setFoodCount(data.foodCount || 0);
             setUserFood(data.userFood || []);
 
