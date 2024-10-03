@@ -17,7 +17,17 @@ const HomeTesterPage = () => {
     // Fetch data when the component is mounted
     useEffect(() => {
         fetchData();
+
+        // Set up a periodic update for pet stats (every 60 seconds)
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, 60000); // 60 seconds
+
+        // Cleanup the interval when the component unmounts
+        return () => clearInterval(intervalId);
     }, []);
+
+
 
     // Fetch data for pets and user food
     const fetchData = async () => {
@@ -27,6 +37,7 @@ const HomeTesterPage = () => {
 
             setPets(data.pets || []);
             setSelectedPet(data.selectedPet || null);
+
             setFoodCount(data.foodCount || 0);
             setUserFood(data.userFood || []);
 

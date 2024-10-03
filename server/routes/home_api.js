@@ -43,10 +43,10 @@ const decrementPetStats = async () => {
 };
 
 // Run the decrement function every 60 seconds (1 minute)
-// setInterval(() => {
-//     decrementPetStats();
-// }, 60000);
-
+// Move setInterval outside to ensure stats decrement independently every 5 minutes (or any suitable interval)
+setInterval(() => {
+    decrementPetStats();
+}, 60000); // 5 minutes
 // Get home data including pets and inventory
 router.get('/', async (req, res) => {
     const userId = 1; // Hardcoded user ID for now
@@ -160,7 +160,7 @@ router.get('/', async (req, res) => {
             userToys: userToys.rows,
         });
 
-        await decrementPetStats();
+        // await decrementPetStats();
 
     } catch (error) {
         console.error('Error executing query', error.stack);
