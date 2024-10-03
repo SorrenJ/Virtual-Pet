@@ -175,10 +175,17 @@ const HomePage = () => {
                         <div id="petDetails">
                             <h2>Meet {selectedPet.pet_name}</h2>
                             <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <br/>
+                            <p>Current Mood: {selectedPet.mood_name}</p>
+                            <br/>
                             <p>Energy: {selectedPet.energy}</p>
                             <p>Happiness: {selectedPet.happiness}</p>
                             <p>Hunger: {selectedPet.hunger}</p>
                             <p>Cleanliness: {selectedPet.cleanliness}</p>
+                        <br/>
+                        <p>Species: {selectedPet.species_name}</p>
+                        <p>Diet: {selectedPet.diet_desc}</p>
+                        <p>Personality: {selectedPet.personality_name}</p>
                         </div>
                     )}
                 </>
@@ -191,19 +198,19 @@ const HomePage = () => {
                 <button 
                     onClick={() => setVisibleComponent(1)} 
                     disabled={visibleComponent === 1}>
-                    Show Component One
+                    Feed Pet
                 </button>
 
                 <button 
                     onClick={() => setVisibleComponent(2)} 
                     disabled={visibleComponent === 2}>
-                    Show Component Two
+                    Clean Pet
                 </button>
 
                 <button 
                     onClick={() => setVisibleComponent(3)} 
                     disabled={visibleComponent === 3}>
-                    Show Component Two
+                   Give Toy
                 </button>
             </div>
 
