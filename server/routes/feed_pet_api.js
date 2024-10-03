@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
            FROM foods f
            JOIN user_foods uf ON f.id = uf.item_type_id
            JOIN pets p ON p.id = $3
-           WHERE uf.user_id = $1 AND uf.item_type_id = $2;
+           WHERE uf.user_id = $1 AND uf.id = $2;
         `;
         const foodResult = await pool.query(foodQuery, [userId, foodId, petId]);
 
@@ -68,7 +68,7 @@ router.post('/', async (req, res) => {
         const decreaseFoodCountQuery = `
             UPDATE user_foods
             SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2;
+            WHERE user_id = $1 AND id = $2;
         `;
         await pool.query(decreaseFoodCountQuery, [userId, foodId]);
 
