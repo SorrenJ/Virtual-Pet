@@ -30,7 +30,7 @@ const CleanPetPage= () => {
     };
 
     // Function to handle feeding the pet
-    const cleanPet = async (petId, toiletriesId, toiletriesImage) => {
+    const cleanPet = async (petId, toiletriesId) => {
         try {
             console.log('Feeding pet:', petId, 'with toiletry:', toiletriesId);  // Debug
             if (!petId || !toiletriesId) {
@@ -42,7 +42,7 @@ const CleanPetPage= () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ petId, toiletriesId, toiletriesImage }),
+                body: JSON.stringify({ petId, toiletriesId}),
             });
 
             if (!response.ok) {

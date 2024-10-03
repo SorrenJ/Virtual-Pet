@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
            JOIN user_toiletries ut ON t.id = ut.item_type_id
            WHERE ut.user_id = $1 AND ut.item_type_id = $2;
         `;
-        const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId, toiletriesImage]);
+        const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId]);
 
         if (toiletriesResult.rows.length === 0) {
             return res.status(400).json({ error: 'Toiletry not found or not enough count' });
