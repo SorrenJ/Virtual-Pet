@@ -25,9 +25,6 @@ const NavBar = () => {
           <Link to="/adopt" style={{ color: '#fff', textDecoration: 'none' }}>Adopt</Link>
         </li>
         <li>
-          <Link to="/profile" style={{ color: '#fff', textDecoration: 'none' }}>Profile</Link>
-        </li>
-        <li>
           <button onClick={toggleModal} style={{ backgroundColor: '#555', color: '#fff', border: 'none', padding: '5px 10px' }}>
             {playGame ? 'Cancel Game' : 'Play Math Game'}
           </button>
