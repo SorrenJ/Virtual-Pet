@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
 
         // Get the toy's effect value and count
         const toyQuery = `
-           SELECT t.effects AS effect, ut.count 
+           SELECT t.id AS toyId, t.effects AS effect, ut.count 
            FROM toys t
            JOIN user_toys ut ON t.id = ut.item_type_id
            WHERE ut.user_id = $1 AND ut.item_type_id = $2;

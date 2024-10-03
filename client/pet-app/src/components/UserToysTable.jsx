@@ -16,7 +16,7 @@ const UserToysTable = ({ userToys, playWithPet, selectedPet }) => {
           {userToys.map((item) => (
             <tr key={item.item_type_id}>
               <td>
-                <img src={item.toy_image} alt={item.toys_name} width="100" />
+                <img src={item.toyImage} alt={item.toys_name} width="100" />
               </td>
               <td>{item.toys_name}</td>
               <td>{item.count}</td>
