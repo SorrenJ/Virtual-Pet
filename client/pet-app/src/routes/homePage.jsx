@@ -168,13 +168,6 @@ const HomePage = () => {
 
     return (
         <div>
-            <div className="links">
-                <h3>Explore More:</h3>
-                <a href="/">Go home</a>
-                <a href="/adopt">Adopt a Pet</a>
-                <a href="/shop">Visit the Shop</a>
-            </div>
-
             {/* Display the pet details */}
             {pets.length > 0 ? (
                 <>
