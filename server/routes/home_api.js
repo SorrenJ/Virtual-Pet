@@ -36,7 +36,7 @@ const decrementPetStats = async () => {
             `;
             await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
         }
-        console.log('Pet stats updated successfully.');
+        // console.log('Pet stats updated successfully.');
     } catch (error) {
         console.error('Error decrementing pet stats:', error);
     }
@@ -50,7 +50,7 @@ setInterval(() => {
 // Get home data including pets and inventory
 router.get('/', async (req, res) => {
     const userId = 1; // Hardcoded user ID for now
-    console.log(`Current User ID in /home route: ${userId}`); 
+    // console.log(`Current User ID in /home route: ${userId}`); 
     const selectedPetId = req.query.selectedPetId;
 
     try {
