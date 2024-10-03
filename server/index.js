@@ -24,7 +24,6 @@ app.use('/db', express.static('db'));
 app.set('view engine', 'ejs');
 
 
-
 // Create a router
 const router = express.Router();
 
@@ -40,6 +39,7 @@ router.use((req, res, next) => {
 const convertScoreRoutes = require('./routes/convert-score');
 const petApiRoute = require('./routes/pet_api');
 const speciesApiRoute = require('./routes/species_api');
+const userPetsApi = require('./routes/user_pet_api');
 const homeApiRoute = require('./routes/home_api');
 const cleanApiRoute = require('./routes/clean_pet_api');
 const feedApiRoute = require('./routes/feed_pet_api');
@@ -51,6 +51,7 @@ const statsApiRoute = require('./routes/pets_stats_api');
 app.use('/api/convert-score', convertScoreRoutes);
 app.use('/api/pets', petApiRoute);
 app.use('/api/species', speciesApiRoute);
+app.use('/api/pets', userPetsApi);
 app.use('/api/home', homeApiRoute);
 app.use('/api/clean-pet', cleanApiRoute);
 app.use('/api/feed-pet', feedApiRoute);
@@ -67,9 +68,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
-
-
 
 
 // Adoption route

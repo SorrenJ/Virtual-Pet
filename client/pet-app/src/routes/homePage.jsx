@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import UserToysTable from '../components/UserToysTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserFoodTable from '../components/UserFoodTable';
-import MathGame from '../components/mathGame'; // Import the MathGame component
+
 
 const HomePage = () => {
     const [playGame, setPlayGame] = useState(false); // State to control game visibility
@@ -168,13 +168,6 @@ const HomePage = () => {
 
     return (
         <div>
-            <div className="links">
-                <h3>Explore More:</h3>
-                <a href="/">Go home</a>
-                <a href="/adopt">Adopt a Pet</a>
-                <a href="/shop">Visit the Shop</a>
-            </div>
-
             {/* Display the pet details */}
             {pets.length > 0 ? (
                 <>
