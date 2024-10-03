@@ -20,35 +20,47 @@ const HomeTesterPage = () => {
 
         // Set up a periodic update for pet stats (every 60 seconds)
         const intervalId = setInterval(() => {
-            fetchData();
-        }, 60000); // 60 seconds
+            fetchData(false);  // Call fetchData without resetting the selected pet
+        }, 6000); // 60 seconds
 
         // Cleanup the interval when the component unmounts
         return () => clearInterval(intervalId);
     }, []);
 
-
+    // UseEffect that tracks changes in the pets array and ensures the selectedPet is not reset unnecessarily
+    useEffect(() => {
+        if (!selectedPet && pets.length > 0) {
+            // Only set the first pet if selectedPet is null (first render case)
+            setSelectedPet(pets[0]);
+        }
+    }, [pets]); // This effect only runs when pets array changes
 
     // Fetch data for pets and user food
-    const fetchData = async () => {
+    const fetchData = async (resetSelectedPet = true) => {
         try {
             const response = await fetch(`/api/home?selectedPetId=${selectedPet ? selectedPet.pet_id : 1}`);
             const data = await response.json();
 
             setPets(data.pets || []);
-            setSelectedPet(data.selectedPet || null);
+
+            // Don't reset the selected pet when fetchData is called periodically
+            if (resetSelectedPet && data.pets.length > 0) {
+                setSelectedPet(data.selectedPet || data.pets[0] || null);
+            } else if (!resetSelectedPet && selectedPet) {
+                // Update selectedPet stats without switching the pet
+                const updatedPet = data.pets.find(pet => pet.pet_id === selectedPet.pet_id);
+                if (updatedPet) {
+                    setSelectedPet(updatedPet);
+                }
+            }
 
             setFoodCount(data.foodCount || 0);
             setUserFood(data.userFood || []);
-
             setToiletriesCount(data.toiletriesCount || 0);
             setUserToiletries(data.userToiletries || []);
-
-
             setToysCount(data.toysCount || 0);
             setUserToys(data.userToys || []);
-
-
+            
             console.log('Fetched userFood data in HomePage:', data.userFood);
         } catch (error) {
             console.error('Error fetching home data:', error);
@@ -81,18 +93,17 @@ const HomeTesterPage = () => {
             const data = await response.json();
             if (data.success) {
                 alert('Pet fed successfully!');
-                fetchData(); // Fetch updated data
+                fetchData(false); // Fetch updated data without resetting selected pet
             }
         } catch (error) {
             console.error('Error feeding pet:', error);
         }
     };
 
-
-     // Function to handle feeding the pet
-     const cleanPet = async (petId, toiletriesId) => {
+    // Function to handle cleaning the pet
+    const cleanPet = async (petId, toiletriesId) => {
         try {
-            console.log('Feeding pet:', petId, 'with toiletry:', toiletriesId);  // Debug
+            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);  // Debug
             if (!petId || !toiletriesId) {
                 throw new Error('Missing petId or toiletriesId');
             }
@@ -102,7 +113,7 @@ const HomeTesterPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ petId, toiletriesId}),
+                body: JSON.stringify({ petId, toiletriesId }),
             });
 
             if (!response.ok) {
@@ -114,46 +125,46 @@ const HomeTesterPage = () => {
 
             const data = await response.json();
             if (data.success) {
-                alert('Pet fed successfully!');
-                fetchData(); // Fetch updated data
+                alert('Pet cleaned successfully!');
+                fetchData(false); // Fetch updated data without resetting selected pet
             }
         } catch (error) {
-            console.error('Error feeding pet:', error);
+            console.error('Error cleaning pet:', error);
         }
     };
 
- // Function to handle feeding the pet
- const playWithPet = async (petId, toyId) => {
-    try {
-        console.log('Playing pet:', petId, 'with toy:', toyId);  // Debug
-        if (!petId || !toyId) {
-            throw new Error('Missing petId or toyId');
-        }
+    // Function to handle playing with the pet
+    const playWithPet = async (petId, toyId) => {
+        try {
+            console.log('Playing with pet:', petId, 'with toy:', toyId);  // Debug
+            if (!petId || !toyId) {
+                throw new Error('Missing petId or toyId');
+            }
 
-        const response = await fetch('/api/play-with-pet', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ petId, toyId }),
-        });
+            const response = await fetch('/api/play-with-pet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ petId, toyId }),
+            });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error response:', errorData);  // Log the error response
-            alert(`Error: ${errorData.error}`);
-            return;
-        }
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);  // Log the error response
+                alert(`Error: ${errorData.error}`);
+                return;
+            }
 
-        const data = await response.json();
-        if (data.success) {
-            alert('Pet play successfully!');
-            fetchData(); // Fetch updated data
+            const data = await response.json();
+            if (data.success) {
+                alert('Pet played successfully!');
+                fetchData(false); // Fetch updated data without resetting selected pet
+            }
+        } catch (error) {
+            console.error('Error playing with pet:', error);
         }
-    } catch (error) {
-        console.error('Error playing pet:', error);
-    }
-};
+    };
 
     return (
         <div>
@@ -167,8 +178,9 @@ const HomeTesterPage = () => {
                         id="petSelector"
                         value={selectedPet?.pet_id || ''}
                         onChange={(e) => {
-                            console.log("selected your pet");
-                            setSelectedPet(pets.find(p => p.pet_id === parseInt(e.target.value)));
+                            console.log("Selected your pet");
+                            const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
+                            setSelectedPet(pet);
                         }}
                     >
                         {pets.map((pet) => (
@@ -213,7 +225,7 @@ const HomeTesterPage = () => {
                 <button 
                     onClick={() => setVisibleComponent(3)} 
                     disabled={visibleComponent === 3}>
-                    Show Component Two
+                    Show Component Three
                 </button>
             </div>
 
