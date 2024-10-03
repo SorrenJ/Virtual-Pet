@@ -23,98 +23,52 @@ app.use('/db', express.static('db'));
 // Set up EJS as the templating engine (if needed)
 app.set('view engine', 'ejs');
 
-app.listen(5000, () => {
-    console.log("Server started on port 5000");
+
+// Create a router
+const router = express.Router();
+
+// Middleware to be applied to all routes
+router.use((req, res, next) => {
+    console.log(`Request URL: ${req.originalUrl}, Request Method: ${req.method}`);
+    next(); // Continue to the next middleware or route handler
 });
 
 // Routes
-const convertScoreRoutes = require('./routes/convert-score')
-app.use('/api/convert-score', convertScoreRoutes);
 
-const petApiRoute = require('./routes/pet_api')
-app.use('/api/pets', petApiRoute);
-
-const speciesApiRoute = require('./routes/species_api')
-app.use('/api/species', speciesApiRoute);
-
+// Importing routes from separate files
+const convertScoreRoutes = require('./routes/convert-score');
+const petApiRoute = require('./routes/pet_api');
+const speciesApiRoute = require('./routes/species_api');
 const userPetsApi = require('./routes/user_pet_api');
+const homeApiRoute = require('./routes/home_api');
+const cleanApiRoute = require('./routes/clean_pet_api');
+const feedApiRoute = require('./routes/feed_pet_api');
+const playApiRoute = require('./routes/play_with_pet_api');
+const itemApiRoute = require('./routes/inventory_api');
+const statsApiRoute = require('./routes/pets_stats_api');
+
+// Register routes
+app.use('/api/convert-score', convertScoreRoutes);
+app.use('/api/pets', petApiRoute);
+app.use('/api/species', speciesApiRoute);
 app.use('/api/pets', userPetsApi);
+app.use('/api/home', homeApiRoute);
+app.use('/api/clean-pet', cleanApiRoute);
+app.use('/api/feed-pet', feedApiRoute);
+app.use('/api/play-with-pet', playApiRoute);
+app.use('/api/inventory', itemApiRoute);
+app.use('/api/pets-stats', statsApiRoute);
 
 
+// Use the router in the app
+app.use(router);
 
-// New route to fetch latest pet stats
-app.get('/api/pets-stats', async (req, res) => {
-    const userId = 1; // Hardcoded user ID for now
-    try {
-        // Query to fetch updated pet stats
-        const petStatsQuery = `
-        SELECT 
-          p.id AS pet_id, 
-          p.energy, 
-          p.happiness, 
-          p.hunger, 
-          p.cleanliness
-        FROM pets p
-        WHERE p.user_id = $1
-        `;
-        const result = await pool.query(petStatsQuery, [userId]);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching pet stats:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
+// Start the server on port 5000
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
 
-
-
-
-
-// Function to decrement pet stats
-const decrementPetStats = async () => {
-    try {
-        // Query to fetch all pets with their current stats and personality decay rates
-        const query = `
-        SELECT p.id AS pet_id, p.energy, p.happiness, p.hunger, p.cleanliness, 
-               per.energy_decay, per.happiness_decay, per.hunger_decay, per.cleanliness_decay
-        FROM pets p
-        JOIN personalities per ON p.personality_id = per.id
-        `;
-        const result = await pool.query(query);
-        const pets = result.rows;
-
-        // Loop through each pet and apply the decrements
-        for (const pet of pets) {
-            const newEnergy = Math.max(Math.floor(pet.energy - pet.energy_decay), 0);
-            const newHappiness = Math.max(Math.floor(pet.happiness - pet.happiness_decay), 0);
-            const newHunger = Math.max(Math.floor(pet.hunger - pet.hunger_decay), 0);
-            const newCleanliness = Math.max(Math.floor(pet.cleanliness - pet.cleanliness_decay), 0);
-
-  // Log old and new stats
-  console.log(`Pet ID: ${pet.pet_id}`);
-  console.log(`Old Energy: ${pet.energy}, New Energy: ${newEnergy}`);
-  console.log(`Old Happiness: ${pet.happiness}, New Happiness: ${newHappiness}`);
-  console.log(`Old Hunger: ${pet.hunger}, New Hunger: ${newHunger}`);
-  console.log(`Old Cleanliness: ${pet.cleanliness}, New Cleanliness: ${newCleanliness}`);
-
-            // Update the pet stats in the database
-            const updateQuery = `
-            UPDATE pets 
-            SET energy = $1, happiness = $2, hunger = $3, cleanliness = $4
-            WHERE id = $5
-            `;
-            await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
-            console.log(`Updated stats for Pet ID: ${pet.pet_id}`);
-        }
-        console.log('Pet stats updated successfully.');
-    } catch (error) {
-        console.error('Error decrementing pet stats:', error);
-    }
-};
-
-// Run the decrement function every 60 seconds (1 minute)
-setInterval(() => {
-    decrementPetStats();
-}, 6000); // Runs every minute/10
 
 // Adoption route
 app.get('/adopt', async (req, res) => {
