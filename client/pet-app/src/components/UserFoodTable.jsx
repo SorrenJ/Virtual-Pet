@@ -2,20 +2,9 @@ import React from 'react';
 
 const UserFoodTable = ({ userFood, feedPet, selectedPet }) => {
     
-    console.log('UserFoodTable received userFood:', userFood);
-    console.log('UserFoodTable received selectedPet:', selectedPet);
-    
-    const handleFeedPet = (petId, foodId) => {
-        if (!petId || !foodId) {
-            console.error('Missing petId or foodId');
-            return;
-        }
-        feedPet(petId, foodId);
-    };
-
     return (
         <div className="user-data" id="userFoodTable">
-               <h2>User Food Data</h2>
+            <h2>User Food Data</h2>
                 <table>
                     <thead>
                         <tr>
