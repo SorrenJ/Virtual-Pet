@@ -46,7 +46,7 @@ const decrementPetStats = async () => {
 // Move setInterval outside to ensure stats decrement independently every 5 minutes (or any suitable interval)
 setInterval(() => {
     decrementPetStats();
-}, 60000); // 5 minutes
+}, 60000); // 60 seconds
 // Get home data including pets and inventory
 router.get('/', async (req, res) => {
     const userId = 1; // Hardcoded user ID for now
