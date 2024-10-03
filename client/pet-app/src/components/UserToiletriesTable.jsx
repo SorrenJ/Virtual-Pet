@@ -5,7 +5,7 @@ const UserToiletriesTable = ({ userToiletries, cleanPet, selectedPet }) => {
     
   return (
     <div className="user-data" id="userToiletriesTable">
-<h2>Toiletries</h2>
+<h3>Toiletries</h3>
                 <table>
                     <thead>
                         <tr>

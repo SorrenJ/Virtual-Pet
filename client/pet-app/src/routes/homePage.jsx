@@ -3,8 +3,10 @@ import { useParams, useLocation } from 'react-router-dom';
 import UserToysTable from '../components/UserToysTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserFoodTable from '../components/UserFoodTable';
-
+import MathGame from '../components/mathGame'; // Import the MathGame component
 const HomePage = () => {
+    const [playGame, setPlayGame] = useState(false); // State to control game visibility
+    
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null);
     const [userFood, setUserFood] = useState([]); // To store user food data
@@ -242,6 +244,10 @@ const HomePage = () => {
                         selectedPet={selectedPet}
                 />}  
             </div>
+            <button onClick={() => setPlayGame(!playGame)}>
+          {playGame ? 'Cancel Game' : 'Play Math Game'}
+        </button>
+        
         </div>
     );
 };

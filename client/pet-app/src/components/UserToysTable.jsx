@@ -3,7 +3,7 @@ import React from 'react';
 const UserToysTable = ({ userToys, playWithPet, selectedPet }) => {
   return (
     <div className="user-data" id="userToysTable">
-      <h2>Toys</h2>
+      <h3>Toys</h3>
                 <table>
                     <thead>
                     <tr>

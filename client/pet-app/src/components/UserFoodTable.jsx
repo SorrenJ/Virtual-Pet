@@ -4,7 +4,7 @@ const UserFoodTable = ({ userFood, feedPet, selectedPet }) => {
     
     return (
         <div className="user-data" id="userFoodTable">
-            <h2>Treats</h2>
+            <h3>Treats</h3>
                 <table>
                     <thead>
                         <tr>
