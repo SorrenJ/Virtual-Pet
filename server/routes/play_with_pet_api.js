@@ -30,14 +30,14 @@ router.post('/', async (req, res) => {
            SELECT t.id AS toyId, t.effects AS effect, ut.count 
            FROM toys t
            JOIN user_toys ut ON t.id = ut.item_type_id
-           WHERE ut.user_id = $1 AND ut.item_type_id = $2;
+           WHERE ut.user_id = $1 AND ut.id = $2;
         `;
         const toyResult = await pool.query(toyQuery, [userId, toyId]);
 
         if (toyResult.rows.length === 0) {
             return res.status(400).json({ error: 'Toy not found or not enough count' });
         }
-
+console.log("toy object", toyResult.rows);
         const { effect, count } = toyResult.rows[0];
 
         if (count <= 0) {
@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
         const decreaseToyCountQuery = `
            UPDATE user_toys
            SET count = count - 1
-           WHERE user_id = $1 AND item_type_id = $2;
+           WHERE user_id = $1 AND id = $2;
         `;
         await pool.query(decreaseToyCountQuery, [userId, toyId]);
 
