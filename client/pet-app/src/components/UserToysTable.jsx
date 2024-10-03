@@ -3,10 +3,10 @@ import React from 'react';
 const UserToysTable = ({ userToys, playWithPet, selectedPet }) => {
   return (
     <div className="user-data" id="userToysTable">
-      <h2>User Toys Data</h2>
-      <table>
-        <thead>
-          <tr>
+      <h2>User Toy Data</h2>
+                <table>
+                    <thead>
+                    <tr>
             <th>Toy Name</th>
             <th>Count</th>
             <th>Action</th>
@@ -14,7 +14,7 @@ const UserToysTable = ({ userToys, playWithPet, selectedPet }) => {
         </thead>
         <tbody>
           {userToys.map((item) => (
-            <tr key={item.item_type_id}>
+            <tr key={item.item_type_id || item.id}>
               <td>
                 <img src={item.toyImage} alt={item.toys_name} width="100" />
               </td>
@@ -22,16 +22,16 @@ const UserToysTable = ({ userToys, playWithPet, selectedPet }) => {
               <td>{item.count}</td>
               <td>
                 <button
-                  onClick={() => playWithPet(selectedPet.pet_id, item.item_type_id)}
+                  onClick={() => playWithPet(selectedPet.pet_id, item.id)}
                   disabled={item.count <= 0}
                 >
                   Play
                 </button>
               </td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+                        ))}
+                    </tbody>
+                </table>
     </div>
   );
 };
