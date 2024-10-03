@@ -120,7 +120,7 @@ const FeedPetPage = () => {
                     <tbody>
                         {userFood.map((item) => (
                             <tr key={item.item_type_id || item.id}>
-                                <td><img src={item.food_image} alt={item.food_name} width="100" /></td>
+                                <td><img src={item.foodImage} alt={item.food_name} width="100" /></td>
                                 <td>{item.food_name}</td>
                                 <td>{item.count}</td>
                                 <td>
