@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
            SELECT t.id AS toiletriesId, effects AS effect, ut.count 
            FROM toiletries t
            JOIN user_toiletries ut ON t.id = ut.item_type_id
-           WHERE ut.user_id = $1 AND ut.item_type_id = $2;
+           WHERE ut.user_id = $1 AND ut.id = $2;
         `;
         const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId]);
 
@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
         const decreaseToiletryCountQuery = `
             UPDATE user_toiletries
             SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2;
+            WHERE user_id = $1 AND id = $2;
         `;
         await pool.query(decreaseToiletryCountQuery, [userId, toiletriesId]);
 
