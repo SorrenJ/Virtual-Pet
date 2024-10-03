@@ -135,14 +135,14 @@ router.get('/', async (req, res) => {
         `, [userId]);
 
         const userToiletries = await pool.query(`
-            SELECT ut.count, t.name AS toiletries_name, t.toiletry_image AS "toiletryImage"
+            SELECT ut.count, ut.item_type_id, ut.id, t.name AS toiletries_name, t.toiletry_image AS "toiletryImage"
             FROM user_toiletries ut
             JOIN toiletries t ON ut.item_type_id = t.id
             WHERE ut.user_id = $1
         `, [userId]);
 
         const userToys = await pool.query(`
-            SELECT ut.count, ty.name AS toys_name, ty.toy_image AS "toyImage"
+            SELECT ut.count, ut.item_type_id, ut.id, ty.name AS toys_name, ty.toy_image AS "toyImage"
             FROM user_toys ut
             JOIN toys ty ON ut.item_type_id = ty.id
             WHERE ut.user_id = $1

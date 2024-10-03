@@ -3,15 +3,16 @@ import React, { useState, useEffect } from 'react';
 const CleanPetPage= () => {
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null);
-    const [userFood, setUserFood] = useState([]); // To store user food data
-    const [foodCount, setFoodCount] = useState(0); // To store food count
+    const [userToiletries, setUserToiletries] = useState([]);
+    const [toiletriesCount, setToiletriesCount] = useState(0);
+ 
 
     // Fetch data when the component is mounted
     useEffect(() => {
         fetchData();
     }, []);
 
-    // Fetch data for pets and user food
+    // Fetch data for pets and user toiletry
     const fetchData = async () => {
         try {
             const response = await fetch(`/api/home?selectedPetId=${selectedPet?selectedPet.pet_id:1}`);
@@ -19,29 +20,29 @@ const CleanPetPage= () => {
 
             setPets(data.pets || []);
             setSelectedPet(data.selectedPet || null);
-            setFoodCount(data.foodCount || 0);
-            setUserFood(data.userFood || []);
+            setToiletriesCount(data.toiletriesCount || 0);
+            setUserToiletries(data.userToiletries || []);
 
-            console.log('Fetched userFood data in HomePage:', data.userFood);
+            console.log('Fetched userToiletriesdata in HomePage:', data.userToiletries);
         } catch (error) {
             console.error('Error fetching home data:', error);
         }
     };
 
     // Function to handle feeding the pet
-    const feedPet = async (petId, foodId) => {
+    const cleanPet = async (petId, toiletriesId, toiletriesImage) => {
         try {
-            console.log('Feeding pet:', petId, 'with food:', foodId);  // Debug
-            if (!petId || !foodId) {
-                throw new Error('Missing petId or foodId');
+            console.log('Feeding pet:', petId, 'with toiletry:', toiletriesId);  // Debug
+            if (!petId || !toiletriesId) {
+                throw new Error('Missing petId or toiletriesId');
             }
 
-            const response = await fetch('/api/feed-pet', {
+            const response = await fetch('/api/clean-pet', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ petId, foodId }),
+                body: JSON.stringify({ petId, toiletriesId, toiletriesImage }),
             });
 
             if (!response.ok) {
@@ -63,7 +64,7 @@ const CleanPetPage= () => {
 
     return (
         <div>
-            <h3>Pet Feeding Test Page</h3>
+            <h3>Pet Cleaning Test Page</h3>
 
             {/* Display the pet details */}
             {pets.length > 0 ? (
@@ -105,30 +106,30 @@ const CleanPetPage= () => {
                 <p>No pets available at the moment.</p>
             )}
 
-            {/* Display the user's food inventory */}
+            {/* Display the user's toiletry inventory */}
             <div className="inventory" id="inventoryTable">
-                <h2>User Food Data</h2>
+                <h2>User Toiletries Data</h2>
                 <table>
                     <thead>
                         <tr>
-                            <th>Food Image</th>
-                            <th>Food Name</th>
+                            <th>Item Image</th>
+                            <th>Item Name</th>
                             <th>Count</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {userFood.map((item) => (
+                        {userToiletries.map((item) => (
                             <tr key={item.item_type_id || item.id}>
-                                <td><img src={item.food_image} alt={item.food_name} width="100" /></td>
-                                <td>{item.food_name}</td>
+                                <td><img src={item.toiletryImage} alt={item.toiletries_name} width="100" /></td>
+                                <td>{item.toiletries_name}</td>
                                 <td>{item.count}</td>
                                 <td>
                                     <button
-                                        onClick={() => feedPet(selectedPet?.pet_id, item.id)}
+                                        onClick={() => cleanPet(selectedPet?.pet_id, item.id)}
                                         disabled={item.count <= 0}
                                     >
-                                        Feed
+                                        Clean
                                     </button>
                                 </td>
                             </tr>

@@ -7,8 +7,8 @@ router.use(bodyParser.json());
 router.use(cors());
 
 
-router.post('/clean-pet', async (req, res) => {
-    const { petId, toiletriesId } = req.body; // Get petId and toiletriesId from the request body
+router.post('/', async (req, res) => {
+    const { petId, toiletriesId, toiletriesImage } = req.body; // Get petId and toiletriesId from the request body
     const userId = 1; // Use the actual userId from your session or request
 
     try {
@@ -22,12 +22,12 @@ router.post('/clean-pet', async (req, res) => {
 
         // Get the toiletries' effect value and count
         const toiletriesQuery = `
-           SELECT effects AS effect, ut.count 
+           SELECT t.id AS toiletriesId, effects AS effect, ut.count 
            FROM toiletries t
            JOIN user_toiletries ut ON t.id = ut.item_type_id
            WHERE ut.user_id = $1 AND ut.item_type_id = $2;
         `;
-        const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId]);
+        const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId, toiletriesImage]);
 
         if (toiletriesResult.rows.length === 0) {
             return res.status(400).json({ error: 'Toiletry not found or not enough count' });
