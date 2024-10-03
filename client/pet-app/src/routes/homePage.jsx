@@ -147,6 +147,13 @@ const HomePage = () => {
 
     return (
         <div>
+   <div className="links">
+        <h3>Explore More:</h3>
+        <a href="/">Go home</a>
+        <a href="/adopt">Adopt a Pet</a>
+        <a href="/shop">Visit the Shop</a>  
+      </div>
+
             {/* Display the pet details */}
             {pets.length > 0 ? (
                 <>
@@ -195,22 +202,23 @@ const HomePage = () => {
 
             {/* Button to toggle Component One */}
             <div>
+            <h2>Inventory</h2>
                 <button 
                     onClick={() => setVisibleComponent(1)} 
                     disabled={visibleComponent === 1}>
-                    Feed Pet
+                    Pet Treats
                 </button>
 
                 <button 
                     onClick={() => setVisibleComponent(2)} 
                     disabled={visibleComponent === 2}>
-                    Clean Pet
+                    Pet Toiletries
                 </button>
 
                 <button 
                     onClick={() => setVisibleComponent(3)} 
                     disabled={visibleComponent === 3}>
-                   Give Toy
+                   Pet Toys
                 </button>
             </div>
 
