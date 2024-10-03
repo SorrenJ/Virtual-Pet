@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import UserFoodTable from '../components/UserFoodTable'; 
 import UserToiletriesTable from '../components/UserToiletriesTable'; 
+import UserToysTable from '../components/UserToysTable'; 
 
 const HomeTesterPage = () => {
     const [pets, setPets] = useState([]); // To store all pets and their stats
@@ -9,7 +10,8 @@ const HomeTesterPage = () => {
     const [foodCount, setFoodCount] = useState(0); // To store food count
     const [userToiletries, setUserToiletries] = useState([]);
     const [toiletriesCount, setToiletriesCount] = useState(0);
-   
+    const [userToys, setUserToys] = useState([]);
+    const [toysCount, setToysCount] = useState(0);
     const [visibleComponent, setVisibleComponent] = useState(null); // To handle component visibility
 
     // Fetch data when the component is mounted
@@ -30,6 +32,11 @@ const HomeTesterPage = () => {
 
             setToiletriesCount(data.toiletriesCount || 0);
             setUserToiletries(data.userToiletries || []);
+
+
+            setToysCount(data.toysCount || 0);
+            setUserToys(data.userToys || []);
+
 
             console.log('Fetched userFood data in HomePage:', data.userFood);
         } catch (error) {
@@ -104,6 +111,38 @@ const HomeTesterPage = () => {
         }
     };
 
+ // Function to handle feeding the pet
+ const playWithPet = async (petId, toyId) => {
+    try {
+        console.log('Playing pet:', petId, 'with toy:', toyId);  // Debug
+        if (!petId || !toyId) {
+            throw new Error('Missing petId or toyId');
+        }
+
+        const response = await fetch('/api/play-with-pet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ petId, toyId }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error response:', errorData);  // Log the error response
+            alert(`Error: ${errorData.error}`);
+            return;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Pet play successfully!');
+            fetchData(); // Fetch updated data
+        }
+    } catch (error) {
+        console.error('Error playing pet:', error);
+    }
+};
 
     return (
         <div>
@@ -159,6 +198,12 @@ const HomeTesterPage = () => {
                     disabled={visibleComponent === 2}>
                     Show Component Two
                 </button>
+
+                <button 
+                    onClick={() => setVisibleComponent(3)} 
+                    disabled={visibleComponent === 3}>
+                    Show Component Two
+                </button>
             </div>
 
             {/* Render UserFoodTable if visibleComponent is 1 */}
@@ -175,6 +220,11 @@ const HomeTesterPage = () => {
                         selectedPet={selectedPet}
                 />}            
                 
+                {visibleComponent === 3 && <UserToysTable
+                        userToys={userToys} 
+                        playWithPet={playWithPet} 
+                        selectedPet={selectedPet}
+                />}  
             </div>
         </div>
     );

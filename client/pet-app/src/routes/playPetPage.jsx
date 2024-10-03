@@ -126,7 +126,7 @@ const PlayPetPage = () => {
               <td>{item.count}</td>
               <td>
                 <button
-                  onClick={() => playWithPet(selectedPet.pet_id, item.id)}
+                  onClick={() => playWithPet(selectedPet?.pet_id, item.id)}
                   disabled={item.count <= 0}
                 >
                   Play
