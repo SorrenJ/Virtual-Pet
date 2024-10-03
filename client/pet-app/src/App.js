@@ -6,6 +6,7 @@ import AdoptPage from './routes/adoptPage'; // Default adopt page
 import FeedPetPage from './routes/feedPetPage'; 
 import PlayPetPage from './routes/playPetPage'; 
 import CleanPetPage from './routes/cleanPetPage'; 
+import HomeTesterPage from './routes/homeTesterPage'; 
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/playPet" element={<PlayPetPage />} />
             <Route path="/feedPet" element={<FeedPetPage />} />
             <Route path="/cleanPet" element={<CleanPetPage />} />
+            <Route path="/homeTester" element={<HomeTesterPage />} />
           </Routes>
         </header>
       </div>
