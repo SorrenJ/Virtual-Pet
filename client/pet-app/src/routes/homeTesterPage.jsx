@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import UserFoodTable from '../components/UserFoodTable'; 
+import UserToiletriesTable from '../components/UserToiletriesTable'; 
 
 const HomeTesterPage = () => {
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null);
     const [userFood, setUserFood] = useState([]); // To store user food data
     const [foodCount, setFoodCount] = useState(0); // To store food count
+    const [userToiletries, setUserToiletries] = useState([]);
+    const [toiletriesCount, setToiletriesCount] = useState(0);
+   
     const [visibleComponent, setVisibleComponent] = useState(null); // To handle component visibility
 
     // Fetch data when the component is mounted
@@ -23,6 +27,9 @@ const HomeTesterPage = () => {
             setSelectedPet(data.selectedPet || null);
             setFoodCount(data.foodCount || 0);
             setUserFood(data.userFood || []);
+
+            setToiletriesCount(data.toiletriesCount || 0);
+            setUserToiletries(data.userToiletries || []);
 
             console.log('Fetched userFood data in HomePage:', data.userFood);
         } catch (error) {
@@ -62,6 +69,41 @@ const HomeTesterPage = () => {
             console.error('Error feeding pet:', error);
         }
     };
+
+
+     // Function to handle feeding the pet
+     const cleanPet = async (petId, toiletriesId) => {
+        try {
+            console.log('Feeding pet:', petId, 'with toiletry:', toiletriesId);  // Debug
+            if (!petId || !toiletriesId) {
+                throw new Error('Missing petId or toiletriesId');
+            }
+
+            const response = await fetch('/api/clean-pet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ petId, toiletriesId}),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);  // Log the error response
+                alert(`Error: ${errorData.error}`);
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                alert('Pet fed successfully!');
+                fetchData(); // Fetch updated data
+            }
+        } catch (error) {
+            console.error('Error feeding pet:', error);
+        }
+    };
+
 
     return (
         <div>
@@ -111,6 +153,12 @@ const HomeTesterPage = () => {
                     disabled={visibleComponent === 1}>
                     Show Component One
                 </button>
+
+                <button 
+                    onClick={() => setVisibleComponent(2)} 
+                    disabled={visibleComponent === 2}>
+                    Show Component Two
+                </button>
             </div>
 
             {/* Render UserFoodTable if visibleComponent is 1 */}
@@ -120,6 +168,13 @@ const HomeTesterPage = () => {
                         feedPet={feedPet} 
                         selectedPet={selectedPet}
                 />}
+
+                {visibleComponent === 2 && <UserToiletriesTable 
+                        userToiletries={userToiletries} 
+                        cleanPet={cleanPet} 
+                        selectedPet={selectedPet}
+                />}            
+                
             </div>
         </div>
     );
