@@ -1,111 +1,76 @@
 const express = require("express");
-const app = express();
 const cors = require("cors");
-require('dotenv').config();
-const pool = require('./db/db'); // Import the pool from db/db.js
+const app = express();
+const bodyParser = require('body-parser');
+require('dotenv').config(); // Load environment variables from the .env file
 
+// Import the pool from db.js to handle PostgreSQL queries
+const pool = require('./db/db'); 
+app.use(bodyParser.json());
 // Middleware
-app.use(cors({
-  origin: 'http://localhost:3000' // Allow only this origin
-}));
-app.use(express.json()); // Add this line to parse JSON bodies
 
-// Serve static files from the "db" directory
+// Enable CORS to allow requests from localhost:3000 (your React frontend)
+app.use(cors({
+  origin: 'http://localhost:3000' // Allow only the React app to make requests
+}));
+
+// Parse incoming JSON requests
+app.use(express.json());
+
+// Serve static files from the "db" directory (if needed)
 app.use('/db', express.static('db'));
 
-// Set up EJS as the templating engine
+// Set up EJS as the templating engine (if needed)
 app.set('view engine', 'ejs');
 
-app.listen(5000, () => {
-    console.log("Server started on port 5000");
+
+
+// Create a router
+const router = express.Router();
+
+// Middleware to be applied to all routes
+router.use((req, res, next) => {
+    console.log(`Request URL: ${req.originalUrl}, Request Method: ${req.method}`);
+    next(); // Continue to the next middleware or route handler
 });
 
 // Routes
-const convertScoreRoutes = require('./routes/convert-score')
+
+// Importing routes from separate files
+const convertScoreRoutes = require('./routes/convert-score');
+const petApiRoute = require('./routes/pet_api');
+const speciesApiRoute = require('./routes/species_api');
+const homeApiRoute = require('./routes/home_api');
+const cleanApiRoute = require('./routes/clean_pet_api');
+const feedApiRoute = require('./routes/feed_pet_api');
+const playApiRoute = require('./routes/play_with_pet_api');
+const itemApiRoute = require('./routes/inventory_api');
+const statsApiRoute = require('./routes/pets_stats_api');
+
+// Register routes
 app.use('/api/convert-score', convertScoreRoutes);
-
-const petApiRoute = require('./routes/pet_api')
 app.use('/api/pets', petApiRoute);
+app.use('/api/species', speciesApiRoute);
+app.use('/api/home', homeApiRoute);
+app.use('/api/clean-pet', cleanApiRoute);
+app.use('/api/feed-pet', feedApiRoute);
+app.use('/api/play-with-pet', playApiRoute);
+app.use('/api/inventory', itemApiRoute);
+app.use('/api/pets-stats', statsApiRoute);
 
-const speciesApiRoute = require('./routes/species_api')
-app.use('/api/species', speciesApiRoute)
 
+// Use the router in the app
+app.use(router);
 
-
-
-// New route to fetch latest pet stats
-app.get('/api/pets-stats', async (req, res) => {
-    const userId = 1; // Hardcoded user ID for now
-    try {
-        // Query to fetch updated pet stats
-        const petStatsQuery = `
-        SELECT 
-          p.id AS pet_id, 
-          p.energy, 
-          p.happiness, 
-          p.hunger, 
-          p.cleanliness
-        FROM pets p
-        WHERE p.user_id = $1
-        `;
-        const result = await pool.query(petStatsQuery, [userId]);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching pet stats:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
+// Start the server on port 5000
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
 
 
 
 
-
-// Function to decrement pet stats
-const decrementPetStats = async () => {
-    try {
-        // Query to fetch all pets with their current stats and personality decay rates
-        const query = `
-        SELECT p.id AS pet_id, p.energy, p.happiness, p.hunger, p.cleanliness, 
-               per.energy_decay, per.happiness_decay, per.hunger_decay, per.cleanliness_decay
-        FROM pets p
-        JOIN personalities per ON p.personality_id = per.id
-        `;
-        const result = await pool.query(query);
-        const pets = result.rows;
-
-        // Loop through each pet and apply the decrements
-        for (const pet of pets) {
-            const newEnergy = Math.max(Math.floor(pet.energy - pet.energy_decay), 0);
-            const newHappiness = Math.max(Math.floor(pet.happiness - pet.happiness_decay), 0);
-            const newHunger = Math.max(Math.floor(pet.hunger - pet.hunger_decay), 0);
-            const newCleanliness = Math.max(Math.floor(pet.cleanliness - pet.cleanliness_decay), 0);
-
-  // Log old and new stats
-  console.log(`Pet ID: ${pet.pet_id}`);
-  console.log(`Old Energy: ${pet.energy}, New Energy: ${newEnergy}`);
-  console.log(`Old Happiness: ${pet.happiness}, New Happiness: ${newHappiness}`);
-  console.log(`Old Hunger: ${pet.hunger}, New Hunger: ${newHunger}`);
-  console.log(`Old Cleanliness: ${pet.cleanliness}, New Cleanliness: ${newCleanliness}`);
-
-            // Update the pet stats in the database
-            const updateQuery = `
-            UPDATE pets 
-            SET energy = $1, happiness = $2, hunger = $3, cleanliness = $4
-            WHERE id = $5
-            `;
-            await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
-            console.log(`Updated stats for Pet ID: ${pet.pet_id}`);
-        }
-        console.log('Pet stats updated successfully.');
-    } catch (error) {
-        console.error('Error decrementing pet stats:', error);
-    }
-};
-
-// Run the decrement function every 60 seconds (1 minute)
-setInterval(() => {
-    decrementPetStats();
-}, 6000); // Runs every minute/10
 
 // Adoption route
 app.get('/adopt', async (req, res) => {
@@ -382,346 +347,11 @@ app.get('/all_tables', async (req, res) => {
   
 
 
-app.get('/home', async (req, res) => {
-    const userId = 1; // Hardcoded user ID for now
-    console.log(`Current User ID in /home route: ${userId}`); // Add logging here
-    const selectedPetId = req.query.selectedPetId;
-  
-    try {
-     
 
-     
-        // Query to get pets with their sprite and species details
-      const petQuery = `
-      SELECT 
-        -- From pets table
-        p.id AS pet_id, 
-        p.user_id, 
-        p.species_id, 
-        p.name AS pet_name, 
-        p.age, 
-        p.adopted_at, 
-        p.sprite_id, 
-        p.mood_id, 
-        p.color_id, 
-        p.personality_id, 
-        p.update_time, 
-        p.energy, 
-        p.happiness, 
-        p.hunger, 
-        p.cleanliness,
-    
-        -- From species table
-        s.species_name, 
-        s.hunger_mod, 
-        s.happy_mod, 
-        s.energy_mod, 
-        s.clean_mod, 
-        s.lifespan, 
-        s.diet_type, 
-        s.diet_desc, 
-        s.image AS species_image,
-    
-        -- From users table
-        u.name AS user_name, 
-        u.email,
-    
-        -- From sprites table
-        sp.image_url AS pet_image,
-    
-        -- From moods table
-        m.mood_name, 
-    
-        -- From colors table
-        c.color_name,
-    
-        -- From personalities table
-        per.personality_name
-    
-      FROM pets p
-      JOIN species s ON p.species_id = s.id
-      JOIN users u ON p.user_id = u.id
-      JOIN sprites sp ON p.sprite_id = sp.id  -- Fetch image_url from sprites
-      JOIN moods m ON p.mood_id = m.id  -- Fetch mood from moods table
-      JOIN colors c ON p.color_id = c.id  -- Fetch color from colors table
-      JOIN personalities per ON p.personality_id = per.id  -- Fetch personality from personalities table
-      WHERE p.user_id = $1
-      ORDER BY p.name;
-    `;
-    
-      
-      const pets = await pool.query(petQuery, [userId]);
-  
-      // If no pets are found, handle that case
-      if (pets.rows.length === 0) {
-        return res.render('home', { pets: [], selectedPet: null });
-      }
-  
-      // Find the selected pet or default to the first pet
-      const selectedPet = selectedPetId
-      ? pets.rows.find(pet => pet.pet_id === parseInt(selectedPetId))
-      : pets.rows[0];
-
-  if (!selectedPet) {
-      return res.status(404).send('Pet not found');
-  }
-
-
-    
-       console.log('Selected Pet:', selectedPet );
-      
-      // Query to get inventory data for the user
-      const inventoryQuery = `
-        SELECT * FROM inventory WHERE user_id = $1
-      `;
-      const inventory = await pool.query(inventoryQuery, [userId]);
-  
-      // Queries to get counts from views for the user
-      const userFoodCountQuery = `
-        SELECT food_count FROM user_food_count WHERE user_id = $1
-      `;
-      const userToiletriesCountQuery = `
-        SELECT toiletry_count FROM user_toiletries_count WHERE user_id = $1
-      `;
-      const userToysCountQuery = `
-        SELECT toy_count FROM user_toy_count WHERE user_id = $1
-      `;
-  
-      const userFoodCount = await pool.query(userFoodCountQuery, [userId]);
-      const userToiletriesCount = await pool.query(userToiletriesCountQuery, [userId]);
-      const userToysCount = await pool.query(userToysCountQuery, [userId]);
-  
-      // Extract counts or default to 0
-      const foodCount = userFoodCount.rows[0] ? userFoodCount.rows[0].food_count : 0;
-      const toiletriesCount = userToiletriesCount.rows[0] ? userToiletriesCount.rows[0].toiletry_count : 0;
-      const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
-  
-      // Queries to get user_toys, user_toiletries, and user_foodss for the user with names
-      const userFood = await pool.query(`
-        SELECT uf.count, uf.user_id, uf.inventory_id, 
-               f.id AS item_type_id, f.name AS food_name, f.food_image AS "foodImage"
-        FROM user_foods uf
-        JOIN foods f ON uf.item_type_id = f.id
-        WHERE uf.user_id = $1
-      `, [userId]);
-      
-      console.log(userFood.rows); // LOG this to check if foodImage is fetched
-  
-      const userToiletries = await pool.query(`
-        SELECT ut.count, ut.user_id, ut.inventory_id, t.id AS item_type_id, t.name AS toiletries_name, t.toiletry_image AS "toiletryImage"
-        FROM user_toiletries ut
-        JOIN toiletries t ON ut.item_type_id = t.id
-        WHERE ut.user_id = $1
-      `, [userId]);
-  
-      const userToys = await pool.query(`
-        SELECT ut.count, ut.user_id, ut.inventory_id, ty.id AS item_type_id, ty.name AS toys_name, ty.toy_image AS "toyImage"
-        FROM user_toys ut
-        JOIN toys ty ON ut.item_type_id = ty.id
-        WHERE ut.user_id = $1
-      `, [userId]);
-  
-      // Render the EJS template for the home page
-      res.render('home', {
-        pets: pets.rows, // List of pets
-        selectedPet, // Pass the correct selected pet
-        inventory: inventory.rows, // Inventory data
-        foodCount,
-        toiletriesCount,
-        toysCount,
-        userFood: userFood.rows,
-        userToiletries: userToiletries.rows,
-        userToys: userToys.rows,
-        petId: selectedPet.pet_id // Pass the selected petId explicitly
-
-      });
-         // Decrement pet stats before fetching updated data
-         await decrementPetStats();
-     
-    } catch (error) {
-      console.error('Error executing query', error.stack);
-      res.status(500).send('Internal Server Error');
-    }
-  });
  
 
-  app.post('/feed-pet', async (req, res) => {
-    const { petId, foodId } = req.body; // Get petId and foodId from the request body
-    const userId = 1; // Use the actual userId from your session or request
-    console.log(`Feeding pet. User ID: ${userId}, Pet ID: ${petId}, Food ID: ${foodId}`); // Log these values
-
-    try {
-        // Ensure pet's hunger is initialized to 100 if it's currently NULL
-        const hungerFixQuery = `
-            UPDATE pets
-            SET hunger = 100
-            WHERE id = $1 AND hunger IS NULL;
-        `;
-        await pool.query(hungerFixQuery, [petId]);
-
-        // Get the food's effect value, count, and pet's current hunger
-        const foodQuery = `
-           SELECT f.id AS foodId, f.effects AS effect, uf.count, p.hunger
-           FROM foods f
-           JOIN user_foods uf ON f.id = uf.item_type_id
-           JOIN pets p ON p.id = $3
-           WHERE uf.user_id = $1 AND uf.item_type_id = $2;
-        `;
-        const foodResult = await pool.query(foodQuery, [userId, foodId, petId]);
-
-        // Log the query result to check what's being returned
-        console.log('Food Query Result:', foodResult.rows);
-
-        if (foodResult.rows.length === 0) {
-            console.log(`No food found for user ${userId} or food count is zero.`);
-            return res.status(400).json({ error: 'Food not found or not enough count' });
-        }
-
-        let { effect, count, hunger } = foodResult.rows[0];
-
-        // Ensure effect and hunger are valid numbers (fallback to 0 if not)
-        effect = effect || 0;
-        hunger = hunger || 0;
-
-        if (count <= 0) {
-            return res.status(400).json({ error: 'No food left to feed' });
-        }
-
-        // Update the pet's hunger by adding the food's effect, ensuring hunger doesn't exceed 200
-        const newHunger = Math.min(hunger + effect, 200); // Adjust max hunger to 200
-
-        const updateHungerQuery = `
-           UPDATE pets
-           SET hunger = $1
-           WHERE id = $2;
-       `;
-        await pool.query(updateHungerQuery, [newHunger, petId]);
-
-        // Decrease the food count in user_foods
-        const decreaseFoodCountQuery = `
-            UPDATE user_foods
-            SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2;
-        `;
-        await pool.query(decreaseFoodCountQuery, [userId, foodId]);
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error feeding pet:', error.stack);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-
-app.post('/clean-pet', async (req, res) => {
-    const { petId, toiletriesId } = req.body; // Get petId and toiletriesId from the request body
-    const userId = 1; // Use the actual userId from your session or request
-
-    try {
-        // First, update any pets with NULL cleanliness to 100 (cleanliness fix)
-        const cleanlinessFixQuery = `
-            UPDATE pets
-            SET cleanliness = 100
-            WHERE id = $1 AND cleanliness IS NULL;
-        `;
-        await pool.query(cleanlinessFixQuery, [petId]);
-
-        // Get the toiletries' effect value and count
-        const toiletriesQuery = `
-           SELECT effects AS effect, ut.count 
-           FROM toiletries t
-           JOIN user_toiletries ut ON t.id = ut.item_type_id
-           WHERE ut.user_id = $1 AND ut.item_type_id = $2
-        `;
-        const toiletriesResult = await pool.query(toiletriesQuery, [userId, toiletriesId]);
-
-        if (toiletriesResult.rows.length === 0) {
-            return res.status(400).json({ error: 'Toiletry not found or not enough count' });
-        }
-
-        const { effect, count } = toiletriesResult.rows[0];
-
-        if (count <= 0) {
-            return res.status(400).json({ error: 'No toiletry left to use' });
-        }
-
-        // Update the pet's cleanliness using the toiletries' effect
-        const updateCleanlinessQuery = `
-            UPDATE pets
-            SET cleanliness = COALESCE(cleanliness, 0) + $1
-            WHERE id = $2;
-        `;
-        await pool.query(updateCleanlinessQuery, [effect, petId]);
-
-        // Decrease the toiletries count
-        const decreaseToiletryCountQuery = `
-            UPDATE user_toiletries
-            SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2;
-        `;
-        await pool.query(decreaseToiletryCountQuery, [userId, toiletriesId]);
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error cleaning pet:', error.stack);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-app.post('/play-with-pet', async (req, res) => {
-    const { petId, toyId } = req.body; // Get petId and toyId from the request body
-    const userId = 1; // Use the actual userId from your session or request
-
-    try {
-        // First, update the pet's happiness to a default value (e.g., 100) if it is NULL
-        const happinessFixQuery = `
-            UPDATE pets
-            SET happiness = 100
-            WHERE id = $1 AND happiness IS NULL;
-        `;
-        await pool.query(happinessFixQuery, [petId]);
-
-        // Get the toy's effect value and count
-        const toyQuery = `
-           SELECT t.effects AS effect, ut.count 
-           FROM toys t
-           JOIN user_toys ut ON t.id = ut.item_type_id
-           WHERE ut.user_id = $1 AND ut.item_type_id = $2;
-        `;
-        const toyResult = await pool.query(toyQuery, [userId, toyId]);
-        
-        if (toyResult.rows.length === 0) {
-            return res.status(400).json({ error: 'Toy not found or not enough count' });
-        }
-
-        const { effect, count } = toyResult.rows[0];
-
-        if (count <= 0) {
-            return res.status(400).json({ error: 'No toys left to play with' });
-        }
-
-        // Update the pet's happiness by adding the toy's effect
-        const updateHappinessQuery = `
-            UPDATE pets
-            SET happiness = happiness + $1
-            WHERE id = $2;
-        `;
-        await pool.query(updateHappinessQuery, [effect, petId]);
-
-        // Decrease the toy count
-        const decreaseToyCountQuery = `
-            UPDATE user_toys
-            SET count = count - 1
-            WHERE user_id = $1 AND item_type_id = $2;
-        `;
-        await pool.query(decreaseToyCountQuery, [userId, toyId]);
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error playing with pet:', error.stack);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+  
 
 // Convert score to money
+
+

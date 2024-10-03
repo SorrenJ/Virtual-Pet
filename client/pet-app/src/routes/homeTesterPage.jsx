@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import UserToysTable from '../components/UserToysTable';
-import UserToiletriesTable from '../components/UserToiletriesTable';
-import UserFoodTable from '../components/UserFoodTable';
-import MathGame from '../components/mathGame'; // Import the MathGame component
+import UserFoodTable from '../components/UserFoodTable'; 
+import UserToiletriesTable from '../components/UserToiletriesTable'; 
+import UserToysTable from '../components/UserToysTable'; 
 
-const HomePage = () => {
-    const [playGame, setPlayGame] = useState(false); // State to control game visibility
+const HomeTesterPage = () => {
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null);
     const [userFood, setUserFood] = useState([]); // To store user food data
@@ -18,23 +16,24 @@ const HomePage = () => {
 
     // Fetch data when the component is mounted
     useEffect(() => {
-        fetchData(); // Fetch data on component mount
+        fetchData();
 
         // Set up a periodic update for pet stats (every 60 seconds)
         const intervalId = setInterval(() => {
             fetchData(false);  // Call fetchData without resetting the selected pet
-        }, 60000); // 60 seconds
+        }, 6000); // 60 seconds
 
         // Cleanup the interval when the component unmounts
         return () => clearInterval(intervalId);
     }, []);
 
-    // Ensure selected pet is not reset unnecessarily when pets array changes
+    // UseEffect that tracks changes in the pets array and ensures the selectedPet is not reset unnecessarily
     useEffect(() => {
         if (!selectedPet && pets.length > 0) {
-            setSelectedPet(pets[0]); // Set the first pet only if selectedPet is null (first render case)
+            // Only set the first pet if selectedPet is null (first render case)
+            setSelectedPet(pets[0]);
         }
-    }, [pets]);
+    }, [pets]); // This effect only runs when pets array changes
 
     // Fetch data for pets and user food
     const fetchData = async (resetSelectedPet = true) => {
@@ -61,7 +60,8 @@ const HomePage = () => {
             setUserToiletries(data.userToiletries || []);
             setToysCount(data.toysCount || 0);
             setUserToys(data.userToys || []);
-
+            
+            console.log('Fetched userFood data in HomePage:', data.userFood);
         } catch (error) {
             console.error('Error fetching home data:', error);
         }
@@ -70,7 +70,7 @@ const HomePage = () => {
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
         try {
-            console.log('Feeding pet:', petId, 'with food:', foodId);
+            console.log('Feeding pet:', petId, 'with food:', foodId);  // Debug
             if (!petId || !foodId) {
                 throw new Error('Missing petId or foodId');
             }
@@ -85,7 +85,7 @@ const HomePage = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Error response:', errorData);
+                console.error('Error response:', errorData);  // Log the error response
                 alert(`Error: ${errorData.error}`);
                 return;
             }
@@ -103,7 +103,7 @@ const HomePage = () => {
     // Function to handle cleaning the pet
     const cleanPet = async (petId, toiletriesId) => {
         try {
-            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);
+            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);  // Debug
             if (!petId || !toiletriesId) {
                 throw new Error('Missing petId or toiletriesId');
             }
@@ -118,7 +118,7 @@ const HomePage = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Error response:', errorData);
+                console.error('Error response:', errorData);  // Log the error response
                 alert(`Error: ${errorData.error}`);
                 return;
             }
@@ -136,7 +136,7 @@ const HomePage = () => {
     // Function to handle playing with the pet
     const playWithPet = async (petId, toyId) => {
         try {
-            console.log('Playing with pet:', petId, 'with toy:', toyId);
+            console.log('Playing with pet:', petId, 'with toy:', toyId);  // Debug
             if (!petId || !toyId) {
                 throw new Error('Missing petId or toyId');
             }
@@ -151,7 +151,7 @@ const HomePage = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Error response:', errorData);
+                console.error('Error response:', errorData);  // Log the error response
                 alert(`Error: ${errorData.error}`);
                 return;
             }
@@ -168,13 +168,6 @@ const HomePage = () => {
 
     return (
         <div>
-            <div className="links">
-                <h3>Explore More:</h3>
-                <a href="/">Go home</a>
-                <a href="/adopt">Adopt a Pet</a>
-                <a href="/shop">Visit the Shop</a>
-            </div>
-
             {/* Display the pet details */}
             {pets.length > 0 ? (
                 <>
@@ -185,12 +178,16 @@ const HomePage = () => {
                         id="petSelector"
                         value={selectedPet?.pet_id || ''}
                         onChange={(e) => {
+                            console.log("Selected your pet");
                             const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
                             setSelectedPet(pet);
                         }}
                     >
                         {pets.map((pet) => (
-                            <option key={pet.pet_id} value={pet.pet_id}>
+                            <option
+                                key={pet.pet_id}
+                                value={pet.pet_id}
+                            >
                                 {pet.pet_name}
                             </option>
                         ))}
@@ -200,17 +197,10 @@ const HomePage = () => {
                         <div id="petDetails">
                             <h2>Meet {selectedPet.pet_name}</h2>
                             <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
-                            <br />
-                            <p>Current Mood: {selectedPet.mood_name}</p>
-                            <br />
                             <p>Energy: {selectedPet.energy}</p>
                             <p>Happiness: {selectedPet.happiness}</p>
                             <p>Hunger: {selectedPet.hunger}</p>
                             <p>Cleanliness: {selectedPet.cleanliness}</p>
-                            <br />
-                            <p>Species: {selectedPet.species_name}</p>
-                            <p>Diet: {selectedPet.diet_desc}</p>
-                            <p>Personality: {selectedPet.personality_name}</p>
                         </div>
                     )}
                 </>
@@ -220,38 +210,47 @@ const HomePage = () => {
 
             {/* Button to toggle Component One */}
             <div>
-                <h2>Inventory</h2>
-                <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>
-                    Pet Treats
+                <button 
+                    onClick={() => setVisibleComponent(1)} 
+                    disabled={visibleComponent === 1}>
+                    Show Component One
                 </button>
-                <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>
-                    Pet Toiletries
+
+                <button 
+                    onClick={() => setVisibleComponent(2)} 
+                    disabled={visibleComponent === 2}>
+                    Show Component Two
                 </button>
-                <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>
-                    Pet Toys
+
+                <button 
+                    onClick={() => setVisibleComponent(3)} 
+                    disabled={visibleComponent === 3}>
+                    Show Component Three
                 </button>
             </div>
 
             {/* Render UserFoodTable if visibleComponent is 1 */}
             <div style={{ marginTop: '20px' }}>
-                {visibleComponent === 1 && (
-                    <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />
-                )}
+                {visibleComponent === 1 && <UserFoodTable 
+                        userFood={userFood} 
+                        feedPet={feedPet} 
+                        selectedPet={selectedPet}
+                />}
 
-                {visibleComponent === 2 && (
-                    <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />
-                )}
-
-                {visibleComponent === 3 && (
-                    <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />
-                )}
+                {visibleComponent === 2 && <UserToiletriesTable 
+                        userToiletries={userToiletries} 
+                        cleanPet={cleanPet} 
+                        selectedPet={selectedPet}
+                />}            
+                
+                {visibleComponent === 3 && <UserToysTable
+                        userToys={userToys} 
+                        playWithPet={playWithPet} 
+                        selectedPet={selectedPet}
+                />}  
             </div>
-
-            <button onClick={() => setPlayGame(!playGame)}>
-                {playGame ? 'Cancel Game' : 'Play Math Game'}
-            </button>
         </div>
     );
 };
 
-export default HomePage;
+export default HomeTesterPage;
