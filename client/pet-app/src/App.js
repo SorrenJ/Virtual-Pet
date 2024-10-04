@@ -27,7 +27,7 @@ function App() {
             <Route path="/feedPet" element={<FeedPetPage />} />
             <Route path="/cleanPet" element={<CleanPetPage />} />
             <Route path="/homeTester" element={<HomeTesterPage />} />
-            <Route path="/petPage" element={<PetPage />} />
+            <Route path="/sprites" element={<PetPage />} />
           </Routes>
           </body>
       </div>
