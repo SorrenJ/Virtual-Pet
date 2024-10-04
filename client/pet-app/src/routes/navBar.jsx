@@ -16,6 +16,8 @@ const NavBar = () => {
   return (
     <nav>
       <ul>
+
+        <li>Beastly Bonds</li>
         <li>
           <Link to="/">Home</Link>
         </li>
