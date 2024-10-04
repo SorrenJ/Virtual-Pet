@@ -44,20 +44,27 @@ router.put('/update-image/:userId/:petId', async (req, res) => {
   const { mood_id } = req.body;
 
   try {
-    // Query to update mood_id and get the correct sprite_id from the sprites table
+    // Update mood_id and sprite_id
     await pool.query(
       'UPDATE pets SET mood_id = $1, sprite_id = (SELECT id FROM sprites WHERE species_id = pets.species_id AND color_id = pets.color_id AND mood_id = $1) WHERE id = $2 AND user_id = $3',
       [mood_id, petId, userId]
     );
 
-    // Optionally fetch and return updated pet data
-    const updatedPet = await pool.query('SELECT * FROM pets WHERE id = $1', [petId]);
+    // Fetch the updated pet to return the new image URL
+    const updatedPet = await pool.query(
+      `SELECT sprites.image_url AS pet_image_url 
+       FROM pets 
+       JOIN sprites ON pets.sprite_id = sprites.id 
+       WHERE pets.id = $1`,
+      [petId]
+    );
 
-    res.json(updatedPet.rows[0]);
+    res.json(updatedPet.rows[0]);  // Return the updated pet with the new image URL
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update pet mood and sprite' });
   }
 });
+
 
 module.exports = router;
