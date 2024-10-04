@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import updateImageAndMood from '../helper/updateImageAndMood';
+import updatePetMood from '../helper/petUpdateMood';
 import submitScore from '../helper/submitScore';
 
 const MathGame = ({ userId }) => {
@@ -7,17 +7,17 @@ const MathGame = ({ userId }) => {
   const [num2, setNum2] = useState(0);
   const [answer, setAnswer] = useState('');
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30); // Time limit of 30 seconds
+  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds for the game
   const [gameOver, setGameOver] = useState(false);
-  const [pets, setPets] = useState([]); // Store pets info
-  const [selectedPetId, setSelectedPetId] = useState(null); // Selected pet's ID
-  const [originalPetImage, setOriginalPetImage] = useState(''); // Original pet image
-  const [currentPetImage, setCurrentPetImage] = useState(''); // State for current pet image based on mood
-  const [moodId, setMoodId] = useState(0); // New state for mood ID
-  const [currentSpriteId, setCurrentSpriteId] = useState(0); // New state for the current sprite ID
-  const [lastAnswerCorrect, setLastAnswerCorrect] = useState(null); // State to track if last answer was correct
+  const [pets, setPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState(null);
+  const [originalPetImage, setOriginalPetImage] = useState(''); // Original image
+  const [currentPetImage, setCurrentPetImage] = useState(''); // Dynamic image
+  const [originalMoodId, setOriginalMoodId] = useState(0); // Original mood ID
+  const [moodId, setMoodId] = useState(0); // Dynamic mood ID
+  const [streak, setStreak] = useState(0); // Track correct answer streak
+  const [feedbackMessage, setFeedbackMessage] = useState(''); // UI feedback
 
-  // Fetch the user's pets on component mount
   useEffect(() => {
     const fetchPets = async () => {
       try {
@@ -26,13 +26,13 @@ const MathGame = ({ userId }) => {
         const petsData = await response.json();
         setPets(petsData);
 
-        // Default to first pet
         if (petsData.length > 0) {
-          setSelectedPetId(petsData[0].id);
-          setOriginalPetImage(petsData[0].pet_image_url);
-          setCurrentPetImage(petsData[0].pet_image_url); // Set initial current image
-          setMoodId(petsData[0].mood_id); // Initialize moodId
-          setCurrentSpriteId(petsData[0].sprite_id); // Set initial sprite ID
+          const firstPet = petsData[0];
+          setSelectedPetId(firstPet.id);
+          setOriginalPetImage(firstPet.pet_image_url);  // Save original image
+          setCurrentPetImage(firstPet.pet_image_url);
+          setOriginalMoodId(firstPet.mood_id);  // Save original mood
+          setMoodId(firstPet.mood_id);
         }
       } catch (error) {
         console.error('Error fetching pets:', error);
@@ -42,7 +42,6 @@ const MathGame = ({ userId }) => {
     fetchPets();
   }, [userId]);
 
-  // Generate a new math problem
   const generateProblem = () => {
     setNum1(Math.floor(Math.random() * 10) + 1);
     setNum2(Math.floor(Math.random() * 10) + 1);
@@ -50,87 +49,86 @@ const MathGame = ({ userId }) => {
   };
 
   useEffect(() => {
-    generateProblem(); // Generate initial problem
+    generateProblem();
 
+    // Set up timer
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
-        if (prevTime === 1) {
-          setGameOver(true);
+        if (prevTime <= 1) {
           clearInterval(timer);
+          setGameOver(true);
           return 0;
         }
-        return prevTime - 1;
+        return prevTime - 1; // Decrement by 1
       });
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup timer on unmount
-  }, []);
-
-  const handleAnswerChange = (e) => setAnswer(e.target.value);
+    // Cleanup function to revert the pet's mood and image when component unmounts (game is exited or closed)
+    return () => {
+      clearInterval(timer); // Clear the timer on cleanup
+      const revertMoodAndImageOnExit = async () => {
+        if (selectedPetId && originalMoodId) {
+          await updatePetMood(userId, selectedPetId, originalMoodId); // Revert to original mood
+          setCurrentPetImage(originalPetImage); // Revert to original image
+        }
+      };
+      revertMoodAndImageOnExit();
+    };
+  }, [selectedPetId, originalMoodId, originalPetImage, userId]);
 
   const checkAnswer = async () => {
     const correctAnswer = num1 + num2;
-    try {
-      let updatedPet;
-      if (parseInt(answer) === correctAnswer) {
-        setScore((prevScore) => prevScore + 1);
-        console.log(`Correct answer! Score: ${score + 1}`);
-        // Update selected pet's mood to happy (mood_id = 3)
-        updatedPet = await updateImageAndMood(userId, selectedPetId, 3);
-        setMoodId(3); // Update mood state
-        setCurrentPetImage(updatedPet.pet_image_url); // Update current image to happy
-        setLastAnswerCorrect(true); // Track that the last answer was correct
-      } else {
-        console.log(`Incorrect answer! Correct answer was: ${correctAnswer}`);
-        // Update selected pet's mood to angry (mood_id = 11)
-        updatedPet = await updateImageAndMood(userId, selectedPetId, 11);
-        setMoodId(11); // Update mood state
-        setCurrentPetImage(updatedPet.pet_image_url); // Update current image to angry
-        setLastAnswerCorrect(false); // Track that the last answer was incorrect
-      }
 
-      // Log updated pet data
-      console.log('Updated Pet:', updatedPet);
+    if (parseInt(answer) === correctAnswer) {
+      setScore((prevScore) => prevScore + 1);
+      setStreak((prevStreak) => prevStreak + 1);
+      setFeedbackMessage('Correct!');
 
-      // Update the pet in the state with the new image URL
-      setPets((prevPets) =>
-        prevPets.map((pet) =>
-          pet.id === updatedPet.id ? { ...pet, pet_image_url: updatedPet.pet_image_url } : pet
-        )
-      );
+      let newMoodId = 3;  // Happy mood by default
+      if (streak + 1 >= 3) newMoodId = 8;  // Mood change for streak (e.g., "wake")
 
-      generateProblem(); // Generate new problem
-      setAnswer('');
-    } catch (error) {
-      console.error('Error updating pet mood:', error);
+      const newImage = await updatePetMood(userId, selectedPetId, newMoodId);
+      setCurrentPetImage(newImage);
+      setMoodId(newMoodId);
+    } else {
+      setFeedbackMessage(`Wrong! The correct answer was ${correctAnswer}`);
+      setStreak(0);
+      const newImage = await updatePetMood(userId, selectedPetId, 11); // Angry mood
+      setCurrentPetImage(newImage);
+      setMoodId(11);
     }
+
+    generateProblem();
+    setAnswer('');
   };
 
-  const handleGameOver = () => {
-    // Revert selected pet's image back to original
-    setPets((prevPets) =>
-      prevPets.map((pet) =>
-        pet.id === selectedPetId ? { ...pet, pet_image_url: originalPetImage } : pet
-      )
-    );
+  // Handle Enter key press to submit the answer
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      checkAnswer();
+    }
   };
 
   useEffect(() => {
     if (gameOver) {
-      submitScore(userId, score); // Submit score when game is over
-      handleGameOver(); // Revert pet's image
-      console.log('Game over! Your score has been submitted:', score);
-    }
-  }, [gameOver, submitScore, userId, score, originalPetImage, selectedPetId]);
+      submitScore(userId, score);
 
-  // Find the selected pet
-  const selectedPet = pets.find(pet => pet.id === selectedPetId);
+      // Revert the pet's mood and image to its original state after the game
+      const revertMoodAndImage = async () => {
+        await updatePetMood(userId, selectedPetId, originalMoodId); // Revert to original mood
+        setCurrentPetImage(originalPetImage); // Revert to original image
+        setMoodId(originalMoodId); // Reset mood ID
+      };
+
+      revertMoodAndImage();
+      setFeedbackMessage('Game Over! Your score has been submitted.');
+    }
+  }, [gameOver, submitScore, userId, score, originalMoodId, originalPetImage]);
 
   return (
     <div>
       <h1>Math Game</h1>
 
-      {/* Dropdown to select pet */}
       {pets.length > 0 && (
         <div>
           <label htmlFor="pet-select">Choose your pet:</label>
@@ -141,11 +139,11 @@ const MathGame = ({ userId }) => {
               const selectedPet = pets.find((pet) => pet.id === parseInt(e.target.value, 10));
               if (selectedPet) {
                 setSelectedPetId(selectedPet.id);
-                setOriginalPetImage(selectedPet.pet_image_url); // Set original image
-                setCurrentPetImage(selectedPet.pet_image_url); // Set current image to original
-                setMoodId(selectedPet.mood_id); // Set the current mood
-                setCurrentSpriteId(selectedPet.sprite_id); // Set current sprite ID
-                setLastAnswerCorrect(null); // Reset last answer correctness when selecting a new pet
+                setOriginalPetImage(selectedPet.pet_image_url);
+                setCurrentPetImage(selectedPet.pet_image_url);
+                setOriginalMoodId(selectedPet.mood_id);
+                setMoodId(selectedPet.mood_id);
+                setStreak(0); // Reset streak when changing pets
               }
             }}
           >
@@ -158,22 +156,13 @@ const MathGame = ({ userId }) => {
         </div>
       )}
 
-      {/* Display selected pet */}
-      {selectedPet && (
-        <div>
-          <h2>Your Pet: {selectedPet.name}</h2>
-          <img
-            src={lastAnswerCorrect === true ? 'happy-image-url' : lastAnswerCorrect === false ? 'angry-image-url' : currentPetImage} // Conditional src
-            alt={selectedPet.name}
-            style={{ width: '150px', height: '150px' }}
-          />
-        </div>
-      )}
+      {feedbackMessage && <p>{feedbackMessage}</p>} {/* Display feedback */}
 
       {gameOver ? (
-        <div>
-          <h2>Game Over! Your score: {score}</h2>
-        </div>
+        <h2>
+          <p>Game Over! Your score: {score}</p>
+          <p>You made: ${score * 10}</p>
+        </h2>
       ) : (
         <div>
           <p>Time left: {timeLeft}s</p>
@@ -181,12 +170,22 @@ const MathGame = ({ userId }) => {
           <input
             type="number"
             value={answer}
-            onChange={handleAnswerChange}
+            onChange={(e) => setAnswer(e.target.value)}
+            onKeyPress={handleKeyPress} // Add event listener for Enter key
           />
-          <button onClick={checkAnswer}>
-            Submit Answer
-          </button>
+          <button onClick={checkAnswer}>Submit Answer</button>
           <p>Score: {score}</p>
+        </div>
+      )}
+
+      {selectedPetId && (
+        <div>
+          <h2>Your Pet</h2>
+          <img
+            src={currentPetImage}
+            alt="Pet"
+            style={{ width: '150px', height: '150px' }}
+          />
         </div>
       )}
     </div>

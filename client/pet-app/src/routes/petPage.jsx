@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PetMoodUpdater from '../components/petMoodUpdater';
 
 const PetPage = () => {
-  const userId = 1;  // Make sure this is replaced with the correct logic for fetching userId
-  
+  const userId = 1;  // Replace with correct logic for fetching userId
   const [pets, setPets] = useState([]);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ const PetPage = () => {
               petId={pet.id} 
               currentImage={pet.pet_image_url} // Pass current image URL
               setPetImage={(newImage) => {
-                // Update the pet image in the pets state
+                // Update the pet image in the pets state dynamically
                 setPets((prevPets) => 
                   prevPets.map((p) => 
                     p.id === pet.id ? { ...p, pet_image_url: newImage } : p
