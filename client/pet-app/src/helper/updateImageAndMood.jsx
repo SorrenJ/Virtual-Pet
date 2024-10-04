@@ -1,9 +1,9 @@
-const updateImageAndMood = async (userId, moodId) => {
+const updateImageAndMood = async (userId, petId, moodId) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/pets/update-image/${userId}`, {
+    const response = await fetch(`http://localhost:5000/api/pets/update-image/${userId}/${petId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mood_id: moodId }), // Send the mood_id for update
+      body: JSON.stringify({ mood_id: moodId }), // Send mood_id for update
     });
 
     if (!response.ok) throw new Error('Failed to update mood and image');
