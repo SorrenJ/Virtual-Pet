@@ -9,13 +9,16 @@ import CleanPetPage from './routes/cleanPetPage';
 import HomeTesterPage from './routes/homeTesterPage'; 
 import NavBar from './routes/navBar';
 import './App.css';
+import PetPage from './routes/petPage';
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <header className="App-header">
+        <header className="NavBar">
         <NavBar />
+        </header>
+        <body>
           <Routes> {/* Use Routes to create paths*/}
             <Route path="/" element={<HomePage />} /> {/* Home page */}
             <Route path="/shop" element={<ShopPage />} /> {/* Shop page */}
@@ -24,8 +27,9 @@ function App() {
             <Route path="/feedPet" element={<FeedPetPage />} />
             <Route path="/cleanPet" element={<CleanPetPage />} />
             <Route path="/homeTester" element={<HomeTesterPage />} />
+            <Route path="/petPage" element={<PetPage />} />
           </Routes>
-        </header>
+          </body>
       </div>
     </Router>
   );
