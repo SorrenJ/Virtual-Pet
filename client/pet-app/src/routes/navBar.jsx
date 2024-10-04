@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import MathModal from './mathModal'; // Adjust the import path to match your project structure
+import '../styles/navBar.scss';
 
 const NavBar = () => {
   const [playGame, setPlayGame] = useState(false); // State to control modal visibility
@@ -13,21 +14,22 @@ const NavBar = () => {
   };
 
   return (
-    <nav style={{ padding: '10px', backgroundColor: '#333', color: '#fff' }}>
-      <ul style={{ listStyle: 'none', display: 'flex', gap: '15px' }}>
+    <nav>
+      <ul>
         <li>
-          <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>Home</Link>
+          <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/shop" style={{ color: '#fff', textDecoration: 'none' }}>Shop</Link>
+          <Link to="/shop">Shop</Link>
         </li>
         <li>
-          <Link to="/adopt" style={{ color: '#fff', textDecoration: 'none' }}>Adopt</Link>
+          <Link to="/adopt">Adopt</Link>
         </li>
         <li>
-          <button onClick={toggleModal} style={{ backgroundColor: '#555', color: '#fff', border: 'none', padding: '5px 10px' }}>
+          {/* Use javascript:void(0) to prevent navigation */}
+          <a href="javascript:void(0);" onClick={toggleModal} className="game-link">
             {playGame ? 'Cancel Game' : 'Play Math Game'}
-          </button>
+          </a>
         </li>
       </ul>
 

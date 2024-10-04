@@ -239,10 +239,6 @@ const HomePage = () => {
                     <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />
                 )}
             </div>
-
-            <button onClick={() => setPlayGame(!playGame)}>
-                {playGame ? 'Cancel Game' : 'Play Math Game'}
-            </button>
         </div>
     );
 };
