@@ -1,80 +1,62 @@
-const express = require('express');
-const pool = require('../db/db'); // Assuming you've set up your PostgreSQL connection pool
+const express = require("express");
 const router = express.Router();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const pool = require('../db/db'); // Import the pool from db/db.js
+router.use(bodyParser.json());
+router.use(cors());
 
-// Route to fetch the pet by user ID
+// Route to fetch all pets by user ID
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  try {
-    console.log('Fetching pet for user ID:', userId); // Debugging statement
+  // Validate userId and check if it's defined and a number
+  if (!userId || isNaN(userId)) {
+    return res.status(400).json({ error: 'Invalid or missing user ID' });
+  }
 
-    const petQuery = await pool.query(
-      `SELECT pets.name, sprites.image_url AS pet_image_url, colors.color_name, pets.mood_id
+  try {
+    const petsQuery = await pool.query(
+      `SELECT pets.id, pets.name, sprites.image_url AS pet_image_url, colors.color_name, pets.mood_id
        FROM pets 
        JOIN sprites ON pets.sprite_id = sprites.id
        JOIN colors ON pets.color_id = colors.id
-       
        WHERE pets.user_id = $1`,
       [userId]
     );
 
-    console.log('Pet query result:', petQuery.rows); // Debugging statement
-
-    if (petQuery.rows.length === 0) {
-      return res.status(404).json({ error: 'No pet found for this user' });
+    if (petsQuery.rows.length === 0) {
+      return res.status(404).json({ error: 'No pets found for this user' });
     }
 
-    const pet = petQuery.rows[0];
-    res.json(pet); // Send the pet data
+    res.json(petsQuery.rows);
   } catch (error) {
-    console.error('Error fetching pet:', error);
+    console.error('Error fetching pets:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-router.put('/update-image/:userId', async (req, res) => {
-  const { userId } = req.params;
-  const { mood_id } = req.body; // Get the new mood_id from the request body
+
+
+// Route to update a specific pet's image based on mood
+router.put('/update-image/:userId/:petId', async (req, res) => {
+  const { userId, petId } = req.params;
+  const { mood_id } = req.body;
 
   try {
-    // Query to get the pet's current color_id and species_id
-    const petQuery = await pool.query(
-      `SELECT color_id, species_id FROM pets WHERE user_id = $1`,
-      [userId]
-    );
-
-    if (petQuery.rowCount === 0) {
-      return res.status(404).json({ error: 'No pet found for this user' });
-    }
-
-    const { color_id, species_id } = petQuery.rows[0];
-
-    // Query to get the new sprite_id based on color_id, species_id, and mood_id
-    const spriteQuery = await pool.query(
-      `SELECT id FROM sprites 
-      WHERE color_id = $1 AND species_id = $2 AND mood_id = $3`,
-      [color_id, species_id, mood_id]
-    );
-
-    if (spriteQuery.rowCount === 0) {
-      return res.status(404).json({ error: 'No sprite found for the given parameters' });
-    }
-
-    const newSpriteId = spriteQuery.rows[0].id;
-
-    // Update the pet's sprite_id in the pets table
+    // Query to update mood_id and get the correct sprite_id from the sprites table
     await pool.query(
-      `UPDATE pets 
-      SET sprite_id = $1, update_time = CURRENT_TIMESTAMP 
-      WHERE user_id = $2`,
-      [newSpriteId, userId]
+      'UPDATE pets SET mood_id = $1, sprite_id = (SELECT id FROM sprites WHERE species_id = pets.species_id AND color_id = pets.color_id AND mood_id = $1) WHERE id = $2 AND user_id = $3',
+      [mood_id, petId, userId]
     );
 
-    res.json({ message: 'Sprite updated successfully', sprite_id: newSpriteId }); // Respond with the new sprite ID
+    // Optionally fetch and return updated pet data
+    const updatedPet = await pool.query('SELECT * FROM pets WHERE id = $1', [petId]);
+
+    res.json(updatedPet.rows[0]);
   } catch (error) {
-    console.error('Error updating sprite:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update pet mood and sprite' });
   }
 });
 
