@@ -29,9 +29,9 @@ const MathGame = ({ userId }) => {
         if (petsData.length > 0) {
           const firstPet = petsData[0];
           setSelectedPetId(firstPet.id);
-          setOriginalPetImage(firstPet.pet_image_url); // Save original image
+          setOriginalPetImage(firstPet.pet_image_url);  // Save original image
           setCurrentPetImage(firstPet.pet_image_url);
-          setOriginalMoodId(firstPet.mood_id); // Save original mood
+          setOriginalMoodId(firstPet.mood_id);  // Save original mood
           setMoodId(firstPet.mood_id);
         }
       } catch (error) {
@@ -51,21 +51,30 @@ const MathGame = ({ userId }) => {
   useEffect(() => {
     generateProblem();
 
+    // Set up timer
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
-        if (prevTime === 1) {
+        if (prevTime <= 1) {
+          clearInterval(timer);
           setGameOver(true);
-          return 0; // End the game
+          return 0;
         }
         return prevTime - 1; // Decrement by 1
       });
     }, 1000);
 
-    // Cleanup function to clear the timer when component unmounts or game ends
+    // Cleanup function to revert the pet's mood and image when component unmounts (game is exited or closed)
     return () => {
-      clearInterval(timer); // Clear the interval
+      clearInterval(timer); // Clear the timer on cleanup
+      const revertMoodAndImageOnExit = async () => {
+        if (selectedPetId && originalMoodId) {
+          await updatePetMood(userId, selectedPetId, originalMoodId); // Revert to original mood
+          setCurrentPetImage(originalPetImage); // Revert to original image
+        }
+      };
+      revertMoodAndImageOnExit();
     };
-  }, []);
+  }, [selectedPetId, originalMoodId, originalPetImage, userId]);
 
   const checkAnswer = async () => {
     const correctAnswer = num1 + num2;
@@ -93,9 +102,9 @@ const MathGame = ({ userId }) => {
     setAnswer('');
   };
 
-  const handleKeyDown = (e) => {
+  // Handle Enter key press to submit the answer
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Prevent form submission
       checkAnswer();
     }
   };
@@ -150,7 +159,10 @@ const MathGame = ({ userId }) => {
       {feedbackMessage && <p>{feedbackMessage}</p>} {/* Display feedback */}
 
       {gameOver ? (
-        <h2>Game Over! Your score: {score}</h2>
+        <h2>
+          <p>Game Over! Your score: {score}</p>
+          <p>You made: ${score * 10}</p>
+        </h2>
       ) : (
         <div>
           <p>Time left: {timeLeft}s</p>
@@ -159,11 +171,10 @@ const MathGame = ({ userId }) => {
             type="number"
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            onKeyDown={handleKeyDown} // Add the keydown handler here
+            onKeyPress={handleKeyPress} // Add event listener for Enter key
           />
           <button onClick={checkAnswer}>Submit Answer</button>
           <p>Score: {score}</p>
-          <p>You made: {score * 10}</p>
         </div>
       )}
 
