@@ -80,14 +80,6 @@ const ShopPage = () => {
 
   return (
 <div>
-    <div className="links">
-    <h3>Explore More:</h3>
-    <a href="/">Go home</a>
-    <a href="/adopt">Adopt a Pet</a>
-    <a href="/shop">Visit the Shop</a>  
-  </div>
-
-
     <Shop 
       money={data.money}
       toys={data.toys}
