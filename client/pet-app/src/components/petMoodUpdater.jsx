@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const PetMoodUpdater = ({ userId, petId }) => {
+const PetMoodUpdater = ({ userId, petId, currentImage, setPetImage }) => {
   const [currentMood, setCurrentMood] = useState(null);
 
   // Moods and their corresponding moodId
@@ -36,6 +36,9 @@ const PetMoodUpdater = ({ userId, petId }) => {
       const data = await response.json();
       setCurrentMood(data.mood_id); // Optionally, update the current mood in state
       console.log('Mood updated successfully:', data);
+
+      // Update the pet's image URL based on the new mood
+      setPetImage(data.pet_image_url); // Set the new image URL from the response
     } catch (error) {
       console.error('Error updating mood:', error);
     }

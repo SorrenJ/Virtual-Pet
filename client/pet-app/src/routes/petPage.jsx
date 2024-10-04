@@ -35,7 +35,19 @@ const PetPage = () => {
           <div key={pet.id}>
             <h2>{pet.name}</h2>
             <img src={pet.pet_image_url} alt={`${pet.name}`} />
-            <PetMoodUpdater userId={userId} petId={pet.id} />
+            <PetMoodUpdater 
+              userId={userId} 
+              petId={pet.id} 
+              currentImage={pet.pet_image_url} // Pass current image URL
+              setPetImage={(newImage) => {
+                // Update the pet image in the pets state
+                setPets((prevPets) => 
+                  prevPets.map((p) => 
+                    p.id === pet.id ? { ...p, pet_image_url: newImage } : p
+                  )
+                );
+              }}
+            />
           </div>
         ))
       ) : (
