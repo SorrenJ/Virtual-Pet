@@ -28,17 +28,14 @@ const PetMoodUpdater = ({ userId, petId, currentImage, setPetImage }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mood_id: moodId }), // Send the mood_id to the backend
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to update mood');
       }
-
+  
       const data = await response.json();
-      setCurrentMood(data.mood_id); // Optionally, update the current mood in state
-      console.log('Mood updated successfully:', data);
-
-      // Update the pet's image URL based on the new mood
-      setPetImage(data.pet_image_url); // Set the new image URL from the response
+      setCurrentMood(moodId);  // Optionally update the current mood in the component state
+      setPetImage(data.pet_image_url);  // Update the parent component's pet image state
     } catch (error) {
       console.error('Error updating mood:', error);
     }
