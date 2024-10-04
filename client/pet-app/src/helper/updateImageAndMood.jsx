@@ -8,11 +8,8 @@ const updateImageAndMood = async (userId, petId, moodId) => {
 
     if (!response.ok) throw new Error('Failed to update mood and image');
 
-    // Fetch updated pet data to reflect mood and image change
-    const updatedResponse = await fetch(`http://localhost:5000/api/pets/${userId}`);
-    if (!updatedResponse.ok) throw new Error('Failed to fetch updated pet data');
-
-    return await updatedResponse.json(); // Return the updated pet data
+    // Return the updated pet data (including new sprite URL)
+    return await response.json();
   } catch (error) {
     console.error('Error updating mood and image:', error);
     throw error; // Rethrow error for handling in MathGame
