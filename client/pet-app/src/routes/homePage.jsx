@@ -22,7 +22,7 @@ const HomePage = () => {
 
         // Set up a periodic update for pet stats (every 60 seconds)
         const intervalId = setInterval(() => {
-            fetchData(false);  // Call fetchData without resetting the selected pet
+            fetchData();  // Call fetchData without resetting the selected pet
         }, 60000); // 60 seconds
 
         // Cleanup the interval when the component unmounts
@@ -52,24 +52,31 @@ const HomePage = () => {
 
             if (existingSelectedPet) {
                 // Keep the currently selected pet if it exists in the new data
-                setSelectedPet(existingSelectedPet);
+                console.log('Keeping currently selected pet:', existingSelectedPet);
+                setSelectedPet(existingSelectedPet);  // Selected pet remains unchanged
+            } 
+            // Only select the first pet if no pet is currently selected (avoiding fallback to pet_id = 1)
+            else if (!selectedPet) {
+                console.log('No pet selected, selecting first pet:', data.pets[0]);
+                setSelectedPet(data.pets[0]);  // Select first pet only if no pet is selected
             } else {
-                // If the currently selected pet is no longer available, select the first pet
-                setSelectedPet(data.pets[0]);
+                // If the currently selected pet is not found in the new data, log it
+                console.log('Currently selected pet not found in updated data, keeping current selection.');
             }
         }
 
-            setFoodCount(data.foodCount || 0);
-            setUserFood(data.userFood || []);
-            setToiletriesCount(data.toiletriesCount || 0);
-            setUserToiletries(data.userToiletries || []);
-            setToysCount(data.toysCount || 0);
-            setUserToys(data.userToys || []);
+        setFoodCount(data.foodCount || 0);
+        setUserFood(data.userFood || []);
+        setToiletriesCount(data.toiletriesCount || 0);
+        setUserToiletries(data.userToiletries || []);
+        setToysCount(data.toysCount || 0);
+        setUserToys(data.userToys || []);
 
-        } catch (error) {
-            console.error('Error fetching home data:', error);
-        }
-    };
+    } catch (error) {
+        console.error('Error fetching home data:', error);
+    }
+};
+
 
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
