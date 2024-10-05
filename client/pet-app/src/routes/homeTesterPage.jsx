@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import UserFoodTable from '../components/UserFoodTable'; 
-import UserToiletriesTable from '../components/UserToiletriesTable'; 
-import UserToysTable from '../components/UserToysTable'; 
+import UserToysTable from '../components/UserToysTable';
+import UserToiletriesTable from '../components/UserToiletriesTable';
+import UserFoodTable from '../components/UserFoodTable';
 
 const HomeTesterPage = () => {
     const [pets, setPets] = useState([]); // To store all pets and their stats
@@ -16,41 +16,44 @@ const HomeTesterPage = () => {
 
     // Fetch data when the component is mounted
     useEffect(() => {
-        fetchData();
+        fetchData(); // Fetch data on component mount
 
         // Set up a periodic update for pet stats (every 60 seconds)
         const intervalId = setInterval(() => {
-            fetchData(false);  // Call fetchData without resetting the selected pet
-        }, 6000); // 60 seconds
+            fetchData();  // Call fetchData without resetting the selected pet
+        }, 60000); // 60 seconds
 
         // Cleanup the interval when the component unmounts
         return () => clearInterval(intervalId);
     }, []);
 
-    // UseEffect that tracks changes in the pets array and ensures the selectedPet is not reset unnecessarily
+    // Ensure selected pet is set after pets are fetched
     useEffect(() => {
         if (!selectedPet && pets.length > 0) {
-            // Only set the first pet if selectedPet is null (first render case)
-            setSelectedPet(pets[0]);
+            setSelectedPet(pets[0]); // Set the first pet only if selectedPet is null (first render case)
         }
-    }, [pets]); // This effect only runs when pets array changes
+    }, [pets]);
 
     // Fetch data for pets and user food
-    const fetchData = async (resetSelectedPet = true) => {
-        try {
-            const response = await fetch(`/api/home?selectedPetId=${selectedPet ? selectedPet.pet_id : 1}`);
-            const data = await response.json();
+    const fetchData = async () => {
+        console.log('Fetching new data...'); // Log when the fetch starts
 
+        try {
+            const response = await fetch(`/api/home`);
+            const data = await response.json();
+            console.log('Data received:', data); // Log the received data
             setPets(data.pets || []);
 
-            // Don't reset the selected pet when fetchData is called periodically
-            if (resetSelectedPet && data.pets.length > 0) {
-                setSelectedPet(data.selectedPet || data.pets[0] || null);
-            } else if (!resetSelectedPet && selectedPet) {
-                // Update selectedPet stats without switching the pet
-                const updatedPet = data.pets.find(pet => pet.pet_id === selectedPet.pet_id);
-                if (updatedPet) {
-                    setSelectedPet(updatedPet);
+            if (data.pets.length > 0) {
+                // Find the currently selected pet in the newly fetched pets list
+                const existingSelectedPet = data.pets.find(pet => pet.pet_id === selectedPet?.pet_id);
+
+                if (existingSelectedPet) {
+                    // Keep the currently selected pet if it exists in the new data
+                    setSelectedPet(existingSelectedPet);
+                } else {
+                    // If the currently selected pet is no longer available, select the first pet
+                    setSelectedPet(data.pets[0]);
                 }
             }
 
@@ -60,109 +63,8 @@ const HomeTesterPage = () => {
             setUserToiletries(data.userToiletries || []);
             setToysCount(data.toysCount || 0);
             setUserToys(data.userToys || []);
-            
-            console.log('Fetched userFood data in HomePage:', data.userFood);
         } catch (error) {
             console.error('Error fetching home data:', error);
-        }
-    };
-
-    // Function to handle feeding the pet
-    const feedPet = async (petId, foodId) => {
-        try {
-            console.log('Feeding pet:', petId, 'with food:', foodId);  // Debug
-            if (!petId || !foodId) {
-                throw new Error('Missing petId or foodId');
-            }
-
-            const response = await fetch('/api/feed-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ petId, foodId }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);  // Log the error response
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Pet fed successfully!');
-                fetchData(false); // Fetch updated data without resetting selected pet
-            }
-        } catch (error) {
-            console.error('Error feeding pet:', error);
-        }
-    };
-
-    // Function to handle cleaning the pet
-    const cleanPet = async (petId, toiletriesId) => {
-        try {
-            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);  // Debug
-            if (!petId || !toiletriesId) {
-                throw new Error('Missing petId or toiletriesId');
-            }
-
-            const response = await fetch('/api/clean-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ petId, toiletriesId }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);  // Log the error response
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Pet cleaned successfully!');
-                fetchData(false); // Fetch updated data without resetting selected pet
-            }
-        } catch (error) {
-            console.error('Error cleaning pet:', error);
-        }
-    };
-
-    // Function to handle playing with the pet
-    const playWithPet = async (petId, toyId) => {
-        try {
-            console.log('Playing with pet:', petId, 'with toy:', toyId);  // Debug
-            if (!petId || !toyId) {
-                throw new Error('Missing petId or toyId');
-            }
-
-            const response = await fetch('/api/play-with-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ petId, toyId }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);  // Log the error response
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Pet played successfully!');
-                fetchData(false); // Fetch updated data without resetting selected pet
-            }
-        } catch (error) {
-            console.error('Error playing with pet:', error);
         }
     };
 
@@ -178,16 +80,12 @@ const HomeTesterPage = () => {
                         id="petSelector"
                         value={selectedPet?.pet_id || ''}
                         onChange={(e) => {
-                            console.log("Selected your pet");
                             const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
                             setSelectedPet(pet);
                         }}
                     >
                         {pets.map((pet) => (
-                            <option
-                                key={pet.pet_id}
-                                value={pet.pet_id}
-                            >
+                            <option key={pet.pet_id} value={pet.pet_id}>
                                 {pet.pet_name}
                             </option>
                         ))}
@@ -197,6 +95,7 @@ const HomeTesterPage = () => {
                         <div id="petDetails">
                             <h2>Meet {selectedPet.pet_name}</h2>
                             <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <br />
                             <p>Energy: {selectedPet.energy}</p>
                             <p>Happiness: {selectedPet.happiness}</p>
                             <p>Hunger: {selectedPet.hunger}</p>
@@ -208,46 +107,33 @@ const HomeTesterPage = () => {
                 <p>No pets available at the moment.</p>
             )}
 
-            {/* Button to toggle Component One */}
+            {/* Inventory and other components */}
             <div>
-                <button 
-                    onClick={() => setVisibleComponent(1)} 
-                    disabled={visibleComponent === 1}>
-                    Show Component One
+                <h2>Inventory</h2>
+                <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>
+                    Pet Treats
                 </button>
-
-                <button 
-                    onClick={() => setVisibleComponent(2)} 
-                    disabled={visibleComponent === 2}>
-                    Show Component Two
+                <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>
+                    Pet Toiletries
                 </button>
-
-                <button 
-                    onClick={() => setVisibleComponent(3)} 
-                    disabled={visibleComponent === 3}>
-                    Show Component Three
+                <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>
+                    Pet Toys
                 </button>
             </div>
 
             {/* Render UserFoodTable if visibleComponent is 1 */}
             <div style={{ marginTop: '20px' }}>
-                {visibleComponent === 1 && <UserFoodTable 
-                        userFood={userFood} 
-                        feedPet={feedPet} 
-                        selectedPet={selectedPet}
-                />}
+                {visibleComponent === 1 && (
+                    <UserFoodTable userFood={userFood} feedPet={() => {}} selectedPet={selectedPet} />
+                )}
 
-                {visibleComponent === 2 && <UserToiletriesTable 
-                        userToiletries={userToiletries} 
-                        cleanPet={cleanPet} 
-                        selectedPet={selectedPet}
-                />}            
-                
-                {visibleComponent === 3 && <UserToysTable
-                        userToys={userToys} 
-                        playWithPet={playWithPet} 
-                        selectedPet={selectedPet}
-                />}  
+                {visibleComponent === 2 && (
+                    <UserToiletriesTable userToiletries={userToiletries} cleanPet={() => {}} selectedPet={selectedPet} />
+                )}
+
+                {visibleComponent === 3 && (
+                    <UserToysTable userToys={userToys} playWithPet={() => {}} selectedPet={selectedPet} />
+                )}
             </div>
         </div>
     );

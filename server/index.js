@@ -1,12 +1,13 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
 const bodyParser = require('body-parser');
 require('dotenv').config(); // Load environment variables from the .env file
 
 // Import the pool from db.js to handle PostgreSQL queries
 const pool = require('./db/db'); 
-app.use(bodyParser.json());
+
+const app = express();
+
 // Middleware
 
 // Enable CORS to allow requests from localhost:3000 (your React frontend)
@@ -15,6 +16,7 @@ app.use(cors({
 }));
 
 // Parse incoming JSON requests
+app.use(bodyParser.json());
 app.use(express.json());
 
 // Serve static files from the "db" directory (if needed)
@@ -23,22 +25,12 @@ app.use('/db', express.static('db'));
 // Set up EJS as the templating engine (if needed)
 app.set('view engine', 'ejs');
 
-
-// Create a router
-const router = express.Router();
-
-// Middleware to be applied to all routes
-router.use((req, res, next) => {
-    console.log(`Request URL: ${req.originalUrl}, Request Method: ${req.method}`);
-    next(); // Continue to the next middleware or route handler
-});
-
 // Routes
 
 // Importing routes from separate files
 const convertScoreRoutes = require('./routes/convert-score');
-const petApiRoute = require('./routes/pet_api');
 const speciesApiRoute = require('./routes/species_api');
+const petApiRoute = require('./routes/pet_api');
 const userPetsApi = require('./routes/user_pet_api');
 const homeApiRoute = require('./routes/home_api');
 const cleanApiRoute = require('./routes/clean_pet_api');
@@ -51,17 +43,13 @@ const statsApiRoute = require('./routes/pets_stats_api');
 app.use('/api/convert-score', convertScoreRoutes);
 app.use('/api/pets', petApiRoute);
 app.use('/api/species', speciesApiRoute);
-app.use('/api/pets', userPetsApi);
+app.use('/api/user-pets', userPetsApi); // Changed to avoid duplicate paths
 app.use('/api/home', homeApiRoute);
 app.use('/api/clean-pet', cleanApiRoute);
 app.use('/api/feed-pet', feedApiRoute);
 app.use('/api/play-with-pet', playApiRoute);
 app.use('/api/inventory', itemApiRoute);
 app.use('/api/pets-stats', statsApiRoute);
-
-
-// Use the router in the app
-app.use(router);
 
 // Start the server on port 5000
 const PORT = process.env.PORT || 5000;

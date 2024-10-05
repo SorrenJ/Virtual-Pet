@@ -11,42 +11,42 @@ router.use(cors());
 
 
 // Function to decrement pet stats
-const decrementPetStats = async () => {
-    try {
-        const query = `
-        SELECT p.id AS pet_id, p.energy, p.happiness, p.hunger, p.cleanliness, 
-               per.energy_decay, per.happiness_decay, per.hunger_decay, per.cleanliness_decay
-        FROM pets p
-        JOIN personalities per ON p.personality_id = per.id
-        `;
-        const result = await pool.query(query);
-        const pets = result.rows;
+// const decrementPetStats = async () => {
+//     try {
+//         const query = `
+//         SELECT p.id AS pet_id, p.energy, p.happiness, p.hunger, p.cleanliness, 
+//                per.energy_decay, per.happiness_decay, per.hunger_decay, per.cleanliness_decay
+//         FROM pets p
+//         JOIN personalities per ON p.personality_id = per.id
+//         `;
+//         const result = await pool.query(query);
+//         const pets = result.rows;
 
-        for (const pet of pets) {
-            const newEnergy = Math.max(Math.floor(pet.energy - pet.energy_decay), 0);
-            const newHappiness = Math.max(Math.floor(pet.happiness - pet.happiness_decay), 0);
-            const newHunger = Math.max(Math.floor(pet.hunger - pet.hunger_decay), 0);
-            const newCleanliness = Math.max(Math.floor(pet.cleanliness - pet.cleanliness_decay), 0);
+//         for (const pet of pets) {
+//             const newEnergy = Math.max(Math.floor(pet.energy - pet.energy_decay), 0);
+//             const newHappiness = Math.max(Math.floor(pet.happiness - pet.happiness_decay), 0);
+//             const newHunger = Math.max(Math.floor(pet.hunger - pet.hunger_decay), 0);
+//             const newCleanliness = Math.max(Math.floor(pet.cleanliness - pet.cleanliness_decay), 0);
 
-            // Update the pet stats in the database
-            const updateQuery = `
-            UPDATE pets 
-            SET energy = $1, happiness = $2, hunger = $3, cleanliness = $4
-            WHERE id = $5
-            `;
-            await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
-        }
-        // console.log('Pet stats updated successfully.');
-    } catch (error) {
-        console.error('Error decrementing pet stats:', error);
-    }
-};
+//             // Update the pet stats in the database
+//             const updateQuery = `
+//             UPDATE pets 
+//             SET energy = $1, happiness = $2, hunger = $3, cleanliness = $4
+//             WHERE id = $5
+//             `;
+//             await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
+//         }
+//         // console.log('Pet stats updated successfully.');
+//     } catch (error) {
+//         console.error('Error decrementing pet stats:', error);
+//     }
+// };
 
-// Run the decrement function every 60 seconds (1 minute)
-// Move setInterval outside to ensure stats decrement independently every 5 minutes (or any suitable interval)
-setInterval(() => {
-    decrementPetStats();
-}, 60000); // 60 seconds
+// // Run the decrement function every 60 seconds (1 minute)
+// // Move setInterval outside to ensure stats decrement independently every 5 minutes (or any suitable interval)
+// setInterval(() => {
+//     decrementPetStats();
+// }, 60000); // 60 seconds
 // Get home data including pets and inventory
 router.get('/', async (req, res) => {
     const userId = 1; // Hardcoded user ID for now
