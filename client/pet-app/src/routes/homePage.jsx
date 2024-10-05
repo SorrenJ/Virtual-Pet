@@ -3,11 +3,11 @@ import UserToysTable from '../components/UserToysTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserFoodTable from '../components/UserFoodTable';
 
-
 const HomePage = () => {
     const [playGame, setPlayGame] = useState(false); // State to control game visibility
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null);
+    const [petStats, setPetStats] = useState(null); // Store stats separately
     const [userFood, setUserFood] = useState([]); // To store user food data
     const [foodCount, setFoodCount] = useState(0); // To store food count
     const [userToiletries, setUserToiletries] = useState([]);
@@ -16,67 +16,66 @@ const HomePage = () => {
     const [toysCount, setToysCount] = useState(0);
     const [visibleComponent, setVisibleComponent] = useState(null); // To handle component visibility
 
-    // Fetch data when the component is mounted
+    // Fetch general pet and user data on mount
     useEffect(() => {
-        fetchData(); // Fetch data on component mount
+        fetchGeneralData(); // Fetch data on component mount
 
         // Set up a periodic update for pet stats (every 60 seconds)
         const intervalId = setInterval(() => {
-            fetchData();  // Call fetchData without resetting the selected pet
+            if (selectedPet) {
+                fetchPetStats(selectedPet.pet_id); // Fetch stats for the currently selected pet
+            }
         }, 60000); // 60 seconds
 
-        // Cleanup the interval when the component unmounts
-        return () => clearInterval(intervalId);
-    }, []);
+        return () => clearInterval(intervalId); // Cleanup interval on unmount
+    }, [selectedPet]); // Run when selectedPet changes
 
-    // Ensure selected pet is not reset unnecessarily when pets array changes
-    useEffect(() => {
-        if (!selectedPet && pets.length > 0) {
-            setSelectedPet(pets[0]); // Set the first pet only if selectedPet is null (first render case)
-        }
-    }, [pets]);
+    // Fetch general data (pets and user resources)
+    const fetchGeneralData = async () => {
+        try {
+            const response = await fetch(`/api/home`);
+            const data = await response.json();
+            console.log('General data received:', data);
+            setPets(data.pets || []);
+            setFoodCount(data.foodCount || 0);
+            setUserFood(data.userFood || []);
+            setToiletriesCount(data.toiletriesCount || 0);
+            setUserToiletries(data.userToiletries || []);
+            setToysCount(data.toysCount || 0);
+            setUserToys(data.userToys || []);
 
- // Fetch data for pets and user food
- const fetchData = async () => {
-    console.log('Fetching new data...'); // Log when the fetch starts
-
-    try {
-        const response = await fetch(`/api/home`);
-        const data = await response.json();
-        console.log('Data received:', data); // Log the received data
-        setPets(data.pets || []);
-
-        if (data.pets.length > 0) {
-            // Find the currently selected pet in the newly fetched pets list
-            const existingSelectedPet = data.pets.find(pet => pet.pet_id === selectedPet?.pet_id);
-
-            if (existingSelectedPet) {
-                // Keep the currently selected pet if it exists in the new data
-                console.log('Keeping currently selected pet:', existingSelectedPet);
-                setSelectedPet(existingSelectedPet);  // Selected pet remains unchanged
-            } 
-            // Only select the first pet if no pet is currently selected (avoiding fallback to pet_id = 1)
-            else if (!selectedPet) {
-                console.log('No pet selected, selecting first pet:', data.pets[0]);
-                setSelectedPet(data.pets[0]);  // Select first pet only if no pet is selected
-            } else {
-                // If the currently selected pet is not found in the new data, log it
-                console.log('Currently selected pet not found in updated data, keeping current selection.');
+            if (!selectedPet && data.pets.length > 0) {
+                setSelectedPet(data.pets[0]); // Select the first pet if none is selected
             }
+        } catch (error) {
+            console.error('Error fetching general data:', error);
         }
+    };
 
-        setFoodCount(data.foodCount || 0);
-        setUserFood(data.userFood || []);
-        setToiletriesCount(data.toiletriesCount || 0);
-        setUserToiletries(data.userToiletries || []);
-        setToysCount(data.toysCount || 0);
-        setUserToys(data.userToys || []);
+    // Fetch stats for the currently selected pet
+    const fetchPetStats = async (petId) => {
+        try {
+            console.log(`Fetching stats for petId: ${petId}`);
 
-    } catch (error) {
-        console.error('Error fetching home data:', error);
-    }
-};
+             // Ensure petId is valid and defined
+        if (!petId) {
+            throw new Error('Invalid petId');
+          }
+            const response = await fetch(`/api/pets-stats/${petId}`);
+            const stats = await response.json();
+            console.log(`Stats for pet ${petId}:`, stats);
+            setPetStats(stats); // Update pet stats separately
+        } catch (error) {
+            console.error(`Error fetching stats for pet ${petId}:`, error);
+        }
+    };
 
+    // UseEffect to fetch stats when selected pet changes
+    useEffect(() => {
+        if (selectedPet) {
+            fetchPetStats(selectedPet.pet_id); // Fetch stats for the selected pet
+        }
+    }, [selectedPet]); // Trigger when the selected pet changes
 
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
@@ -104,85 +103,90 @@ const HomePage = () => {
             const data = await response.json();
             if (data.success) {
                 alert('Pet fed successfully!');
-                fetchData(false); // Fetch updated data without resetting selected pet
+                fetchPetStats(petId); // Fetch updated stats after feeding
             }
         } catch (error) {
             console.error('Error feeding pet:', error);
         }
+
     };
-
-    // Function to handle cleaning the pet
-    const cleanPet = async (petId, toiletriesId) => {
-        try {
-            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);
-            if (!petId || !toiletriesId) {
-                throw new Error('Missing petId or toiletriesId');
+    
+        // Function to handle cleaning the pet
+        const cleanPet = async (petId, toiletriesId) => {
+            try {
+                console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);
+                if (!petId || !toiletriesId) {
+                    throw new Error('Missing petId or toiletriesId');
+                }
+    
+                const response = await fetch('/api/clean-pet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ petId, toiletriesId }),
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error response:', errorData);
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
+    
+                const data = await response.json();
+                if (data.success) {
+                    alert('Pet cleaned successfully!');
+                    
+                }
+            } catch (error) {
+                console.error('Error cleaning pet:', error);
             }
-
-            const response = await fetch('/api/clean-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ petId, toiletriesId }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);
-                alert(`Error: ${errorData.error}`);
-                return;
+        };
+    
+        // Function to handle playing with the pet
+        const playWithPet = async (petId, toyId) => {
+            try {
+                console.log('Playing with pet:', petId, 'with toy:', toyId);
+                if (!petId || !toyId) {
+                    throw new Error('Missing petId or toyId');
+                }
+    
+                const response = await fetch('/api/play-with-pet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ petId, toyId }),
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error response:', errorData);
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
+    
+                const data = await response.json();
+                if (data.success) {
+                    alert('Pet played successfully!');
+                  
+                }
+            } catch (error) {
+                console.error('Error playing with pet:', error);
             }
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Pet cleaned successfully!');
-                fetchData(false); // Fetch updated data without resetting selected pet
-            }
-        } catch (error) {
-            console.error('Error cleaning pet:', error);
-        }
-    };
-
-    // Function to handle playing with the pet
-    const playWithPet = async (petId, toyId) => {
-        try {
-            console.log('Playing with pet:', petId, 'with toy:', toyId);
-            if (!petId || !toyId) {
-                throw new Error('Missing petId or toyId');
-            }
-
-            const response = await fetch('/api/play-with-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ petId, toyId }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Pet played successfully!');
-                fetchData(false); // Fetch updated data without resetting selected pet
-            }
-        } catch (error) {
-            console.error('Error playing with pet:', error);
-        }
-    };
+        
+    
+    
+    
+         };
 
     return (
         <div>
             {/* Display the pet details */}
             {pets.length > 0 ? (
                 <>
-                    <h1>Welcome {pets[0].user_name}</h1>
+                    <h1>Welcome {pets[0]?.user_name}</h1>
 
                     <h2>Select Your Pet</h2>
                     <select
@@ -200,17 +204,15 @@ const HomePage = () => {
                         ))}
                     </select>
 
-                    {selectedPet && (
+                    {selectedPet && petStats && (
                         <div id="petDetails">
                             <h2>Meet {selectedPet.pet_name}</h2>
                             <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
                             <br />
-                            <p>Current Mood: {selectedPet.mood_name}</p>
-                            <br />
-                            <p>Energy: {selectedPet.energy}</p>
-                            <p>Happiness: {selectedPet.happiness}</p>
-                            <p>Hunger: {selectedPet.hunger}</p>
-                            <p>Cleanliness: {selectedPet.cleanliness}</p>
+                            <p>Energy: {petStats.energy}</p>
+                            <p>Happiness: {petStats.happiness}</p>
+                            <p>Hunger: {petStats.hunger}</p>
+                            <p>Cleanliness: {petStats.cleanliness}</p>
                             <br />
                             <p>Species: {selectedPet.species_name}</p>
                             <p>Diet: {selectedPet.diet_desc}</p>
