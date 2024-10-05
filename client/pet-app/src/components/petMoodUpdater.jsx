@@ -23,7 +23,7 @@ const PetMoodUpdater = ({ userId, petId, currentImage, setPetImage }) => {
   // Function to handle mood update
   const updateMood = async (moodId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/pets/update-image/${userId}/${petId}`, {
+      const response = await fetch(`http://localhost:5000/api/user-pets/update-image/${userId}/${petId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mood_id: moodId }), // Send the mood_id to the backend

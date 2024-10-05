@@ -1,6 +1,6 @@
 const updateImageAndMood = async (userId, petId, moodId) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/pets/update-image/${userId}/${petId}`, {
+    const response = await fetch(`http://localhost:5000/api/user-pets/update-image/${userId}/${petId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mood_id: moodId }), // Send mood_id for update
