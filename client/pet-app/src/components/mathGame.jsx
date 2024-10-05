@@ -21,7 +21,7 @@ const MathGame = ({ userId }) => {
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/pets/${userId}`);
+        const response = await fetch(`http://localhost:5000/api/user-pets/${userId}`);
         if (!response.ok) throw new Error('Failed to fetch pets data');
         const petsData = await response.json();
         setPets(petsData);
