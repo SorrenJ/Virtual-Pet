@@ -100,19 +100,19 @@ VALUES
 
 -- Hippostyx Sprites
 -- Yellow Hippostyx
-(1, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
-(1, 2, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813807/Hippostyx_Acknowlege.png'),
-(1, 2, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813849/Hippostyx_Happy.png'),
-(1, 2, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813844/Hippostyx_Feeding.png'),
-(1, 2, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813854/Hippostyx_Hungry.png'),
-(1, 2, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813924/Hippostyx_Tired.png'),
-(1, 2, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813812/Hippostyx_Sleep.png'),
-(1, 2, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813930/Hippostyx_Wake.png'),
-(1, 2, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813833/Hippostyx_Dirty.png'),
-(1, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813828/Hippostyx_Clean.png'),
-(1, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
-(1, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
-(1, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
+(1, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728152619/Hippo_Yellow_Default.gif'),
+(1, 2, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147593/Hippo_Yellow_Acknowlege.png'),
+(1, 2, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147593/Hippo_Yellow_Happy.png'),
+(1, 2, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728153925/Hippo_Yellow_Feeding.gif'),
+(1, 2, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147589/Hippo_Yellow_Hunger.png'),
+(1, 2, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147588/Hippo_Yellow_Tired.png'),
+(1, 2, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147587/Hippo_Yellow_Sleep.png'),
+(1, 2, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147586/Hippo_Yellow_Wake.png'),
+(1, 2, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147585/Hippo_Yellow_Dirty.png'),
+(1, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147591/Hippo_Yellow_Cleaned.png'),
+(1, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147584/Hippo_Yellow_Mad.png'),
+(1, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147585/Hippo_Yellow_Sad.png'),
+(1, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147592/Hippo_Yellow_Pet.png'),
 
 -- Red Hippostyx
 (2, 2, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813936/Hippostyx_default.gif'),
