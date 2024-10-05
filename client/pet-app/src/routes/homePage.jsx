@@ -15,20 +15,19 @@ const HomePage = () => {
     const [userToys, setUserToys] = useState([]);
     const [toysCount, setToysCount] = useState(0);
     const [visibleComponent, setVisibleComponent] = useState(null); // To handle component visibility
+    const [isUpdated, setIsUpdated] = useState(false); // Track when to refresh
 
-    // Fetch general pet and user data on mount
-    useEffect(() => {
-        fetchGeneralData(); // Fetch data on component mount
-
-        // Set up a periodic update for pet stats (every 60 seconds)
-        const intervalId = setInterval(() => {
-            if (selectedPet) {
-                fetchPetStats(selectedPet.pet_id); // Fetch stats for the currently selected pet
-            }
-        }, 60000); // 60 seconds
-
-        return () => clearInterval(intervalId); // Cleanup interval on unmount
-    }, [selectedPet]); // Run when selectedPet changes
+    // Fetch pet stats function
+    const fetchPetStats = async (petId) => {
+        try {
+            const response = await fetch(`/api/pets-stats/${petId}`);
+            const data = await response.json();
+            setPetStats(data);
+            console.log("front-end updated")
+        } catch (error) {
+            console.error('Error fetching pet stats:', error);
+        }
+    };
 
     // Fetch general data (pets and user resources)
     const fetchGeneralData = async () => {
@@ -52,30 +51,26 @@ const HomePage = () => {
         }
     };
 
-    // Fetch stats for the currently selected pet
-    const fetchPetStats = async (petId) => {
-        try {
-            console.log(`Fetching stats for petId: ${petId}`);
-
-             // Ensure petId is valid and defined
-        if (!petId) {
-            throw new Error('Invalid petId');
-          }
-            const response = await fetch(`/api/pets-stats/${petId}`);
-            const stats = await response.json();
-            console.log(`Stats for pet ${petId}:`, stats);
-            setPetStats(stats); // Update pet stats separately
-        } catch (error) {
-            console.error(`Error fetching stats for pet ${petId}:`, error);
-        }
-    };
-
-    // UseEffect to fetch stats when selected pet changes
+    // UseEffect to fetch stats when selected pet or isUpdated changes
     useEffect(() => {
         if (selectedPet) {
-            fetchPetStats(selectedPet.pet_id); // Fetch stats for the selected pet
+            fetchPetStats(selectedPet.pet_id);
         }
-    }, [selectedPet]); // Trigger when the selected pet changes
+    }, [selectedPet, isUpdated]); // Trigger when the selected pet or isUpdated changes
+
+    // Fetch general pet and user data on mount
+    useEffect(() => {
+        fetchGeneralData();
+
+        // Set up a periodic update for pet stats (every 5 seconds)
+        const intervalId = setInterval(() => {
+            if (selectedPet) {
+                fetchPetStats(selectedPet.pet_id); // Fetch stats for the currently selected pet
+            }
+        }, 5000); // 5 seconds
+
+        return () => clearInterval(intervalId); // Cleanup interval on unmount
+    }, [selectedPet]); // Run when selectedPet changes
 
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
@@ -101,85 +96,83 @@ const HomePage = () => {
             }
 
             const data = await response.json();
+
             if (data.success) {
                 alert('Pet fed successfully!');
-                fetchPetStats(petId); // Fetch updated stats after feeding
+                setIsUpdated((prev) => !prev); // Toggle isUpdated to trigger a refresh
             }
         } catch (error) {
             console.error('Error feeding pet:', error);
         }
-
     };
-    
-        // Function to handle cleaning the pet
-        const cleanPet = async (petId, toiletriesId) => {
-            try {
-                console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);
-                if (!petId || !toiletriesId) {
-                    throw new Error('Missing petId or toiletriesId');
-                }
-    
-                const response = await fetch('/api/clean-pet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ petId, toiletriesId }),
-                });
-    
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Error response:', errorData);
-                    alert(`Error: ${errorData.error}`);
-                    return;
-                }
-    
-                const data = await response.json();
-                if (data.success) {
-                    alert('Pet cleaned successfully!');
-                    
-                }
-            } catch (error) {
-                console.error('Error cleaning pet:', error);
+
+    // Function to handle cleaning the pet
+    const cleanPet = async (petId, toiletriesId) => {
+        try {
+            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);
+            if (!petId || !toiletriesId) {
+                throw new Error('Missing petId or toiletriesId');
             }
-        };
-    
-        // Function to handle playing with the pet
-        const playWithPet = async (petId, toyId) => {
-            try {
-                console.log('Playing with pet:', petId, 'with toy:', toyId);
-                if (!petId || !toyId) {
-                    throw new Error('Missing petId or toyId');
-                }
-    
-                const response = await fetch('/api/play-with-pet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ petId, toyId }),
-                });
-    
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Error response:', errorData);
-                    alert(`Error: ${errorData.error}`);
-                    return;
-                }
-    
-                const data = await response.json();
-                if (data.success) {
-                    alert('Pet played successfully!');
-                  
-                }
-            } catch (error) {
-                console.error('Error playing with pet:', error);
+
+            const response = await fetch('/api/clean-pet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ petId, toiletriesId }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);
+                alert(`Error: ${errorData.error}`);
+                return;
             }
-        
-    
-    
-    
-         };
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Pet cleaned successfully!');
+                setIsUpdated((prev) => !prev); // Toggle isUpdated to trigger a refresh
+            }
+        } catch (error) {
+            console.error('Error cleaning pet:', error);
+        }
+    };
+
+    // Function to handle playing with the pet
+    const playWithPet = async (petId, toyId) => {
+        try {
+            console.log('Playing with pet:', petId, 'with toy:', toyId);
+            if (!petId || !toyId) {
+                throw new Error('Missing petId or toyId');
+            }
+
+            const response = await fetch('/api/play-with-pet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ petId, toyId }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);
+                alert(`Error: ${errorData.error}`);
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Pet played successfully!');
+                setIsUpdated((prev) => !prev); // Toggle isUpdated to trigger a refresh
+            }
+        } catch (error) {
+            console.error('Error playing with pet:', error);
+        }
+    };
 
     return (
         <div>
