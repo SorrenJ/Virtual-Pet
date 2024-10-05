@@ -7,6 +7,7 @@ import FeedPetPage from './routes/feedPetPage';
 import PlayPetPage from './routes/playPetPage'; 
 import CleanPetPage from './routes/cleanPetPage'; 
 import HomeTesterPage from './routes/homeTesterPage'; 
+import HomeTesterPage2 from './routes/homeTesterPage2'; 
 import NavBar from './routes/navBar';
 import './App.css';
 import PetPage from './routes/petPage';
@@ -27,6 +28,7 @@ function App() {
             <Route path="/feedPet" element={<FeedPetPage />} />
             <Route path="/cleanPet" element={<CleanPetPage />} />
             <Route path="/homeTester" element={<HomeTesterPage />} />
+            <Route path="/homeTester2" element={<HomeTesterPage2 />} />
             <Route path="/sprites" element={<PetPage />} />
           </Routes>
           </body>

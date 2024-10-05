@@ -1,10 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-router.use(bodyParser.json());
-router.use(cors());
-
 const pool = require('../db/db'); // Import the pool from db/db.js
 
 // Function to decrement pet stats
@@ -33,37 +28,48 @@ const decrementPetStats = async () => {
             `;
             await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
         }
-        // console.log('Pet stats updated successfully.');
+        console.log('Pet stats updated successfully.');
     } catch (error) {
         console.error('Error decrementing pet stats:', error);
     }
 };
 
 // Run the decrement function every 60 seconds
-setInterval(() => {
+const intervalId = setInterval(() => {
     decrementPetStats();
-}, 60000); // 60 seconds (1 minute)
+}, 60000); // 60 seconds
 
-// Fetch pet stats for a specific user
-router.get('/', async (req, res) => {
-    const petId = req.query.petId; // Extract the petId from query parameters
+// Optionally clear the interval when the app shuts down
+process.on('SIGTERM', () => {
+    clearInterval(intervalId);
+});
 
-    if (!petId) {
-        return res.status(400).json({ error: 'Missing petId parameter' });
-    }
+// Test route (move this above parameterized routes to avoid conflicts)
+router.get('/test', (req, res) => {
+    res.send('Test route works!');
+});
+
+// Fetch pet stats for a specific pet
+router.get('/:petId', async (req, res) => {
+    const petId = parseInt(req.params.petId, 10); // Convert petId to an integer
+    console.log(`Received petId as integer: ${petId}`); // Log to confirm
+
     try {
         const petStatsQuery = `
-        SELECT 
-            p.id AS pet_id, 
-            p.energy, 
-            p.happiness, 
-            p.hunger, 
-            p.cleanliness
-        FROM pets p
-       WHERE p.id = $1
+            SELECT
+                p.energy, 
+                p.happiness, 
+                p.hunger, 
+                p.cleanliness
+            FROM pets p
+            WHERE p.id = $1
         `;
         const result = await pool.query(petStatsQuery, [petId]);
-        res.json(result.rows);
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);
+        } else {
+            res.status(404).json({ error: 'Pet not found' });
+        }
     } catch (error) {
         console.error('Error fetching pet stats:', error);
         res.status(500).json({ error: 'Server error' });
