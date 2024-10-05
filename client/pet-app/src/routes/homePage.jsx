@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-// import UserToysTable from '../components/UserToysTable';
-// import UserToiletriesTable from '../components/UserToiletriesTable';
-// import UserFoodTable from '../components/UserFoodTable';
+import UserToysTable from '../components/UserToysTable';
+import UserToiletriesTable from '../components/UserToiletriesTable';
+import UserFoodTable from '../components/UserFoodTable';
 
 const HomePage = () => {
     const [playGame, setPlayGame] = useState(false); // State to control game visibility
@@ -219,7 +219,7 @@ const HomePage = () => {
 
             {/* Button to toggle Component One */}
             <div>
-                {/* <h2>Inventory</h2>
+                <h2>Inventory</h2>
                 <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>
                     Pet Treats
                 </button>
@@ -228,11 +228,11 @@ const HomePage = () => {
                 </button>
                 <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>
                     Pet Toys
-                </button> */}
+                </button>
             </div>
 
             {/* Render UserFoodTable if visibleComponent is 1 */}
-            {/* <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '20px' }}>
                 {visibleComponent === 1 && (
                     <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />
                 )}
@@ -244,7 +244,7 @@ const HomePage = () => {
                 {visibleComponent === 3 && (
                     <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />
                 )}
-            </div> */}
+            </div>
         </div>
     );
 };
