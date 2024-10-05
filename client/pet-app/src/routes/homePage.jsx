@@ -36,24 +36,28 @@ const HomePage = () => {
         }
     }, [pets]);
 
-    // Fetch data for pets and user food
-    const fetchData = async (resetSelectedPet = true) => {
-        try {
-            const response = await fetch(`/api/home?selectedPetId=${selectedPet ? selectedPet.pet_id : 1}`);
-            const data = await response.json();
+ // Fetch data for pets and user food
+ const fetchData = async () => {
+    console.log('Fetching new data...'); // Log when the fetch starts
 
-            setPets(data.pets || []);
+    try {
+        const response = await fetch(`/api/home`);
+        const data = await response.json();
+        console.log('Data received:', data); // Log the received data
+        setPets(data.pets || []);
 
-            // Don't reset the selected pet when fetchData is called periodically
-            if (resetSelectedPet && data.pets.length > 0) {
-                setSelectedPet(data.selectedPet || data.pets[0] || null);
-            } else if (!resetSelectedPet && selectedPet) {
-                // Update selectedPet stats without switching the pet
-                const updatedPet = data.pets.find(pet => pet.pet_id === selectedPet.pet_id);
-                if (updatedPet) {
-                    setSelectedPet(updatedPet);
-                }
+        if (data.pets.length > 0) {
+            // Find the currently selected pet in the newly fetched pets list
+            const existingSelectedPet = data.pets.find(pet => pet.pet_id === selectedPet?.pet_id);
+
+            if (existingSelectedPet) {
+                // Keep the currently selected pet if it exists in the new data
+                setSelectedPet(existingSelectedPet);
+            } else {
+                // If the currently selected pet is no longer available, select the first pet
+                setSelectedPet(data.pets[0]);
             }
+        }
 
             setFoodCount(data.foodCount || 0);
             setUserFood(data.userFood || []);
