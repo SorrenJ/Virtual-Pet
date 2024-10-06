@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import UserToysTable from '../components/UserToysTable';
-import UserToiletriesTable from '../components/UserToiletriesTable';
+// Import the required components for inventory display
 import UserFoodTable from '../components/UserFoodTable';
+import UserToiletriesTable from '../components/UserToiletriesTable';
+import UserToysTable from '../components/UserToysTable';
 
 const MoodTesterPage = () => {
-    const [playGame, setPlayGame] = useState(false); // State to control game visibility
     const [pets, setPets] = useState([]); // To store all pets and their stats
-    const [selectedPet, setSelectedPet] = useState(null);
+    const [selectedPet, setSelectedPet] = useState(null); // Track the selected pet
     const [petStats, setPetStats] = useState(null); // Store stats separately
-    const [userFood, setUserFood] = useState([]); // To store user food data
-    const [foodCount, setFoodCount] = useState(0); // To store food count
-    const [userToiletries, setUserToiletries] = useState([]);
-    const [toiletriesCount, setToiletriesCount] = useState(0);
-    const [userToys, setUserToys] = useState([]);
-    const [toysCount, setToysCount] = useState(0);
-    const [visibleComponent, setVisibleComponent] = useState(null); // To handle component visibility
-    const [isUpdated, setIsUpdated] = useState(false); // Track when to refresh
+    const [sprite, setSprite] = useState(''); // State for the sprite image (per pet)
+    const [moodId, setMoodId] = useState(null); // State for pet's mood
+    const [visibleComponent, setVisibleComponent] = useState(1); // State to control which component is visible
+    const [userFood, setUserFood] = useState([]); // Store user's food inventory
+    const [userToiletries, setUserToiletries] = useState([]); // Store user's toiletries inventory
+    const [userToys, setUserToys] = useState([]); // Store user's toys inventory
 
     // Fetch pet stats function
     const fetchPetStats = async (petId) => {
@@ -23,14 +21,53 @@ const MoodTesterPage = () => {
             const response = await fetch(`/api/pets-stats/${petId}`);
             const data = await response.json();
             setPetStats(data);
-            console.log("front-end updated", data)
-            if (data.hunger < 30) {
-                console.log(`Pet is hungry! Hunger level: ${data.hunger}`);
+            console.log("Pet stats updated for petId:", petId);
+
+            // Check hunger level and update mood based on hunger
+            const newMoodId = data.hunger < 30 ? 5 : 1; // 5 if hungry, 1 otherwise
+
+            // Update mood state if it has changed
+            if (newMoodId !== moodId) {
+                setMoodId(newMoodId);
+                await updatePetMood(petId, newMoodId); // Update the pet's mood on the server
             }
-    
-        
         } catch (error) {
-            console.error('Error fetching pet stats:', error);
+            console.error('Error fetching pet stats or updating mood:', error);
+        }
+    };
+
+    // Function to update pet mood
+    const updatePetMood = async (petId, newMoodId) => {
+        try {
+            const response = await fetch(`/api/pets-stats/update-mood/${petId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ mood_id: newMoodId }),
+            });
+
+            if (response.ok) {
+                console.log(`Mood updated to ${newMoodId} for petId: ${petId}`);
+                // Fetch and update the sprite after mood update
+                await fetchPetSprite(petId);
+            } else {
+                console.error('Failed to update mood');
+            }
+        } catch (error) {
+            console.error('Error updating mood:', error);
+        }
+    };
+
+    // Function to fetch the pet sprite
+    const fetchPetSprite = async (petId) => {
+        try {
+            const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}`);
+            const spriteData = await spriteResponse.json();
+            setSprite(spriteData.image_url); // Update sprite image
+            console.log('Sprite updated:', spriteData.image_url, 'for petId:', petId);
+        } catch (error) {
+            console.error('Error fetching sprite:', error);
         }
     };
 
@@ -41,170 +78,117 @@ const MoodTesterPage = () => {
             const data = await response.json();
             console.log('General data received:', data);
             setPets(data.pets || []);
-            setFoodCount(data.foodCount || 0);
-            setUserFood(data.userFood || []);
-            setToiletriesCount(data.toiletriesCount || 0);
-            setUserToiletries(data.userToiletries || []);
-            setToysCount(data.toysCount || 0);
-            setUserToys(data.userToys || []);
+            setUserFood(data.userFood || []); // Set user's food inventory
+            setUserToiletries(data.userToiletries || []); // Set user's toiletries inventory
+            setUserToys(data.userToys || []); // Set user's toys inventory
 
             if (!selectedPet && data.pets.length > 0) {
-                setSelectedPet(data.pets[0]); // Select the first pet if none is selected
+                const firstPet = data.pets[0];
+                setSelectedPet(firstPet); // Select the first pet if none is selected
+                fetchPetStats(firstPet.pet_id); // Fetch stats for the first pet
+                fetchPetSprite(firstPet.pet_id); // Fetch sprite for the first pet
             }
         } catch (error) {
             console.error('Error fetching general data:', error);
         }
     };
 
-    // UseEffect to fetch stats when selected pet or isUpdated changes
-    useEffect(() => {
-        if (selectedPet) {
-            fetchPetStats(selectedPet.pet_id);
-        }
-    }, [selectedPet, isUpdated]); // Trigger when the selected pet or isUpdated changes
+    // Function to reduce hunger (your specific button)
+    const reduceHunger = async (amount) => {
+        if (!selectedPet) return;
 
-    // Fetch general pet and user data on mount
-    useEffect(() => {
-        fetchGeneralData();
-
-        // Set up a periodic update for pet stats (every 5 seconds)
-        const intervalId = setInterval(() => {
-            if (selectedPet) {
-                fetchPetStats(selectedPet.pet_id); // Fetch stats for the currently selected pet
-            }
-        }, 5000); // 5 seconds
-
-        return () => clearInterval(intervalId); // Cleanup interval on unmount
-    }, [selectedPet]); // Run when selectedPet changes
-
-    // Function to handle feeding the pet
-    const feedPet = async (petId, foodId) => {
         try {
-            console.log('Feeding pet:', petId, 'with food:', foodId);
-            if (!petId || !foodId) {
-                throw new Error('Missing petId or foodId');
-            }
-
-            const response = await fetch('/api/feed-pet', {
-                method: 'POST',
+            const response = await fetch(`/api/pets-stats/reduce-hunger/${selectedPet.pet_id}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ petId, foodId }),
+                body: JSON.stringify({ amount: -amount }), // Sending negative amount to reduce hunger
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
+            if (response.ok) {
+                const updatedPetStats = await response.json();
+                setPetStats(updatedPetStats); // Update the pet stats with the new data
+                console.log(`Hunger reduced by ${amount}. New hunger level: ${updatedPetStats.hunger}`);
 
-            const data = await response.json();
-
-            if (data.success) {
-                alert('Pet fed successfully!');
-                setIsUpdated((prev) => !prev); // Toggle isUpdated to trigger a refresh
+                // Ensure hunger conditional logic works properly here
+                if (updatedPetStats.hunger < 30 && moodId !== 5) {
+                    // Pet is hungry, update mood to hungry
+                    await updatePetMood(selectedPet.pet_id, 5);
+                } else if (updatedPetStats.hunger >= 30 && moodId !== 1) {
+                    // Pet is not hungry, update mood to normal
+                    await updatePetMood(selectedPet.pet_id, 1);
+                }
+            } else {
+                console.error('Failed to reduce hunger');
             }
         } catch (error) {
-            console.error('Error feeding pet:', error);
+            console.error('Error reducing hunger:', error);
         }
     };
 
-    // Function to handle cleaning the pet
-    const cleanPet = async (petId, toiletriesId) => {
-        try {
-            console.log('Cleaning pet:', petId, 'with toiletry:', toiletriesId);
-            if (!petId || !toiletriesId) {
-                throw new Error('Missing petId or toiletriesId');
-            }
+    // Function to clean the pet (increases cleanliness)
+    const cleanPet = async () => {
+        if (!selectedPet) return;
 
-            const response = await fetch('/api/clean-pet', {
-                method: 'POST',
+        try {
+            const response = await fetch(`/api/pets-stats/clean/${selectedPet.pet_id}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ petId, toiletriesId }),
+                body: JSON.stringify({ amount: 10 }), // Increase cleanliness by 10
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                alert('Pet cleaned successfully!');
-                setIsUpdated((prev) => !prev); // Toggle isUpdated to trigger a refresh
+            if (response.ok) {
+                const updatedPetStats = await response.json();
+                setPetStats(updatedPetStats); // Update the pet stats with the new data
+                console.log('Pet cleaned. New cleanliness:', updatedPetStats.cleanliness);
+            } else {
+                console.error('Failed to clean pet');
             }
         } catch (error) {
             console.error('Error cleaning pet:', error);
         }
     };
 
-    // Function to handle playing with the pet
-    const playWithPet = async (petId, toyId) => {
-        try {
-            console.log('Playing with pet:', petId, 'with toy:', toyId);
-            if (!petId || !toyId) {
-                throw new Error('Missing petId or toyId');
-            }
+    // Function to play with the pet (increases happiness)
+    const playWithPet = async () => {
+        if (!selectedPet) return;
 
-            const response = await fetch('/api/play-with-pet', {
-                method: 'POST',
+        try {
+            const response = await fetch(`/api/pets-stats/play/${selectedPet.pet_id}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ petId, toyId }),
+                body: JSON.stringify({ amount: 10 }), // Increase happiness by 10
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                alert('Pet played successfully!');
-                setIsUpdated((prev) => !prev); // Toggle isUpdated to trigger a refresh
+            if (response.ok) {
+                const updatedPetStats = await response.json();
+                setPetStats(updatedPetStats); // Update the pet stats with the new data
+                console.log('Pet played with. New happiness:', updatedPetStats.happiness);
+            } else {
+                console.error('Failed to play with pet');
             }
         } catch (error) {
             console.error('Error playing with pet:', error);
         }
     };
-    
-    // Function to reduce hunger
-const reduceHunger = async (amount) => {
-    if (!selectedPet) return;
 
-    try {
-        // Assuming your backend has an endpoint to reduce hunger, replace `/api/reduce-hunger` with the correct endpoint.
-        const response = await fetch(`/api/pets-stats/reduce-hunger/${selectedPet.pet_id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ amount: -amount }), // Sending negative amount to reduce hunger
-        });
-
-        if (response.ok) {
-            const updatedPetStats = await response.json();
-            setPetStats(updatedPetStats); // Update the pet stats with the new data
-            console.log(`Hunger reduced by ${amount}. New hunger level: ${updatedPetStats.hunger}`);
-        } else {
-            console.error('Failed to reduce hunger');
+    // UseEffect to fetch stats when selected pet changes
+    useEffect(() => {
+        if (selectedPet) {
+            fetchPetStats(selectedPet.pet_id); // Fetch stats for the currently selected pet
+            fetchPetSprite(selectedPet.pet_id); // Fetch sprite for the currently selected pet
         }
-    } catch (error) {
-        console.error('Error reducing hunger:', error);
-    }
-};
+    }, [selectedPet]); // Trigger when the selected pet changes
 
+    // Fetch general pet and user data on mount
+    useEffect(() => {
+        fetchGeneralData();
+    }, []);
 
     return (
         <div>
@@ -219,7 +203,7 @@ const reduceHunger = async (amount) => {
                         value={selectedPet?.pet_id || ''}
                         onChange={(e) => {
                             const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
-                            setSelectedPet(pet);
+                            setSelectedPet(pet); // Set selected pet
                         }}
                     >
                         {pets.map((pet) => (
@@ -232,7 +216,7 @@ const reduceHunger = async (amount) => {
                     {selectedPet && petStats && (
                         <div id="petDetails">
                             <h2>Meet {selectedPet.pet_name}</h2>
-                            <img src={selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <img src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} /> {/* Sprite updates dynamically */}
                             <br />
                             <p>Energy: {petStats.energy}</p>
                             <p>Happiness: {petStats.happiness}</p>
@@ -242,6 +226,9 @@ const reduceHunger = async (amount) => {
                             <p>Species: {selectedPet.species_name}</p>
                             <p>Diet: {selectedPet.diet_desc}</p>
                             <p>Personality: {selectedPet.personality_name}</p>
+
+                            {/* Button to reduce hunger */}
+                            <button onClick={() => reduceHunger(10)}>Feed Pet (Reduce Hunger by 10)</button>
                         </div>
                     )}
                 </>
@@ -249,27 +236,21 @@ const reduceHunger = async (amount) => {
                 <p>No pets available at the moment.</p>
             )}
 
-            {/* Button to toggle Component One */}
-            <div>
-            <button onClick={() => reduceHunger(10)}>Feed Pet (Reduce Hunger)</button>
+            {/* Inventory Section */}
+            <h2>Inventory</h2>
+            <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>
+                Pet Treats
+            </button>
+            <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>
+                Pet Toiletries
+            </button>
+            <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>
+                Pet Toys
+            </button>
 
-
-                <h2>Inventory</h2>
-                <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>
-                    Pet Treats
-                </button>
-                <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>
-                    Pet Toiletries
-                </button>
-                <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>
-                    Pet Toys
-                </button>
-            </div>
-
-            {/* Render UserFoodTable if visibleComponent is 1 */}
             <div style={{ marginTop: '20px' }}>
                 {visibleComponent === 1 && (
-                    <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />
+                    <UserFoodTable userFood={userFood} feedPet={reduceHunger} selectedPet={selectedPet} />
                 )}
 
                 {visibleComponent === 2 && (

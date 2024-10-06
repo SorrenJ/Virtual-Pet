@@ -102,6 +102,48 @@ router.patch('/reduce-hunger/:petId', async (req, res) => {
     }
 });
 
+// Route to update pet mood
+router.patch('/update-mood/:petId', async (req, res) => {
+    const { petId } = req.params;
+    const { mood_id } = req.body; // Get the new mood_id from the request body
+
+    try {
+        // Update the pet's mood in the database
+        const updateQuery = 'UPDATE pets SET mood_id = $1 WHERE id = $2';
+        await pool.query(updateQuery, [mood_id, petId]);
+
+        // Return success response
+        res.status(200).json({ message: 'Mood updated successfully' });
+    } catch (error) {
+        console.error('Error updating mood:', error);
+        res.status(500).json({ error: 'Failed to update mood' });
+    }
+});
+
+// Route to fetch the pet's sprite based on its mood
+router.get('/pet-sprite/:petId', async (req, res) => {
+    const { petId } = req.params;
+
+    try {
+        // Fetch the current sprite based on the pet's mood
+        const spriteQuery = `
+        SELECT s.image_url 
+        FROM sprites s
+        JOIN pets p ON s.species_id = p.species_id AND s.mood_id = p.mood_id
+        WHERE p.id = $1;
+        `;
+        const result = await pool.query(spriteQuery, [petId]);
+
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);
+        } else {
+            res.status(404).json({ error: 'Sprite not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching sprite:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 
 module.exports = router;
