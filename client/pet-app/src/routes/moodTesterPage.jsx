@@ -76,7 +76,7 @@ const MoodTesterPage = () => {
     
                   // If excludeMoodId4 is true, filter out mood_id 4, 10
                   const filteredMoodOptions = excludeMoodId4
-                  ? moodOptions.filter(option => option.id !== 4 || 10)
+                  ? moodOptions.filter(option => option.id !== 4 || 10 || 3)
                   : moodOptions;
       
               // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
@@ -319,6 +319,10 @@ const feedPet = async (petId, foodId) => {
     } catch (error) {
         console.error('Error feeding pet:', error);
     }
+    fetchPetStats(petId);
+    fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+    setIsUpdated(prev => !prev); // Trigger state change to re-render
+
 };
 
 
@@ -358,7 +362,7 @@ const feedPet = async (petId, foodId) => {
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
                 }, 2000); // 2 seconds delay
             
-            console.log("eating anime is done")
+            console.log("cleaning anime is done")
             }
         } catch (error) {
             console.error('Error cleaning pet:', error);
@@ -395,6 +399,18 @@ const feedPet = async (petId, foodId) => {
             if (data.success) {
                 alert('Pet played successfully!');
                 setIsUpdated(prev => !prev);
+    
+                // Temporarily change mood_id to 10
+                await updatePetMood(petId, 3); // Set the mood to 10
+                await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 10
+    
+                // Recalculate the mood_id after 2 seconds
+                setTimeout(async () => {
+                    // Fetch the updated pet stats and recalculate mood based on the stats
+                    await fetchPetStats(petId, true); // Recalculate the mood using the existing function
+                }, 2000); // 2 seconds delay
+            
+            console.log("happy anime is done")
             }
         } catch (error) {
             console.error('Error playing with pet:', error);
