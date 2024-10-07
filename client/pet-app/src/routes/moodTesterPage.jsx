@@ -16,6 +16,42 @@ const MoodTesterPage = () => {
     const [userToys, setUserToys] = useState([]); // Store user's toys inventory
     const [isUpdated, setIsUpdated] = useState(false); // Track when to refresh
 
+    // UseEffect to fetch stats when selected pet changes
+    useEffect(() => {
+        if (selectedPet) {
+            fetchPetStats(selectedPet.pet_id);
+            fetchPetSprite(selectedPet.pet_id);
+        }
+    }, [selectedPet]);
+
+    // Fetch general pet and user data on mount
+    useEffect(() => {
+        const savedSelectedPetId = localStorage.getItem('selectedPetId');
+        fetchGeneralData(savedSelectedPetId);
+    }, []);
+
+    // Fetch general data (pets and user resources)
+    const fetchGeneralData = async (savedSelectedPetId) => {
+        try {
+            const response = await fetch(`/api/home`);
+            const data = await response.json();
+            console.log('General data received:', data);
+            setPets(data.pets || []);
+            setUserFood(data.userFood || []);
+            setUserToiletries(data.userToiletries || []);
+            setUserToys(data.userToys || []);
+    
+            if (data.pets.length > 0) {
+                const restoredPet = data.pets.find(p => p.pet_id === parseInt(savedSelectedPetId));
+                const firstPet = restoredPet || data.pets[0];
+                setSelectedPet(firstPet);
+            }
+        } catch (error) {
+            console.error('Error fetching general data:', error);
+        }
+    };
+    
+
 
     const fetchPetStats = async (petId) => {
         try {
@@ -44,10 +80,11 @@ const MoodTesterPage = () => {
             // Select the moodId of the lowest stat
             const newMoodId = moodOptions[0].id;
     
-            // Update mood state if it has changed
             if (newMoodId !== moodId) {
                 setMoodId(newMoodId);
                 await updatePetMood(petId, newMoodId); // Update the pet's mood on the server
+                localStorage.setItem('selectedPetId', petId); // Save the selected pet to localStorage
+                setIsUpdated(prev => !prev); // Trigger local state update instead
             }
     
             // Fetch updated sprite after the mood change
@@ -57,27 +94,9 @@ const MoodTesterPage = () => {
         }
     };
     
-    // Function to update pet mood
-    const updatePetMood = async (petId, newMoodId) => {
-        try {
-            const response = await fetch(`/api/pets-stats/update-mood/${petId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ mood_id: newMoodId }),
-            });
-    
-            if (response.ok) {
-                console.log(`Mood updated to ${newMoodId} for petId: ${petId}`);
-            } else {
-                console.error('Failed to update mood');
-            }
-        } catch (error) {
-            console.error('Error updating mood:', error);
-        }
-    };
-    
+
+
+     
     const fetchPetSprite = async (petId, moodId) => {
         if (!moodId || isNaN(moodId)) {
             console.error('Invalid or missing moodId:', moodId);
@@ -99,28 +118,32 @@ const MoodTesterPage = () => {
         }
     };
     
-    // Fetch general data (pets and user resources)
-    const fetchGeneralData = async () => {
-        try {
-            const response = await fetch(`/api/home`);
-            const data = await response.json();
-            console.log('General data received:', data);
-            setPets(data.pets || []);
-            setUserFood(data.userFood || []);
-            setUserToiletries(data.userToiletries || []);
-            setUserToys(data.userToys || []);
-    
-            if (!selectedPet && data.pets.length > 0) {
-                const firstPet = data.pets[0];
-                setSelectedPet(firstPet);
-                fetchPetStats(firstPet.pet_id);
-                fetchPetSprite(firstPet.pet_id, 1); // Default moodId to 1 on first load
-            }
-        } catch (error) {
-            console.error('Error fetching general data:', error);
+  // Update pet mood on the server
+  const updatePetMood = async (petId, newMoodId) => {
+    try {
+        const response = await fetch(`/api/pets-stats/update-mood/${petId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mood_id: newMoodId }),
+        });
+
+        if (response.ok) {
+            console.log(`Mood updated to ${newMoodId} for petId: ${petId}`);
+
+            // Store selected pet in localStorage before refreshing the page
+            localStorage.setItem('selectedPet', JSON.stringify(selectedPet));
+          
+        } else {
+            console.error('Failed to update mood');
         }
-    };
-    
+    } catch (error) {
+        console.error('Error updating mood:', error);
+    }
+};
+   
+
 
     // Function to reduce hunger
     const reduceHunger = async (amount) => {
@@ -228,6 +251,12 @@ const MoodTesterPage = () => {
         } catch (error) {
             console.error('Error feeding pet:', error);
         }
+    
+        fetchPetStats(petId);
+        fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+        setIsUpdated(prev => !prev); // Trigger state change to re-render
+    
+    
     };
 
     // Function to clean the pet
@@ -259,6 +288,11 @@ const MoodTesterPage = () => {
         } catch (error) {
             console.error('Error cleaning pet:', error);
         }
+   
+        fetchPetStats(petId);
+        fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+        setIsUpdated(prev => !prev); // Trigger state change to re-render
+   
     };
 
     // Function to play with the pet
@@ -290,6 +324,11 @@ const MoodTesterPage = () => {
         } catch (error) {
             console.error('Error playing with pet:', error);
         }
+    
+        fetchPetStats(petId);
+        fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+        setIsUpdated(prev => !prev); // Trigger state change to re-render
+    
     };
 
     // UseEffect to fetch stats when selected pet changes
