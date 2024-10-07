@@ -102,6 +102,33 @@ router.patch('/reduce-hunger/:petId', async (req, res) => {
     }
 });
 
+
+router.patch('/reduce-energy/:petId', async (req, res) => {
+    const { petId } = req.params;
+    const { amount } = req.body;
+
+    try {
+        // Fetch current pet stats from the database
+        const pet = await pool.query('SELECT energy FROM pets WHERE id = $1', [petId]); // Using pool.query and id instead of pet_id
+
+        if (!pet.rows.length) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        const newEnergy = Math.max(0, pet.rows[0].energy + amount); // Ensure hunger doesn't go below 0
+
+        // Update the hunger in the database
+        await pool.query('UPDATE pets SET energy = $1 WHERE id = $2', [newEnergy, petId]);
+
+        // Return the updated stats
+        const updatedPet = await pool.query('SELECT * FROM pets WHERE id = $1', [petId]);
+        res.json(updatedPet.rows[0]);
+    } catch (error) {
+        console.error('Error reducing energy:', error);
+        res.status(500).json({ error: 'Failed to reduce energy' });
+    }
+});
+
 // Route to update pet mood
 router.patch('/update-mood/:petId', async (req, res) => {
     const { petId } = req.params;
