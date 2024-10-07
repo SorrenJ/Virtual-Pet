@@ -52,7 +52,6 @@ const MoodTesterPage = () => {
     };
     
 
-
     const fetchPetStats = async (petId, excludeMoodId4 = false) => {
         try {
             const response = await fetch(`/api/pets-stats/${petId}`);
@@ -67,20 +66,21 @@ const MoodTesterPage = () => {
             const cleanlinessMoodId = data.cleanliness < 30 ? 9 : 1; // Default to 1 if no mood
     
             // Collect all the moods that need to be considered
-           const moodOptions = [
+            let moodOptions = [
                 { stat: 'hunger', value: data.hunger, id: hungerMoodId },
                 { stat: 'energy', value: data.energy, id: energyMoodId },
                 { stat: 'happiness', value: data.happiness, id: happinessMoodId },
                 { stat: 'cleanliness', value: data.cleanliness, id: cleanlinessMoodId }
             ];
     
-                  // If excludeMoodId4 is true, filter out mood_id 4, 10
-                  const filteredMoodOptions = excludeMoodId4
-                  ? moodOptions.filter(option => option.id !== 4 || 10 || 3)
-                  : moodOptions;
-      
-              // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
-              filteredMoodOptions.sort((a, b) => a.value - b.value || a.id - b.id);
+            // If excludeMoodId4 is true, filter out mood_id 4, 10, 3, 7, 8
+            if (excludeMoodId4) {
+                moodOptions = moodOptions.filter(option => ![4, 10, 3, 7, 8].includes(option.id));
+            }
+    
+            // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
+            moodOptions.sort((a, b) => a.value - b.value || a.id - b.id);
+    
             // Select the moodId of the lowest stat
             const newMoodId = moodOptions[0].id;
     
@@ -253,30 +253,55 @@ const MoodTesterPage = () => {
 
 
                        // Function to reduce energy
-        const sleepButton = async (amount) => {
-            if (!selectedPet) return;
-    
-            try {
-                const response = await fetch(`/api/pets-stats/sleep/${selectedPet.pet_id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ amount: +amount }),
-                });
-    
-                if (response.ok) {
-                    const updatedPetStats = await response.json();
-                    setPetStats(updatedPetStats);
-                    setIsUpdated(prev => !prev);
-                    console.log(`sleep by ${amount}. New energy level: ${updatedPetStats.energy}`);
-                } else {
-                    console.error('Failed to sleep');
-                }
-            } catch (error) {
-                console.error('Error sleeping:', error);
-            }
-        };
+// Function to handle sleeping the pet and changing mood temporarily
+// Function to handle sleeping the pet and changing mood temporarily
+// Function to handle sleeping the pet and increasing energy stat, and changing mood temporarily
+const sleepButton = async (amount, petId) => {
+    if (!selectedPet) return;
+
+    try {
+        // Step 1: Increase the energy stat by the specified amount
+        const response = await fetch(`/api/sleep-pet/${petId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount: +amount }), // Increase energy by 'amount'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setPetStats(data.pet); // Update pet stats
+            setIsUpdated(prev => !prev); // Force state update for UI refresh
+            console.log(`Energy increased by ${amount}. New energy level: ${data.pet.energy}`);
+
+            // Step 2: Set the mood to 8 (resting)
+            await updatePetMood(petId, 7); // Set mood to 8 (resting)
+            await fetchPetSprite(petId, 7); // Update the sprite to reflect mood 8 (resting)
+            console.log('Mood set to 8 (resting)');
+
+            // Step 3: After 3 seconds, set the mood to 9 (post-sleep)
+            setTimeout(async () => {
+                await updatePetMood(petId, 8); // Set mood to 9 (post-sleep)
+                await fetchPetSprite(petId, 8); // Update the sprite to reflect mood 9 (post-sleep)
+                console.log('Mood set to 9 (post-sleep)');
+
+                // Step 4: After another 3 seconds, reset the mood to 1 (default)
+                setTimeout(async () => {
+                    await updatePetMood(petId, 1); // Reset mood to 1 (default)
+                    await fetchPetSprite(petId, 1); // Update the sprite to reflect mood 1 (default)
+                    console.log('Mood reset to 1 (default)');
+                }, 3000); // 3 seconds after changing to mood 9
+            }, 3000); // 3 seconds after changing to mood 8
+        } else {
+            console.error('Failed to update energy and sleep the pet');
+        }
+    } catch (error) {
+        console.error('Error while sleeping and updating energy:', error);
+    }
+};
+
+
     
 // Function to handle feeding the pet
 const feedPet = async (petId, foodId) => {
@@ -477,7 +502,8 @@ const feedPet = async (petId, foodId) => {
                             <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
                             <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
                             <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
-                            <button onClick={() => sleepButton(100)}>Sleep</button>
+                           <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
+
                         </div>
                     )}
                 </>
