@@ -221,9 +221,7 @@ const MoodTesterPage = () => {
                 console.error('Error reducing energy:', error);
             }
         };
-    
-
-                // Function to reduce energy
+            // Function to reduce energy
                 const reduceCleanliness = async (amount) => {
                     if (!selectedPet) return;
             
@@ -247,6 +245,35 @@ const MoodTesterPage = () => {
                         console.error('Error reducing clean:', error);
                     }
                 };
+
+
+
+                       // Function to reduce energy
+        const sleepButton = async (amount) => {
+            if (!selectedPet) return;
+    
+            try {
+                const response = await fetch(`/api/pets-stats/sleep/${selectedPet.pet_id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount: +amount }),
+                });
+    
+                if (response.ok) {
+                    const updatedPetStats = await response.json();
+                    setPetStats(updatedPetStats);
+                    setIsUpdated(prev => !prev);
+                    console.log(`sleep by ${amount}. New energy level: ${updatedPetStats.energy}`);
+                } else {
+                    console.error('Failed to sleep');
+                }
+            } catch (error) {
+                console.error('Error sleeping:', error);
+            }
+        };
+    
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
         try {
@@ -411,6 +438,7 @@ const MoodTesterPage = () => {
                             <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
                             <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
                             <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
+                            <button onClick={() => sleepButton(100)}>Sleep</button>
                         </div>
                     )}
                 </>
