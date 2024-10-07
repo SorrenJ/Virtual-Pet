@@ -222,6 +222,31 @@ const MoodTesterPage = () => {
             }
         };
     
+
+                // Function to reduce energy
+                const reduceCleanliness = async (amount) => {
+                    if (!selectedPet) return;
+            
+                    try {
+                        const response = await fetch(`/api/pets-stats/reduce-cleanliness/${selectedPet.pet_id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount: -amount }),
+                        });
+            
+                        if (response.ok) {
+                            const updatedPetStats = await response.json();
+                            setPetStats(updatedPetStats);
+                            console.log(`reduce-cleanliness reduced by ${amount}. New energy level: ${updatedPetStats.cleanliness}`);
+                        } else {
+                            console.error('Failed to reduce clean');
+                        }
+                    } catch (error) {
+                        console.error('Error reducing clean:', error);
+                    }
+                };
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
         try {
@@ -385,6 +410,7 @@ const MoodTesterPage = () => {
                             <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
                             <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
                             <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
+                            <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
                         </div>
                     )}
                 </>

@@ -159,6 +159,33 @@ router.patch('/reduce-happiness/:petId', async (req, res) => {
     }
 });
 
+router.patch('/reduce-cleanliness/:petId', async (req, res) => {
+    const { petId } = req.params;
+    const { amount } = req.body;
+
+    try {
+        // Fetch current pet stats from the database
+        const pet = await pool.query('SELECT cleanliness FROM pets WHERE id = $1', [petId]); // Using pool.query and id instead of pet_id
+
+        if (!pet.rows.length) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        const newCleanliness  = Math.max(0, pet.rows[0].cleanliness  + amount); // Ensure hunger doesn't go below 0
+
+        // Update the hunger in the database
+        await pool.query('UPDATE pets SET cleanliness  = $1 WHERE id = $2', [newCleanliness , petId]);
+
+        // Return the updated stats
+        const updatedPet = await pool.query('SELECT * FROM pets WHERE id = $1', [petId]);
+        res.json(updatedPet.rows[0]);
+    } catch (error) {
+        console.error('Error reducing cleanliness :', error);
+        res.status(500).json({ error: 'Failed to reduce cleanliness ' });
+    }
+});
+
+
 router.patch('/update-mood/:petId', async (req, res) => {
     const { petId } = req.params;
     let { moodId } = req.body; // Get the new mood_id from the request body
