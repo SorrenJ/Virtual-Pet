@@ -74,9 +74,9 @@ const MoodTesterPage = () => {
                 { stat: 'cleanliness', value: data.cleanliness, id: cleanlinessMoodId }
             ];
     
-                  // If excludeMoodId4 is true, filter out mood_id 4
+                  // If excludeMoodId4 is true, filter out mood_id 4, 10
                   const filteredMoodOptions = excludeMoodId4
-                  ? moodOptions.filter(option => option.id !== 4)
+                  ? moodOptions.filter(option => option.id !== 4 || 10)
                   : moodOptions;
       
               // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
@@ -347,6 +347,18 @@ const feedPet = async (petId, foodId) => {
             if (data.success) {
                 alert('Pet cleaned successfully!');
                 setIsUpdated(prev => !prev);
+    
+                // Temporarily change mood_id to 10
+                await updatePetMood(petId, 10); // Set the mood to 10
+                await fetchPetSprite(petId, 10); // Update the sprite for mood_id = 10
+    
+                // Recalculate the mood_id after 2 seconds
+                setTimeout(async () => {
+                    // Fetch the updated pet stats and recalculate mood based on the stats
+                    await fetchPetStats(petId, true); // Recalculate the mood using the existing function
+                }, 2000); // 2 seconds delay
+            
+            console.log("eating anime is done")
             }
         } catch (error) {
             console.error('Error cleaning pet:', error);
