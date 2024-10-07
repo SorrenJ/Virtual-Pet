@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // Import the required components for inventory display
 import UserFoodTable from '../components/UserFoodTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
@@ -18,6 +18,8 @@ const MoodTesterPage = () => {
     const [foodCount, setFoodCount] = useState(0); // To store food count
     const [toiletriesCount, setToiletriesCount] = useState(0);
     const [toysCount, setToysCount] = useState(0);
+    const [forceRender, setForceRender] = useState(0); // State to force re-render
+    const spriteRef = useRef(null);
     // UseEffect to fetch stats when selected pet changes
     useEffect(() => {
         if (selectedPet) {
@@ -145,10 +147,11 @@ if (!colorId) {
         try {
              const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}?mood_id=${moodId}&color_id=${colorId}`);
             const spriteData = await spriteResponse.json();
-    
+            const spriteWithCacheBuster = `${spriteData.image_url}?v=${new Date().getTime()}`;
+           
             if (sprite !== spriteData.image_url) { // Only update if the image has changed
-                setSprite(spriteData.image_url); // Update sprite image dynamically based on mood
-                console.log('Sprite updated:', spriteData.image_url, 'for petId:', petId, 'with moodId:', moodId, 'and colorId:', colorId);
+                setSprite(spriteWithCacheBuster); // Update sprite image dynamically based on mood
+                console.log('Sprite updated:', spriteWithCacheBuster, 'for petId:', petId, 'with moodId:', moodId);
             } else {
                 console.log('Sprite has not changed, keeping the current image.');
             }
@@ -312,21 +315,23 @@ const sleepButton = async (amount, petId) => {
 
             // Step 2: Set the mood to 8 (resting)
             await updatePetMood(petId, 7); // Set mood to 8 (resting)
-            await fetchPetSprite(petId, 7); // Update the sprite to reflect mood 8 (resting)
+            await fetchPetSprite(petId, 7, selectedPet.color_id); // Update the sprite to reflect mood 8 (resting)
             console.log('Mood set to 8 (resting)');
 
             // Step 3: After 3 seconds, set the mood to 9 (post-sleep)
             setTimeout(async () => {
                 await updatePetMood(petId, 8); // Set mood to 9 (post-sleep)
-                await fetchPetSprite(petId, 8); // Update the sprite to reflect mood 9 (post-sleep)
+                await fetchPetSprite(petId, 8, selectedPet.color_id); // Update the sprite to reflect mood 9 (post-sleep)
                 console.log('Mood set to 9 (post-sleep)');
 
                 // Step 4: After another 3 seconds, reset the mood to 1 (default)
                 setTimeout(async () => {
-                    await updatePetMood(petId, 1); // Reset mood to 1 (default)
-                    await fetchPetSprite(petId, 1); // Update the sprite to reflect mood 1 (default)
+                    await updatePetMood(petId, true); // Reset mood to 1 (default)
+                    await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                     console.log('Mood reset to 1 (default)');
+                    forceImageReload();
                 }, 3000); // 3 seconds after changing to mood 9
+           
             }, 3000); // 3 seconds after changing to mood 8
         } else {
             console.error('Failed to update energy and sleep the pet');
@@ -372,8 +377,10 @@ const feedPet = async (petId, foodId) => {
             setTimeout(async () => {
                 // Fetch the updated pet stats and recalculate mood based on the stats
                 await fetchPetStats(petId, true); // Recalculate the mood using the existing function
+                await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
+              
             }, 2000); // 2 seconds delay
-        
+            forceImageReload();
         console.log("eating anime is done")
         }
     } catch (error) {
@@ -420,8 +427,9 @@ const feedPet = async (petId, foodId) => {
                 setTimeout(async () => {
                     // Fetch the updated pet stats and recalculate mood based on the stats
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
+                    await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                 }, 2000); // 2 seconds delay
-            
+                forceImageReload();
             console.log("cleaning anime is done")
             }
         } catch (error) {
@@ -468,8 +476,9 @@ const feedPet = async (petId, foodId) => {
                 setTimeout(async () => {
                     // Fetch the updated pet stats and recalculate mood based on the stats
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
+                    await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                 }, 2000); // 2 seconds delay
-            
+                forceImageReload();
             console.log("happy anime is done")
             }
         } catch (error) {
@@ -489,6 +498,15 @@ const feedPet = async (petId, foodId) => {
             fetchPetSprite(selectedPet.pet_id);
         }
     }, [selectedPet]);
+
+ 
+
+    const forceImageReload = () => {
+        if (spriteRef.current) {
+            spriteRef.current.src = `${spriteRef.current.src}?v=${new Date().getTime()}`;
+        }
+    };
+
 
     // Fetch general pet and user data on mount
     useEffect(() => {
@@ -521,7 +539,7 @@ const feedPet = async (petId, foodId) => {
                     {selectedPet && petStats && (
                         <div id="petDetails">
                             <h2>Meet {selectedPet.pet_name}</h2>
-                            <img src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <img ref={spriteRef} src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
                             <br />
                             <p>Energy: {petStats.energy}</p>
                             <p>Happiness: {petStats.happiness}</p>
