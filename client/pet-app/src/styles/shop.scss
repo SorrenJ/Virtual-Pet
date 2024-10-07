@@ -1,0 +1,114 @@
+.shop {
+  display: flex; // Use flexbox for layout
+}
+
+.shopkeeper-container {
+  position: fixed; // Keep the shopkeeper fixed
+  overflow: visible; // Ensure the image is not cut off
+  width: 30%; // Width of the shopkeeper container
+  height: 100vh; // Full height to keep it fixed
+  background-color: #312438; // Optional: Background color for better visibility
+  background-image: url("https://www.transparenttextures.com/patterns/old-map.png");
+  padding-top: 44px;
+}
+
+.items-container {
+  margin-left: 30%; // Leave space for the shopkeeper
+  display: flex;
+  flex-direction: column; // Stack items vertically
+  width: 70%; // Occupy the remaining width
+  padding: 35px; // Optional: add padding for spacing
+}
+
+.money {
+  @apply text-3xl font-bold;
+  color: green;
+  position: relative; // Position absolutely
+  top: 10px; // Adjust as needed
+  right: 0em; // Adjust as needed
+}
+
+.shopkeeper {
+  @apply w-full; // Make shopkeeper image full width of container
+  height: auto; // Keep aspect ratio
+  border: 15px solid black;
+}
+
+.shopkeeper-text {
+  position: absolute; // Position text absolutely
+  top: 75px; // Adjust this value to position text vertically
+  left: 75px; // Adjust this value to position text horizontally
+  color: white; // Change text color as needed
+  background-color: rgba(0, 0, 0, 0.5); // Optional: add a semi-transparent background for better readability
+  padding: 5px; // Optional: add padding around the text
+  border-radius: 4px; // Optional: rounded corners
+  z-index: 10; // Ensure it appears above other elements
+  font-size: 24px; // Increase text size (adjust the value as needed)
+  font-weight: bold; // Optional: make the text bold
+}
+
+.category-container {
+  margin-bottom: 20px; // Space between categories
+  text-align: center; // Center align the category title
+}
+
+.items-row {
+  display: flex; // Flexbox for horizontal alignment
+  justify-content: center; // Center items horizontally
+  margin: 10px 0; // Margin between rows
+}
+
+.toys-container h1,
+.toiletries-container h1,
+.foods-container h1 {
+  display: flex;
+  justify-content: center; // Center the title
+  margin-bottom: 10px; // Space below the title
+  padding-top: 12px;
+}
+
+// Add this to your existing styles
+.toys, .toiletries, .foods {
+  border: 2px solid #ccc; // Light gray border
+  border-radius: 8px; // Rounded corners for better appearance
+  padding: 10px; // Padding inside each item
+  margin: 10px; // Margin outside each item
+  width: 150px; // Set a consistent width for each item
+  text-align: center; // Center text within the item box
+  background-color: #f9f9f9; // Light background for better visibility
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optional: subtle shadow for depth
+}
+
+.items-row {
+  display: flex; // Flexbox for horizontal alignment
+  justify-content: center; // Center items horizontally
+  margin: 10px 0; // Margin between rows
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer; // Change cursor to pointer
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px; // Increased width to accommodate both description and price
+  background-color: black; // Background color of the tooltip
+  color: #fff; // Text color
+  text-align: center; // Center text
+  border-radius: 5px; // Rounded corners
+  padding: 10px; // Increased padding for more space
+  position: absolute; // Absolute positioning
+  z-index: 1; // Ensure tooltip appears above other elements
+  bottom: 100%; // Position above the element
+  left: 50%; // Center horizontally
+  margin-left: -100px; // Center the tooltip properly (half of the width)
+  opacity: 0; // Start invisible
+  transition: opacity 0.3s; // Fade effect
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible; // Show on hover
+  opacity: 1; // Fade in
+}
