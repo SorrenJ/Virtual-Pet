@@ -28,6 +28,8 @@ const decrementPetStats = async () => {
             `;
             await pool.query(updateQuery, [newEnergy, newHappiness, newHunger, newCleanliness, pet.pet_id]);
         }
+
+        console.timeEnd('decrementPetStats'); // End timer
         console.log('Pet stats updated successfully.');
     } catch (error) {
         console.error('Error decrementing pet stats:', error);
@@ -129,15 +131,45 @@ router.patch('/reduce-energy/:petId', async (req, res) => {
     }
 });
 
-// Route to update pet mood
+
+
+router.patch('/reduce-happiness/:petId', async (req, res) => {
+    const { petId } = req.params;
+    const { amount } = req.body;
+
+    try {
+        // Fetch current pet stats from the database
+        const pet = await pool.query('SELECT happiness FROM pets WHERE id = $1', [petId]); // Using pool.query and id instead of pet_id
+
+        if (!pet.rows.length) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        const newhappiness  = Math.max(0, pet.rows[0].happiness  + amount); // Ensure hunger doesn't go below 0
+
+        // Update the hunger in the database
+        await pool.query('UPDATE pets SET happiness  = $1 WHERE id = $2', [newhappiness , petId]);
+
+        // Return the updated stats
+        const updatedPet = await pool.query('SELECT * FROM pets WHERE id = $1', [petId]);
+        res.json(updatedPet.rows[0]);
+    } catch (error) {
+        console.error('Error reducing happiness :', error);
+        res.status(500).json({ error: 'Failed to reduce happiness ' });
+    }
+});
+
 router.patch('/update-mood/:petId', async (req, res) => {
     const { petId } = req.params;
-    const { mood_id } = req.body; // Get the new mood_id from the request body
+    let { moodId } = req.body; // Get the new mood_id from the request body
+
+    // Default mood_id to 1 if not provided or invalid
+    moodId = !moodId || isNaN(parseInt(moodId, 10)) ? 1 : parseInt(moodId, 10);
 
     try {
         // Update the pet's mood in the database
         const updateQuery = 'UPDATE pets SET mood_id = $1 WHERE id = $2';
-        await pool.query(updateQuery, [mood_id, petId]);
+        await pool.query(updateQuery, [moodId, petId]);
 
         // Return success response
         res.status(200).json({ message: 'Mood updated successfully' });
@@ -150,27 +182,32 @@ router.patch('/update-mood/:petId', async (req, res) => {
 // Route to fetch the pet's sprite based on its mood
 router.get('/pet-sprite/:petId', async (req, res) => {
     const { petId } = req.params;
+    let { mood_id } = req.query; // Get the moodId from the query string
+
+    // Default mood_id to 1 if not provided or invalid
+    mood_id = !mood_id || isNaN(parseInt(mood_id, 10)) ? 1 : parseInt(mood_id, 10);
 
     try {
-        // Fetch the current sprite based on the pet's mood
+        // Fetch the current sprite based on the pet's species and mood
         const spriteQuery = `
         SELECT s.image_url 
         FROM sprites s
-        JOIN pets p ON s.species_id = p.species_id AND s.mood_id = p.mood_id
-        WHERE p.id = $1;
+        JOIN pets p ON s.species_id = p.species_id
+        WHERE p.id = $1 AND s.mood_id = $2;
         `;
-        const result = await pool.query(spriteQuery, [petId]);
+        const result = await pool.query(spriteQuery, [petId, parseInt(mood_id, 10)]); // Ensure mood_id is passed as an integer
 
         if (result.rows.length > 0) {
-            res.json(result.rows[0]);
+            res.json(result.rows[0]); // Return the sprite URL
         } else {
-            res.status(404).json({ error: 'Sprite not found' });
+            res.status(404).json({ error: 'Sprite not found for this mood' });
         }
     } catch (error) {
         console.error('Error fetching sprite:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 
 module.exports = router;

@@ -25,10 +25,10 @@ const MoodTesterPage = () => {
             console.log("Pet stats updated for petId:", petId);
     
             // Determine mood based on stat thresholds
-            const hungerMoodId = data.hunger < 30 ? 5 : null;
-            const energyMoodId = data.energy < 30 ? 6 : null;
-            const happinessMoodId = data.happiness < 30 ? 12 : null;
-            const cleanlinessMoodId = data.cleanliness < 30 ? 9 : null;
+            const hungerMoodId = data.hunger < 30 ? 5 : 1; // Default to 1 if no mood
+            const energyMoodId = data.energy < 30 ? 6 : 1; // Default to 1 if no mood
+            const happinessMoodId = data.happiness < 30 ? 12 : 1; // Default to 1 if no mood
+            const cleanlinessMoodId = data.cleanliness < 30 ? 9 : 1; // Default to 1 if no mood
     
             // Collect all the moods that need to be considered
             const moodOptions = [
@@ -36,22 +36,13 @@ const MoodTesterPage = () => {
                 { stat: 'energy', value: data.energy, id: energyMoodId },
                 { stat: 'happiness', value: data.happiness, id: happinessMoodId },
                 { stat: 'cleanliness', value: data.cleanliness, id: cleanlinessMoodId }
-            ].filter(option => option.id !== null); // Only keep the ones that have an ID
+            ];
+    
+            // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
+            moodOptions.sort((a, b) => a.value - b.value || a.id - b.id);
             
-            // Determine the new mood ID
-            let newMoodId = 1; // Default mood when all stats are above 30
-            
-            if (moodOptions.length > 0) {
-                // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
-                moodOptions.sort((a, b) => {
-                    if (a.value === b.value) {
-                        return a.id - b.id; // Use smallest ID when values are the same
-                    }
-                    return a.value - b.value; // Otherwise, use the smallest stat value
-                });
-                
-                newMoodId = moodOptions[0].id; // Pick the lowest ID based on the lowest stat
-            }
+            // Select the moodId of the lowest stat
+            const newMoodId = moodOptions[0].id;
     
             // Update mood state if it has changed
             if (newMoodId !== moodId) {
@@ -60,7 +51,7 @@ const MoodTesterPage = () => {
             }
     
             // Fetch updated sprite after the mood change
-            await fetchPetSprite(petId); // Ensure sprite is fetched after mood update
+            await fetchPetSprite(petId, newMoodId); // Ensure sprite is fetched after mood update
         } catch (error) {
             console.error('Error fetching pet stats or updating mood:', error);
         }
@@ -87,15 +78,19 @@ const MoodTesterPage = () => {
         }
     };
     
-    // Function to fetch the pet sprite
-    const fetchPetSprite = async (petId) => {
+    const fetchPetSprite = async (petId, moodId) => {
+        if (!moodId || isNaN(moodId)) {
+            console.error('Invalid or missing moodId:', moodId);
+            return;
+        }
+    
         try {
-            const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}`);
+            const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}?mood_id=${moodId}`);
             const spriteData = await spriteResponse.json();
-            
+    
             if (sprite !== spriteData.image_url) { // Only update if the image has changed
                 setSprite(spriteData.image_url); // Update sprite image dynamically based on mood
-                console.log('Sprite updated:', spriteData.image_url, 'for petId:', petId);
+                console.log('Sprite updated:', spriteData.image_url, 'for petId:', petId, 'with moodId:', moodId);
             } else {
                 console.log('Sprite has not changed, keeping the current image.');
             }
@@ -103,25 +98,6 @@ const MoodTesterPage = () => {
             console.error('Error fetching sprite:', error);
         }
     };
-    
-    // Track image changes with useEffect
-    useEffect(() => {
-        if (sprite) {
-            console.log('Sprite image updated to:', sprite);
-            // Any additional logic for when the image changes
-        }
-    }, [sprite]);
-    
-    // Example useEffect for re-fetching data at intervals (optional)
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (selectedPet) {
-                fetchPetStats(selectedPet.pet_id);
-            }
-        }, 5000); // Example: refetch stats every 5 seconds
-    
-        return () => clearInterval(interval); // Clean up on unmount
-    }, [selectedPet]);
     
     // Fetch general data (pets and user resources)
     const fetchGeneralData = async () => {
@@ -133,17 +109,18 @@ const MoodTesterPage = () => {
             setUserFood(data.userFood || []);
             setUserToiletries(data.userToiletries || []);
             setUserToys(data.userToys || []);
-
+    
             if (!selectedPet && data.pets.length > 0) {
                 const firstPet = data.pets[0];
                 setSelectedPet(firstPet);
                 fetchPetStats(firstPet.pet_id);
-                fetchPetSprite(firstPet.pet_id);
+                fetchPetSprite(firstPet.pet_id, 1); // Default moodId to 1 on first load
             }
         } catch (error) {
             console.error('Error fetching general data:', error);
         }
     };
+    
 
     // Function to reduce hunger
     const reduceHunger = async (amount) => {
@@ -195,6 +172,33 @@ const MoodTesterPage = () => {
         }
     };
 
+
+
+        // Function to reduce energy
+        const reduceHappiness = async (amount) => {
+            if (!selectedPet) return;
+    
+            try {
+                const response = await fetch(`/api/pets-stats/reduce-happiness/${selectedPet.pet_id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount: -amount }),
+                });
+    
+                if (response.ok) {
+                    const updatedPetStats = await response.json();
+                    setPetStats(updatedPetStats);
+                    console.log(`reduce-happiness reduced by ${amount}. New energy level: ${updatedPetStats.energy}`);
+                } else {
+                    console.error('Failed to reduce energy');
+                }
+            } catch (error) {
+                console.error('Error reducing energy:', error);
+            }
+        };
+    
     // Function to handle feeding the pet
     const feedPet = async (petId, foodId) => {
         try {
@@ -341,6 +345,7 @@ const MoodTesterPage = () => {
                             {/* Button to reduce hunger */}
                             <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
                             <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
+                            <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
                         </div>
                     )}
                 </>
