@@ -71,6 +71,8 @@ const checkForDeath = async (petId, stats) => {
         await updatePetMood(petId, 14);
         await fetchPetSprite(petId, 14); // Fetch and update the sprite for mood_id = 14
     }
+
+    setForceRender(prev => prev + 1); // Trigger a re-render after mood change
 };
 
 
@@ -130,6 +132,8 @@ if (!colorId) {
         } catch (error) {
             console.error('Error fetching pet stats or updating mood:', error);
         }
+   
+        setForceRender(prev => prev + 1); // Trigger a re-render after mood change
     };
     
 
@@ -158,6 +162,7 @@ if (!colorId) {
         } catch (error) {
             console.error('Error fetching sprite:', error);
         }
+        setForceRender(prev => prev + 1); // Trigger a re-render after mood change
     };
     
   // Update pet mood on the server
@@ -380,14 +385,13 @@ const feedPet = async (petId, foodId) => {
                 await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
               
             }, 2000); // 2 seconds delay
-            forceImageReload();
+          
         console.log("eating anime is done")
         }
     } catch (error) {
         console.error('Error feeding pet:', error);
     }
-    fetchPetStats(petId);
-    fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+
     setIsUpdated(prev => !prev); // Trigger state change to re-render
 
 };
@@ -429,15 +433,14 @@ const feedPet = async (petId, foodId) => {
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
                     await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                 }, 2000); // 2 seconds delay
-                forceImageReload();
+              
             console.log("cleaning anime is done")
             }
         } catch (error) {
             console.error('Error cleaning pet:', error);
         }
    
-        fetchPetStats(petId);
-        fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+    
         setIsUpdated(prev => !prev); // Trigger state change to re-render
    
     };
@@ -478,15 +481,14 @@ const feedPet = async (petId, foodId) => {
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
                     await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                 }, 2000); // 2 seconds delay
-                forceImageReload();
+               
             console.log("happy anime is done")
             }
         } catch (error) {
             console.error('Error playing with pet:', error);
         }
     
-        fetchPetStats(petId);
-        fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
+    
         setIsUpdated(prev => !prev); // Trigger state change to re-render
     
     };
@@ -496,6 +498,7 @@ const feedPet = async (petId, foodId) => {
         if (selectedPet) {
             fetchPetStats(selectedPet.pet_id);
             fetchPetSprite(selectedPet.pet_id);
+            setForceRender(prev => prev + 1); // Trigger a re-render after mood change
         }
     }, [selectedPet]);
 
