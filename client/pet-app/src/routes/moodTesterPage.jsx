@@ -22,10 +22,18 @@ const MoodTesterPage = () => {
     const spriteRef = useRef(null);
     // UseEffect to fetch stats when selected pet changes
     useEffect(() => {
+
+        let intervalId;
         if (selectedPet) {
             fetchPetStats(selectedPet.pet_id);
-            fetchPetSprite(selectedPet.pet_id);
-        }
+            intervalId = setInterval(() => {
+                fetchPetStats(selectedPet.pet_id);
+            }, 5000); // Check every 5 seconds (adjust the interval as needed)
+        }  return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
     }, [selectedPet]);
 
     // Fetch general pet and user data on mount
@@ -128,7 +136,7 @@ if (!colorId) {
             }
     
             // Fetch updated sprite after the mood change
-            await fetchPetSprite(petId, newMoodId); // Ensure sprite is fetched after mood update
+            await fetchPetSprite(petId, newMoodId, data.color_id); // Ensure sprite is fetched after mood update
         } catch (error) {
             console.error('Error fetching pet stats or updating mood:', error);
         }
