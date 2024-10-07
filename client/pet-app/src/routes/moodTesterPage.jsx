@@ -15,7 +15,9 @@ const MoodTesterPage = () => {
     const [userToiletries, setUserToiletries] = useState([]); // Store user's toiletries inventory
     const [userToys, setUserToys] = useState([]); // Store user's toys inventory
     const [isUpdated, setIsUpdated] = useState(false); // Track when to refresh
-
+    const [foodCount, setFoodCount] = useState(0); // To store food count
+    const [toiletriesCount, setToiletriesCount] = useState(0);
+    const [toysCount, setToysCount] = useState(0);
     // UseEffect to fetch stats when selected pet changes
     useEffect(() => {
         if (selectedPet) {
@@ -37,10 +39,16 @@ const MoodTesterPage = () => {
             const data = await response.json();
             console.log('General data received:', data);
             setPets(data.pets || []);
+            data.pets.forEach(pet => console.log(`Pet: ${pet.pet_name}, Color ID: ${pet.color_id}`));
+            
             setUserFood(data.userFood || []);
             setUserToiletries(data.userToiletries || []);
             setUserToys(data.userToys || []);
-    
+            setToiletriesCount(data.toiletriesCount || 0);
+            setUserToiletries(data.userToiletries || []);
+            setToysCount(data.toysCount || 0);
+            setUserToys(data.userToys || []);
+            
             if (data.pets.length > 0) {
                 const restoredPet = data.pets.find(p => p.pet_id === parseInt(savedSelectedPetId));
                 const firstPet = restoredPet || data.pets[0];
@@ -71,6 +79,15 @@ const checkForDeath = async (petId, stats) => {
             setPetStats(data);
             console.log("Pet stats updated for petId:", petId);
     
+
+// Ensure color_id is present
+const colorId = data.color_id;
+console.log("Color ID:", colorId);
+
+if (!colorId) {
+    throw new Error("Color ID is missing");
+}
+
         // Call the checkForDeath function to verify if any stat is below 1
         await checkForDeath(petId, data);
 
@@ -116,19 +133,22 @@ const checkForDeath = async (petId, stats) => {
 
 
      
-    const fetchPetSprite = async (petId, moodId) => {
-        if (!moodId || isNaN(moodId)) {
-            console.error('Invalid or missing moodId:', moodId);
+    const fetchPetSprite = async (petId, moodId, colorId) => {
+        if (!moodId || isNaN(moodId) || !colorId || isNaN(colorId)) {
+            console.error('Invalid or missing moodId or colorId:', moodId, colorId);
             return;
         }
-    
+        if (!colorId) {
+            console.error('Invalid or missing colorId:', colorId);
+            return;
+        }
         try {
-            const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}?mood_id=${moodId}`);
+             const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}?mood_id=${moodId}&color_id=${colorId}`);
             const spriteData = await spriteResponse.json();
     
             if (sprite !== spriteData.image_url) { // Only update if the image has changed
                 setSprite(spriteData.image_url); // Update sprite image dynamically based on mood
-                console.log('Sprite updated:', spriteData.image_url, 'for petId:', petId, 'with moodId:', moodId);
+                console.log('Sprite updated:', spriteData.image_url, 'for petId:', petId, 'with moodId:', moodId, 'and colorId:', colorId);
             } else {
                 console.log('Sprite has not changed, keeping the current image.');
             }
@@ -152,8 +172,8 @@ const checkForDeath = async (petId, stats) => {
             console.log(`Mood updated to ${newMoodId} for petId: ${petId}`);
 
             // Store selected pet in localStorage before refreshing the page
-            localStorage.setItem('selectedPet', JSON.stringify(selectedPet));
-          
+            // localStorage.setItem('selectedPet', JSON.stringify(selectedPet));
+            await fetchPetSprite(petId, newMoodId, selectedPet.color_id); 
         } else {
             console.error('Failed to update mood');
         }

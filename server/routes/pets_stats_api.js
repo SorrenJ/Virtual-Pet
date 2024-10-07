@@ -62,7 +62,8 @@ router.get('/:petId', async (req, res) => {
                 p.energy, 
                 p.happiness, 
                 p.hunger, 
-                p.cleanliness
+                p.cleanliness,
+                p.color_id 
             FROM pets p
             WHERE p.id = $1
         `;
@@ -212,8 +213,12 @@ router.patch('/update-mood/:petId', async (req, res) => {
 // Route to fetch the pet's sprite based on its mood
 router.get('/pet-sprite/:petId', async (req, res) => {
     const { petId } = req.params;
-    let { mood_id } = req.query; // Get the moodId from the query string
+    let { mood_id, color_id } = req.query; // Get the moodId and colorId from the query string
 
+
+    if (!mood_id || !color_id) {
+        return res.status(400).json({ error: 'Invalid or missing mood_id or color_id' });
+    }
     // Default mood_id to 1 if not provided or invalid
     mood_id = !mood_id || isNaN(parseInt(mood_id, 10)) ? 1 : parseInt(mood_id, 10);
 
@@ -223,9 +228,9 @@ router.get('/pet-sprite/:petId', async (req, res) => {
         SELECT s.image_url 
         FROM sprites s
         JOIN pets p ON s.species_id = p.species_id
-        WHERE p.id = $1 AND s.mood_id = $2;
+        WHERE p.id = $1 AND s.mood_id = $2 AND s.color_id = $3;
         `;
-        const result = await pool.query(spriteQuery, [petId, parseInt(mood_id, 10)]); // Ensure mood_id is passed as an integer
+        const result = await pool.query(spriteQuery, [petId, mood_id, color_id]);
 
         if (result.rows.length > 0) {
             res.json(result.rows[0]); // Return the sprite URL

@@ -160,7 +160,7 @@ VALUES
 (4, 2, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728294280/Hippo_Green_Feeding_kionwv.gif'),
 (4, 2, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147326/Hippo_Green_Hungerpng_kccyky.png'),
 (4, 2, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147325/Hippo_Green_Tired_bsc9ea.png'),
-(4, 2, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147289/Hippo_Blue_SLeeping_xvrsyw.png'),
+(4, 2, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147324/Hippo_Green_Sleep_o7fzk6.png'),
 (4, 2, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147323/Hippo_Green_Wake_fxnf4o.png'),
 (4, 2, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147322/Hippo_Green_Dirtypng_ovdcu9.png'),
 (4, 2, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147328/Hippo_Green_Cleaned_efcyke.png'),
