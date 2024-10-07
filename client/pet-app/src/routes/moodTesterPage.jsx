@@ -51,6 +51,18 @@ const MoodTesterPage = () => {
         }
     };
     
+    // Function to check if any stat is below 1 and set the mood to 14 (death)
+const checkForDeath = async (petId, stats) => {
+    // Check if any stat is below 1
+    if (stats.hunger < 1 || stats.energy < 1 || stats.happiness < 1 || stats.cleanliness < 1) {
+        console.log('One or more stats below 1. Pet is "dead". Setting mood_id to 14.');
+
+        // Update the mood to 14 (dead)
+        await updatePetMood(petId, 14);
+        await fetchPetSprite(petId, 14); // Fetch and update the sprite for mood_id = 14
+    }
+};
+
 
     const fetchPetStats = async (petId, excludeMoodId4 = false) => {
         try {
@@ -59,6 +71,9 @@ const MoodTesterPage = () => {
             setPetStats(data);
             console.log("Pet stats updated for petId:", petId);
     
+        // Call the checkForDeath function to verify if any stat is below 1
+        await checkForDeath(petId, data);
+
             // Determine mood based on stat thresholds
             const hungerMoodId = data.hunger < 30 ? 5 : 1; // Default to 1 if no mood
             const energyMoodId = data.energy < 30 ? 6 : 1; // Default to 1 if no mood
@@ -66,7 +81,7 @@ const MoodTesterPage = () => {
             const cleanlinessMoodId = data.cleanliness < 30 ? 9 : 1; // Default to 1 if no mood
     
             // Collect all the moods that need to be considered
-            let moodOptions = [
+            const moodOptions = [
                 { stat: 'hunger', value: data.hunger, id: hungerMoodId },
                 { stat: 'energy', value: data.energy, id: energyMoodId },
                 { stat: 'happiness', value: data.happiness, id: happinessMoodId },
