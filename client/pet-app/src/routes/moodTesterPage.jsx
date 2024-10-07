@@ -53,7 +53,7 @@ const MoodTesterPage = () => {
     
 
 
-    const fetchPetStats = async (petId) => {
+    const fetchPetStats = async (petId, excludeMoodId4 = false) => {
         try {
             const response = await fetch(`/api/pets-stats/${petId}`);
             const data = await response.json();
@@ -67,16 +67,20 @@ const MoodTesterPage = () => {
             const cleanlinessMoodId = data.cleanliness < 30 ? 9 : 1; // Default to 1 if no mood
     
             // Collect all the moods that need to be considered
-            const moodOptions = [
+           const moodOptions = [
                 { stat: 'hunger', value: data.hunger, id: hungerMoodId },
                 { stat: 'energy', value: data.energy, id: energyMoodId },
                 { stat: 'happiness', value: data.happiness, id: happinessMoodId },
                 { stat: 'cleanliness', value: data.cleanliness, id: cleanlinessMoodId }
             ];
     
-            // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
-            moodOptions.sort((a, b) => a.value - b.value || a.id - b.id);
-            
+                  // If excludeMoodId4 is true, filter out mood_id 4
+                  const filteredMoodOptions = excludeMoodId4
+                  ? moodOptions.filter(option => option.id !== 4)
+                  : moodOptions;
+      
+              // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
+              filteredMoodOptions.sort((a, b) => a.value - b.value || a.id - b.id);
             // Select the moodId of the lowest stat
             const newMoodId = moodOptions[0].id;
     
@@ -274,42 +278,49 @@ const MoodTesterPage = () => {
             }
         };
     
-    // Function to handle feeding the pet
-    const feedPet = async (petId, foodId) => {
-        try {
-            console.log('Feeding pet:', petId, 'with food:', foodId);
-            if (!petId || !foodId) throw new Error('Missing petId or foodId');
+// Function to handle feeding the pet
+const feedPet = async (petId, foodId) => {
+    try {
+        console.log('Feeding pet:', petId, 'with food:', foodId);
+        if (!petId || !foodId) throw new Error('Missing petId or foodId');
 
-            const response = await fetch('/api/feed-pet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ petId, foodId }),
-            });
+        const response = await fetch('/api/feed-pet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ petId, foodId }),
+        });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error response:', errorData);
-                alert(`Error: ${errorData.error}`);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Pet fed successfully!');
-                setIsUpdated(prev => !prev);
-            }
-        } catch (error) {
-            console.error('Error feeding pet:', error);
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error response:', errorData);
+            alert(`Error: ${errorData.error}`);
+            return;
         }
-    
-        fetchPetStats(petId);
-        fetchPetSprite(petId, moodId); // Ensure moodId is correct if needed
-        setIsUpdated(prev => !prev); // Trigger state change to re-render
-    
-    
-    };
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Pet fed successfully!');
+            setIsUpdated(prev => !prev);
+
+            // Temporarily change mood_id to 4
+            await updatePetMood(petId, 4); // Set the mood to 4
+            await fetchPetSprite(petId, 4); // Update the sprite for mood_id = 4
+
+            // Recalculate the mood_id after 2 seconds
+            setTimeout(async () => {
+                // Fetch the updated pet stats and recalculate mood based on the stats
+                await fetchPetStats(petId, true); // Recalculate the mood using the existing function
+            }, 2000); // 2 seconds delay
+        
+        console.log("eating anime is done")
+        }
+    } catch (error) {
+        console.error('Error feeding pet:', error);
+    }
+};
+
 
     // Function to clean the pet
     const cleanPet = async (petId, toiletriesId) => {
