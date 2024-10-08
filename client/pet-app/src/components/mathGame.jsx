@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import updatePetMood from '../helper/petUpdateMood';
 import submitScore from '../helper/submitScore';
+import '../styles/mathGame.scss'; // Make sure to import the SCSS file
 
 const MathGame = ({ userId }) => {
+  // State variables
   const [num1, setNum1] = useState(0);
   const [num2, setNum2] = useState(0);
   const [answer, setAnswer] = useState('');
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds for the game
+  const [timeLeft, setTimeLeft] = useState(30);
   const [gameOver, setGameOver] = useState(false);
   const [pets, setPets] = useState([]);
   const [selectedPetId, setSelectedPetId] = useState(null);
-  const [originalPetImage, setOriginalPetImage] = useState(''); // Original image
-  const [currentPetImage, setCurrentPetImage] = useState(''); // Dynamic image
-  const [originalMoodId, setOriginalMoodId] = useState(0); // Original mood ID
-  const [moodId, setMoodId] = useState(0); // Dynamic mood ID
-  const [streak, setStreak] = useState(0); // Track correct answer streak
-  const [feedbackMessage, setFeedbackMessage] = useState(''); // UI feedback
+  const [originalPetImage, setOriginalPetImage] = useState('');
+  const [currentPetImage, setCurrentPetImage] = useState('');
+  const [originalMoodId, setOriginalMoodId] = useState(0);
+  const [moodId, setMoodId] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -29,9 +32,9 @@ const MathGame = ({ userId }) => {
         if (petsData.length > 0) {
           const firstPet = petsData[0];
           setSelectedPetId(firstPet.id);
-          setOriginalPetImage(firstPet.pet_image_url);  // Save original image
+          setOriginalPetImage(firstPet.pet_image_url);
           setCurrentPetImage(firstPet.pet_image_url);
-          setOriginalMoodId(firstPet.mood_id);  // Save original mood
+          setOriginalMoodId(firstPet.mood_id);
           setMoodId(firstPet.mood_id);
         }
       } catch (error) {
@@ -49,32 +52,35 @@ const MathGame = ({ userId }) => {
   };
 
   useEffect(() => {
-    generateProblem();
+    let timer;
 
-    // Set up timer
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer);
-          setGameOver(true);
-          return 0;
-        }
-        return prevTime - 1; // Decrement by 1
-      });
-    }, 1000);
+    if (gameStarted) {
+      generateProblem();
 
-    // Cleanup function to revert the pet's mood and image when component unmounts (game is exited or closed)
+      timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setGameOver(true);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+
     return () => {
-      clearInterval(timer); // Clear the timer on cleanup
+      clearInterval(timer);
       const revertMoodAndImageOnExit = async () => {
         if (selectedPetId && originalMoodId) {
-          await updatePetMood(userId, selectedPetId, originalMoodId); // Revert to original mood
-          setCurrentPetImage(originalPetImage); // Revert to original image
+          await updatePetMood(userId, selectedPetId, originalMoodId);
+          setCurrentPetImage(originalPetImage);
+          setMoodId(originalMoodId);
         }
       };
       revertMoodAndImageOnExit();
     };
-  }, [selectedPetId, originalMoodId, originalPetImage, userId]);
+  }, [gameStarted, selectedPetId, originalMoodId, originalPetImage, userId]);
 
   const checkAnswer = async () => {
     const correctAnswer = num1 + num2;
@@ -84,8 +90,8 @@ const MathGame = ({ userId }) => {
       setStreak((prevStreak) => prevStreak + 1);
       setFeedbackMessage('Correct!');
 
-      let newMoodId = 3;  // Happy mood by default
-      if (streak + 1 >= 3) newMoodId = 8;  // Mood change for streak (e.g., "wake")
+      let newMoodId = 3;
+      if (streak + 1 >= 3) newMoodId = 8;
 
       const newImage = await updatePetMood(userId, selectedPetId, newMoodId);
       setCurrentPetImage(newImage);
@@ -93,7 +99,7 @@ const MathGame = ({ userId }) => {
     } else {
       setFeedbackMessage(`Wrong! The correct answer was ${correctAnswer}`);
       setStreak(0);
-      const newImage = await updatePetMood(userId, selectedPetId, 11); // Angry mood
+      const newImage = await updatePetMood(userId, selectedPetId, 11);
       setCurrentPetImage(newImage);
       setMoodId(11);
     }
@@ -102,9 +108,8 @@ const MathGame = ({ userId }) => {
     setAnswer('');
   };
 
-  // Handle Enter key press to submit the answer
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !gameOver) { // Check if the game is not over
       checkAnswer();
     }
   };
@@ -113,79 +118,81 @@ const MathGame = ({ userId }) => {
     if (gameOver) {
       submitScore(userId, score);
 
-      // Revert the pet's mood and image to its original state after the game
       const revertMoodAndImage = async () => {
-        await updatePetMood(userId, selectedPetId, originalMoodId); // Revert to original mood
-        setCurrentPetImage(originalPetImage); // Revert to original image
-        setMoodId(originalMoodId); // Reset mood ID
+        await updatePetMood(userId, selectedPetId, originalMoodId);
+        setCurrentPetImage(originalPetImage);
+        setMoodId(originalMoodId);
       };
 
       revertMoodAndImage();
-      setFeedbackMessage('Game Over! Your score has been submitted.');
+      setFeedbackMessage(`Game Over! You earned $${score * 10}.`);
     }
   }, [gameOver, submitScore, userId, score, originalMoodId, originalPetImage]);
 
+  const startGame = () => {
+    setGameStarted(true);
+    setGameOver(false);
+    generateProblem();
+    setTimeLeft(30);
+    setScore(0);
+    setStreak(0);
+  };
+
+  const handlePetSelect = (pet) => {
+    setSelectedPetId(pet.id);
+    setOriginalPetImage(pet.pet_image_url);
+    setCurrentPetImage(pet.pet_image_url);
+    setOriginalMoodId(pet.mood_id);
+    setMoodId(pet.mood_id);
+    setStreak(0);
+  };
+
   return (
-    <div>
+    <div className="math-game-wrapper">
       <h1>Math Game</h1>
 
-      {pets.length > 0 && (
-        <div>
-          <label htmlFor="pet-select">Choose your pet:</label>
-          <select
-            id="pet-select"
-            value={selectedPetId}
-            onChange={(e) => {
-              const selectedPet = pets.find((pet) => pet.id === parseInt(e.target.value, 10));
-              if (selectedPet) {
-                setSelectedPetId(selectedPet.id);
-                setOriginalPetImage(selectedPet.pet_image_url);
-                setCurrentPetImage(selectedPet.pet_image_url);
-                setOriginalMoodId(selectedPet.mood_id);
-                setMoodId(selectedPet.mood_id);
-                setStreak(0); // Reset streak when changing pets
-              }
-            }}
-          >
-            {pets.map((pet) => (
-              <option key={pet.id} value={pet.id}>
-                {pet.name}
-              </option>
-            ))}
-          </select>
+      {!gameStarted ? (
+        <div className="pet-selection">
+          {pets.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+              {pets.map((pet) => (
+                <div
+                  key={pet.id}
+                  onClick={() => handlePetSelect(pet)}
+                  className={`pet-card ${selectedPetId === pet.id ? 'selected-pet' : ''}`}
+                >
+                  <img
+                    src={pet.pet_image_url}
+                    alt={pet.name}
+                  />
+                  <h3>{pet.name}</h3>
+                </div>
+              ))}
+            </div>
+          )}
+          <button onClick={startGame}>Start Game</button>
         </div>
-      )}
-
-      {feedbackMessage && <p>{feedbackMessage}</p>} {/* Display feedback */}
-
-      {gameOver ? (
-        <h2>
-          <p>Game Over! Your score: {score}</p>
-          <p>You made: ${score * 10}</p>
-        </h2>
       ) : (
-        <div>
-          <p>Time left: {timeLeft}s</p>
-          <p>What is {num1} + {num2}?</p>
-          <input
-            type="number"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            onKeyPress={handleKeyPress} // Add event listener for Enter key
-          />
-          <button onClick={checkAnswer}>Submit Answer</button>
+        <div className="game-container">
+          <img src={currentPetImage} alt="Your Pet" />
+          <h2>
+            {num1} + {num2} = ?
+          </h2>
+          {/* Conditionally render the input and button */}
+          {!gameOver ? (
+            <>
+              <input
+                type="number"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
+              <button onClick={checkAnswer}>Submit</button>
+            </>
+          ) : null}
           <p>Score: {score}</p>
-        </div>
-      )}
-
-      {selectedPetId && (
-        <div>
-          <h2>Your Pet</h2>
-          <img
-            src={currentPetImage}
-            alt="Pet"
-            style={{ width: '150px', height: '150px' }}
-          />
+          {!gameOver && <p>Time Left: {timeLeft}</p>}
+          <p>{feedbackMessage}</p>
         </div>
       )}
     </div>
