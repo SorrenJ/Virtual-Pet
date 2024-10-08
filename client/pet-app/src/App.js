@@ -13,6 +13,7 @@ import NavBar from './routes/navBar';
 import './App.css';
 import PetPage from './routes/petPage';
 
+
 function App() {
   return (
     <Router>
@@ -32,6 +33,7 @@ function App() {
             <Route path="/homeTester2" element={<HomeTesterPage2 />} />
             <Route path="/sprites" element={<PetPage />} />
             <Route path="/mood" element={<MoodTesterPage />} />
+           
           </Routes>
           </body>
       </div>
