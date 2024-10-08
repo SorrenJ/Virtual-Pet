@@ -12,6 +12,8 @@ import MoodTesterPage from './routes/moodTesterPage';
 import NavBar from './routes/navBar';
 import './App.css';
 import PetPage from './routes/petPage';
+import ChatbotPage from './routes/sentimentPage'
+
 import PetGallery from './routes/petGalleryPage';
 import PetDetail from './components/petDetailPage';
 
@@ -34,7 +36,7 @@ function App() {
             <Route path="/homeTester2" element={<HomeTesterPage2 />} />
             <Route path="/sprites" element={<PetPage />} />
             <Route path="/mood" element={<MoodTesterPage />} />
-          
+            <Route path="/sentiment" element={<ChatbotPage />} />
             {/* <Route path="/gallery" element={<PetGallery />} />
             <Route path="/pet/:id" element={<PetDetail />} /> */}
             
