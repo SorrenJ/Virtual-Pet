@@ -36,7 +36,7 @@ const ShopPage = () => {
 
       const result = await response.json();
       if (response.ok) {
-        alert(result.message); // Notify the user of a successful purchase
+        // alert(result.message); // Notify the user of a successful purchase
         // Update local state to reflect changes, ensuring money is treated as a number
         setData(prevData => ({
           ...prevData,

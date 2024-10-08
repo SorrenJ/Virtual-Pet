@@ -10,10 +10,11 @@
   background-color: #312438; // Optional: Background color for better visibility
   background-image: url("https://www.transparenttextures.com/patterns/old-map.png");
   padding-top: 44px;
+  padding-right: 15px;
 }
 
 .shopkeeper {
-  @apply w-full; // Make shopkeeper image full width of container
+  width: 100%; // Make shopkeeper image full width of container
   height: auto; // Keep aspect ratio
   border: 15px solid black;
 }
@@ -40,9 +41,10 @@
 }
 
 .money {
-  @apply text-3xl font-bold;
+  font-size: 1.875rem; // Equivalent to text-3xl in Tailwind
+  font-weight: bold;
   color: green;
-  position: relative; // Position absolutely
+  position: relative; // Position relative
   top: 10px; // Adjust as needed
   right: 0em; // Adjust as needed
 }
@@ -67,7 +69,6 @@
   padding-top: 12px;
 }
 
-// Add this to your existing styles
 .toys, .toiletries, .foods {
   border: 2px solid #ccc; // Light gray border
   border-radius: 8px; // Rounded corners for better appearance
@@ -77,12 +78,6 @@
   text-align: center; // Center text within the item box
   background-color: #f9f9f9; // Light background for better visibility
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optional: subtle shadow for depth
-}
-
-.items-row {
-  display: flex; // Flexbox for horizontal alignment
-  justify-content: center; // Center items horizontally
-  margin: 10px 0; // Margin between rows
 }
 
 .tooltip {
