@@ -22,7 +22,6 @@ const MoodTesterPage = () => {
     const spriteRef = useRef(null);
     // UseEffect to fetch stats when selected pet changes
     useEffect(() => {
-
         let intervalId;
         if (selectedPet) {
             fetchPetStats(selectedPet.pet_id);
@@ -50,7 +49,7 @@ const MoodTesterPage = () => {
             console.log('General data received:', data);
             setPets(data.pets || []);
             data.pets.forEach(pet => console.log(`Pet: ${pet.pet_name}, Color ID: ${pet.color_id}`));
-            
+
             setUserFood(data.userFood || []);
             setUserToiletries(data.userToiletries || []);
             setUserToys(data.userToys || []);
@@ -58,7 +57,7 @@ const MoodTesterPage = () => {
             setUserToiletries(data.userToiletries || []);
             setToysCount(data.toysCount || 0);
             setUserToys(data.userToys || []);
-            
+
             if (data.pets.length > 0) {
                 const restoredPet = data.pets.find(p => p.pet_id === parseInt(savedSelectedPetId));
                 const firstPet = restoredPet || data.pets[0];
@@ -68,7 +67,7 @@ const MoodTesterPage = () => {
             console.error('Error fetching general data:', error);
         }
     };
-    
+
     // Function to check if any stat is below 1 and set the mood to 14 (death)
 const checkForDeath = async (petId, stats) => {
     // Check if any stat is below 1
@@ -90,7 +89,7 @@ const checkForDeath = async (petId, stats) => {
             const data = await response.json();
             setPetStats(data);
             console.log("Pet stats updated for petId:", petId);
-    
+
 
 // Ensure color_id is present
 const colorId = data.color_id;
@@ -101,14 +100,14 @@ if (!colorId) {
 }
 
         // Call the checkForDeath function to verify if any stat is below 1
-        await checkForDeath(petId, data);
+        // await checkForDeath(petId, data);
 
             // Determine mood based on stat thresholds
             const hungerMoodId = data.hunger < 30 ? 5 : 1; // Default to 1 if no mood
             const energyMoodId = data.energy < 30 ? 6 : 1; // Default to 1 if no mood
             const happinessMoodId = data.happiness < 30 ? 12 : 1; // Default to 1 if no mood
             const cleanlinessMoodId = data.cleanliness < 30 ? 9 : 1; // Default to 1 if no mood
-    
+
             // Collect all the moods that need to be considered
             const moodOptions = [
                 { stat: 'hunger', value: data.hunger, id: hungerMoodId },
@@ -116,37 +115,37 @@ if (!colorId) {
                 { stat: 'happiness', value: data.happiness, id: happinessMoodId },
                 { stat: 'cleanliness', value: data.cleanliness, id: cleanlinessMoodId }
             ];
-    
+
             // If excludeMoodId4 is true, filter out mood_id 4, 10, 3, 7, 8
             if (excludeMoodId4) {
                 moodOptions = moodOptions.filter(option => ![4, 10, 3, 7, 8].includes(option.id));
             }
-    
+
             // Sort by the lowest stat value first, and in case of a tie, use the smallest mood ID
             moodOptions.sort((a, b) => a.value - b.value || a.id - b.id);
-    
+
             // Select the moodId of the lowest stat
             const newMoodId = moodOptions[0].id;
-    
+
             if (newMoodId !== moodId) {
                 setMoodId(newMoodId);
                 await updatePetMood(petId, newMoodId); // Update the pet's mood on the server
                 localStorage.setItem('selectedPetId', petId); // Save the selected pet to localStorage
                 setIsUpdated(prev => !prev); // Trigger local state update instead
             }
-    
+
             // Fetch updated sprite after the mood change
             await fetchPetSprite(petId, newMoodId, data.color_id); // Ensure sprite is fetched after mood update
         } catch (error) {
             console.error('Error fetching pet stats or updating mood:', error);
         }
-   
+
         setForceRender(prev => prev + 1); // Trigger a re-render after mood change
     };
-    
 
 
-     
+
+
     const fetchPetSprite = async (petId, moodId, colorId) => {
         if (!moodId || isNaN(moodId) || !colorId || isNaN(colorId)) {
             console.error('Invalid or missing moodId or colorId:', moodId, colorId);
@@ -160,7 +159,7 @@ if (!colorId) {
              const spriteResponse = await fetch(`/api/pets-stats/pet-sprite/${petId}?mood_id=${moodId}&color_id=${colorId}`);
             const spriteData = await spriteResponse.json();
             const spriteWithCacheBuster = `${spriteData.image_url}?v=${new Date().getTime()}`;
-           
+
             if (sprite !== spriteData.image_url) { // Only update if the image has changed
                 setSprite(spriteWithCacheBuster); // Update sprite image dynamically based on mood
                 console.log('Sprite updated:', spriteWithCacheBuster, 'for petId:', petId, 'with moodId:', moodId);
@@ -172,7 +171,7 @@ if (!colorId) {
         }
         setForceRender(prev => prev + 1); // Trigger a re-render after mood change
     };
-    
+
   // Update pet mood on the server
   const updatePetMood = async (petId, newMoodId) => {
     try {
@@ -197,7 +196,7 @@ if (!colorId) {
         console.error('Error updating mood:', error);
     }
 };
-   
+
 
 
     // Function to reduce hunger
@@ -255,7 +254,7 @@ if (!colorId) {
         // Function to reduce energy
         const reduceHappiness = async (amount) => {
             if (!selectedPet) return;
-    
+
             try {
                 const response = await fetch(`/api/pets-stats/reduce-happiness/${selectedPet.pet_id}`, {
                     method: 'PATCH',
@@ -264,7 +263,7 @@ if (!colorId) {
                     },
                     body: JSON.stringify({ amount: -amount }),
                 });
-    
+
                 if (response.ok) {
                     const updatedPetStats = await response.json();
                     setPetStats(updatedPetStats);
@@ -279,7 +278,7 @@ if (!colorId) {
             // Function to reduce energy
                 const reduceCleanliness = async (amount) => {
                     if (!selectedPet) return;
-            
+
                     try {
                         const response = await fetch(`/api/pets-stats/reduce-cleanliness/${selectedPet.pet_id}`, {
                             method: 'PATCH',
@@ -288,7 +287,7 @@ if (!colorId) {
                             },
                             body: JSON.stringify({ amount: -amount }),
                         });
-            
+
                         if (response.ok) {
                             const updatedPetStats = await response.json();
                             setPetStats(updatedPetStats);
@@ -344,7 +343,7 @@ const sleepButton = async (amount, petId) => {
                     console.log('Mood reset to 1 (default)');
                     forceImageReload();
                 }, 3000); // 3 seconds after changing to mood 9
-           
+
             }, 3000); // 3 seconds after changing to mood 8
         } else {
             console.error('Failed to update energy and sleep the pet');
@@ -355,7 +354,7 @@ const sleepButton = async (amount, petId) => {
 };
 
 
-    
+
 // Function to handle feeding the pet
 const feedPet = async (petId, foodId) => {
     try {
@@ -391,9 +390,9 @@ const feedPet = async (petId, foodId) => {
                 // Fetch the updated pet stats and recalculate mood based on the stats
                 await fetchPetStats(petId, true); // Recalculate the mood using the existing function
                 await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
-              
+
             }, 2000); // 2 seconds delay
-          
+
         console.log("eating anime is done")
         }
     } catch (error) {
@@ -430,27 +429,27 @@ const feedPet = async (petId, foodId) => {
             if (data.success) {
                 alert('Pet cleaned successfully!');
                 setIsUpdated(prev => !prev);
-    
+
                 // Temporarily change mood_id to 10
                 await updatePetMood(petId, 10); // Set the mood to 10
                 await fetchPetSprite(petId, 10); // Update the sprite for mood_id = 10
-    
+
                 // Recalculate the mood_id after 2 seconds
                 setTimeout(async () => {
                     // Fetch the updated pet stats and recalculate mood based on the stats
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
                     await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                 }, 2000); // 2 seconds delay
-              
+
             console.log("cleaning anime is done")
             }
         } catch (error) {
             console.error('Error cleaning pet:', error);
         }
-   
-    
+
+
         setIsUpdated(prev => !prev); // Trigger state change to re-render
-   
+
     };
 
     // Function to play with the pet
@@ -478,27 +477,27 @@ const feedPet = async (petId, foodId) => {
             if (data.success) {
                 alert('Pet played successfully!');
                 setIsUpdated(prev => !prev);
-    
+
                 // Temporarily change mood_id to 10
                 await updatePetMood(petId, 3); // Set the mood to 10
                 await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 10
-    
+
                 // Recalculate the mood_id after 2 seconds
                 setTimeout(async () => {
                     // Fetch the updated pet stats and recalculate mood based on the stats
                     await fetchPetStats(petId, true); // Recalculate the mood using the existing function
                     await fetchPetSprite(petId, true, selectedPet.color_id); // Update the sprite to reflect mood 1 (default)
                 }, 2000); // 2 seconds delay
-               
+
             console.log("happy anime is done")
             }
         } catch (error) {
             console.error('Error playing with pet:', error);
         }
-    
-    
+
+
         setIsUpdated(prev => !prev); // Trigger state change to re-render
-    
+
     };
 
     // UseEffect to fetch stats when selected pet changes
@@ -510,7 +509,7 @@ const feedPet = async (petId, foodId) => {
         }
     }, [selectedPet]);
 
- 
+
 
     const forceImageReload = () => {
         if (spriteRef.current) {

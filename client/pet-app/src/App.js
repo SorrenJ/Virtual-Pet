@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ShopPage from './routes/shopPage';
 import HomePage from './routes/homePage'; // Default home page
 import AdoptPage from './routes/adoptPage'; // Default adopt page
@@ -12,6 +12,8 @@ import MoodTesterPage from './routes/moodTesterPage';
 import NavBar from './routes/navBar';
 import './App.css';
 import PetPage from './routes/petPage';
+import PetGallery from './routes/petGalleryPage';
+import PetDetail from './components/petDetailPage';
 
 function App() {
   return (
@@ -32,6 +34,10 @@ function App() {
             <Route path="/homeTester2" element={<HomeTesterPage2 />} />
             <Route path="/sprites" element={<PetPage />} />
             <Route path="/mood" element={<MoodTesterPage />} />
+          
+            <Route path="/gallery" element={<PetGallery />} />
+            <Route path="/pet/:id" element={<PetDetail />} />
+            
           </Routes>
           </body>
       </div>
