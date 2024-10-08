@@ -580,15 +580,47 @@ const deletePet = async (petId) => {
     }, []);
 
    // Function to analyze sentiment
+   const getSentimentLabel = (score) => {
+    if (score > 5) return 'excited';
+    if (score > 3) return 'happy';
+    if (score > 0) return 'content';
+    if (score === 0) return 'neutral';
+    if (score < -5) return 'furious';
+    if (score < -3) return 'angry';
+    return 'sad';
+};
+
 const analyzeSentiment = (text) => {
     const result = sentimentAnalyzer.analyze(text);
-    const sentiment = result.score > 0 ? 'happy' : result.score < 0 ? 'angry' : 'neutral';
+    const sentiment = getSentimentLabel(result.score);
     
-    // Update the happiness stat based on the detected sentiment
-    if (sentiment === 'happy') {
-        adjustHappiness(10);  // Increase happiness by 10 when happy
-    } else if (sentiment === 'angry') {
-        adjustHappiness(-10); // Decrease happiness by 10 when angry
+    // Update stats based on the detected sentiment
+    switch (sentiment) {
+        case 'excited':
+            adjustHappiness(15);  // Increase happiness by 15 when excited
+            break;
+        case 'happy':
+            adjustHappiness(10);  // Increase happiness by 10 when happy
+            break;
+        case 'content':
+            adjustHappiness(5);   // Slight happiness increase for content
+            break;
+        case 'neutral':
+            // No change in happiness for neutral sentiment
+            console.log("Pet is neutral, no change in happiness.");
+            break;
+        case 'sad':
+            adjustHappiness(-5);  // Decrease happiness slightly when sad
+            break;
+        case 'angry':
+            adjustHappiness(-10); // Decrease happiness by 10 when angry
+            break;
+        case 'furious':
+            adjustHappiness(-15); // Decrease happiness significantly when furious
+            break;
+        default:
+            console.log("Unknown sentiment detected.");
+            break;
     }
 
     return sentiment;
@@ -624,10 +656,25 @@ const adjustHappiness = async (amount) => {
   
   // Function to simulate chatbot response
   const getChatResponse = (input) => {
+
+        // Define the happiness changes based on sentiment
+        const happinessChanges = {
+            excited: 15,
+            happy: 10,
+            content: 5,
+            neutral: 0,
+            sad: -5,
+            angry: -10,
+            furious: -15,
+        };
     const responses = {
-      happy: `${selectedPet.pet_name} is jumping for joy from what you said`,
-      angry: `${selectedPet.pet_name} is hurt from what you said`,
-      neutral: `${selectedPet.pet_name} is listening`,
+        excited: `${selectedPet.pet_name} is jumping with excitement! Happiness increased by ${happinessChanges.excited}.`,
+        happy: `${selectedPet.pet_name} is happy from what you said. Happiness increased by ${happinessChanges.happy}.`,
+        content: `${selectedPet.pet_name} feels content with your words. Happiness increased by ${happinessChanges.content}.`,
+        neutral: `${selectedPet.pet_name} understood what you said. No change in happiness.`,
+        sad: `${selectedPet.pet_name} seems a little down. Happiness decreased by ${happinessChanges.sad}.`,
+        angry: `${selectedPet.pet_name} is hurt from what you said. Happiness decreased by ${happinessChanges.angry}.`,
+        furious: `${selectedPet.pet_name} is really furious! Happiness decreased by ${happinessChanges.furious}.`,
     };
     const sentiment = analyzeSentiment(input);
     return responses[sentiment] || `${selectedPet.pet_name} doesn't understand`;
@@ -636,22 +683,34 @@ const adjustHappiness = async (amount) => {
     //Function to display dog emotion
     const  getDogEmotion = async (sentiment, petId) => {
         try {
-    
             if (!petId) throw new Error('Missing petId');
     
-       
-      if (sentiment === 'happy') {
-        await updatePetMood(petId, 3); // Set the mood to 10
-        await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 10
-        
-        
+            // Define the happiness changes based on sentiment
+            const happinessChanges = {
+                excited: 15,
+                happy: 10,
+                content: 5,
+                neutral: 0,
+                sad: -5,
+                angry: -10,
+                furious: -15,
+            };
     
-    } else if (sentiment === 'angry') {
-        
-        await updatePetMood(petId, 12); // Set the mood to 10
-        await fetchPetSprite(petId, 12); // Update the sprite for mood_id = 10
-        
-        
+            // Adjust the pet's happiness based on the sentiment
+            const happinessChange = happinessChanges[sentiment] || 0;
+            adjustHappiness(happinessChange);  // Update happiness stat accordingly
+    
+       
+ // Handle positive sentiments (excited, happy, content)
+ if (['excited', 'happy', 'content'].includes(sentiment)) {
+    await updatePetMood(petId, 3); // Set the mood to positive (mood_id = 3)
+    await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 3
+
+// Handle negative sentiments (sad, angry, furious)
+} else if (['sad', 'angry', 'furious'].includes(sentiment)) {
+    await updatePetMood(petId, 12); // Set the mood to negative (mood_id = 12)
+    await fetchPetSprite(petId, 12); // Update the sprite for mood_id = 12
+
       
       } else {
     
