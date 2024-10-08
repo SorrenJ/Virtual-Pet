@@ -38,7 +38,9 @@ const feedApiRoute = require('./routes/feed_pet_api');
 const playApiRoute = require('./routes/play_with_pet_api');
 const itemApiRoute = require('./routes/inventory_api');
 const statsApiRoute = require('./routes/pets_stats_api');
+const colorApiRoute = require('./routes/color_api')
 const sleepApiRoute = require('./routes/sleep_pet_api');
+
 // Register routes
 app.use('/api/convert-score', convertScoreRoutes);
 app.use('/api/pets', petApiRoute);
@@ -50,7 +52,9 @@ app.use('/api/feed-pet', feedApiRoute);
 app.use('/api/play-with-pet', playApiRoute);
 app.use('/api/inventory', itemApiRoute);
 app.use('/api/pets-stats', statsApiRoute);
+app.use('/api/species/sprite', colorApiRoute)
 app.use('/api/sleep-pet', sleepApiRoute);
+
 // Start the server on port 5000
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
