@@ -31,7 +31,8 @@
           border: 2px solid #ccc;
           border-radius: 8px;
           &:hover {
-            border-color: #007bff; // Highlight on hover
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); // Blue shadow on hover
+            transform: scale(1.05); // Slightly expand on hover
           }
         }
       }
