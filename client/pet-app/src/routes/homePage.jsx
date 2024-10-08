@@ -613,8 +613,7 @@ const analyzeSentiment = (text) => {
         await updatePetMood(petId, 3); // Set the mood to 10
         await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 10
         
-        // return '🐕😊'; // Happy dog
-      
+        
     
     } else if (sentiment === 'angry') {
         
@@ -622,13 +621,13 @@ const analyzeSentiment = (text) => {
         await fetchPetSprite(petId, 12); // Update the sprite for mood_id = 10
         
         
-        // return '🐕😡'; // Sad dog
+      
       } else {
     
         // await updatePetMood(petId, 1); // Set the mood to 10
         // await fetchPetSprite(petId, 1); // Update the sprite for mood_id = 10
     
-        // return '🐕😐'; // Neutral dog
+       
       }
     } catch (error) {
         console.error('Error playing with pet:', error);
@@ -666,23 +665,22 @@ const analyzeSentiment = (text) => {
 
                 {selectedPet && petStats && (
                     <div className="pet-details-container">
+
                         <div className="left-section">
+                        <div className="bot-message">{messages[messages.length - 1].bot}</div>
                             <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
                             <div className="chatbot-container">
-      {/* Dog Emotion */}
-      <div className="dog-emotion" style={{ fontSize: '48px' }}>
-        {dogEmotion}
-      </div>
+
 
       {/* Chat Window */}
       <div className="chat-window">
-        {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <div className="user-message">You: {msg.user}</div>
-            <div className="bot-message">{msg.bot}</div>
-          </div>
-        ))}
-      </div>
+  {messages.length > 0 && (
+    <div className="message">
+      <div className="user-message">You: {messages[messages.length - 1].user}</div>
+     
+    </div>
+  )}
+</div>
 
       {/* Input Section */}
       <div className="input-section">
