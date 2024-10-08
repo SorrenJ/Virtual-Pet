@@ -4,12 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const pool = require('../db/db'); // Import the pool from db/db.js
 router.use(bodyParser.json());
-router.use(cors());
-
-// Enable CORS for cross-origin requests
-
-
-
+router.use(cors()); // Enable CORS for cross-origin requests
 
 router.get('/', async (req, res) => {
     try {
@@ -32,21 +27,21 @@ router.get('/', async (req, res) => {
         const toysCount = userToysCount.rows[0] ? userToysCount.rows[0].toy_count : 0;
 
         const userFood = await pool.query(`
-            SELECT uf.count, uf.item_type_id, uf.id, f.name AS food_name, f.food_image AS "foodImage"
+            SELECT uf.count, uf.item_type_id, uf.id, f.name AS food_name, f.food_image AS "foodImage", f.description AS food_description
             FROM user_foods uf
             JOIN foods f ON uf.item_type_id = f.id
             WHERE uf.user_id = $1
         `, [userId]);
 
         const userToiletries = await pool.query(`
-            SELECT ut.count, ut.item_type_id, ut.id, t.name AS toiletries_name, t.toiletry_image AS "toiletryImage"
+            SELECT ut.count, ut.item_type_id, ut.id, t.name AS toiletries_name, t.toiletry_image AS "toiletryImage", t.description AS toiletry_description
             FROM user_toiletries ut
             JOIN toiletries t ON ut.item_type_id = t.id
             WHERE ut.user_id = $1
         `, [userId]);
 
         const userToys = await pool.query(`
-            SELECT ut.count, ut.item_type_id, ut.id, ty.name AS toys_name, ty.toy_image AS "toyImage"
+            SELECT ut.count, ut.item_type_id, ut.id, ty.name AS toys_name, ty.toy_image AS "toyImage", ty.description AS toy_description
             FROM user_toys ut
             JOIN toys ty ON ut.item_type_id = ty.id
             WHERE ut.user_id = $1
@@ -57,9 +52,18 @@ router.get('/', async (req, res) => {
             foodCount,
             toiletriesCount,
             toysCount,
-            userFood: userFood.rows,
-            userToiletries: userToiletries.rows,
-            userToys: userToys.rows,
+            userFood: userFood.rows.map(row => ({
+                ...row,
+                description: row.food_description, // Rename for consistency
+            })),
+            userToiletries: userToiletries.rows.map(row => ({
+                ...row,
+                description: row.toiletry_description, // Rename for consistency
+            })),
+            userToys: userToys.rows.map(row => ({
+                ...row,
+                description: row.toy_description, // Rename for consistency
+            })),
         });
 
     } catch (error) {
