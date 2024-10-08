@@ -1,0 +1,124 @@
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 15px; // Reduced padding for a more compact modal
+  max-width: 675px; // Smaller modal width
+  margin: auto;
+  position: relative; // Ensures relative positioning for the close button
+}
+
+.title {
+  font-size: x-large;
+  color: purple;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 35px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10%;
+  right: -530px; // Adjusted positioning for a smaller modal
+  background: transparent;
+  border: none;
+  font-size: 70px; // Smaller size for close button
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: red; // Optional hover effect
+}
+
+.inventory-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.inventory-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.inventory-buttons button:hover {
+  background-color: #45a049;
+}
+
+.inventory-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.item-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 4 items per row
+  gap: 10px; // Reduced spacing between items to fit smaller modal
+  margin-top: 10px; // Adjusted margin for more compact layout
+}
+
+.item-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px; // Slightly smaller padding for compactness
+  text-align: center;
+  width: 100%; // Full width for grid items
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; // Smooth hover transition
+  cursor: pointer;
+}
+
+.item-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); // Blue shadow on hover
+  transform: scale(1.05); // Slightly expand on hover
+}
+
+.item-card img {
+  width: 100%; // Make sure image is responsive within its container
+  height: auto;
+  object-fit: contain; // Ensure image fits nicely within the card
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.item-card::before {
+  content: attr(data-tooltip); // Display the description stored in data-tooltip
+  position: absolute;
+  bottom: 110%; // Position above the item card
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.item-card:hover::before {
+  opacity: 1; // Show tooltip on hover
+}
+
+.item-card::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.75) transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.item-card:hover::after {
+  opacity: 1; // Show tooltip arrow on hover
+}
