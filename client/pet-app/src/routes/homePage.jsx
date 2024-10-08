@@ -58,7 +58,7 @@ const HomePage = () => {
         if (input.trim() === '') return;
     
         const sentiment = analyzeSentiment(input);
-        const response = getChatResponse(input);
+        const response = getChatResponse(input) || "Sorry, I didn't understand that."; // Provide a default message
     
         // Wait for the async function to complete before updating state
         const emotion = await getDogEmotion(sentiment, selectedPet.pet_id);
@@ -582,14 +582,45 @@ const deletePet = async (petId) => {
    // Function to analyze sentiment
 const analyzeSentiment = (text) => {
     const result = sentimentAnalyzer.analyze(text);
-    if (result.score > 0) {
-      return 'happy';
-    } else if (result.score < 0) {
-      return 'angry';
-    } else {
-      return 'neutral';
+    const sentiment = result.score > 0 ? 'happy' : result.score < 0 ? 'angry' : 'neutral';
+    
+    // Update the happiness stat based on the detected sentiment
+    if (sentiment === 'happy') {
+        adjustHappiness(10);  // Increase happiness by 10 when happy
+    } else if (sentiment === 'angry') {
+        adjustHappiness(-10); // Decrease happiness by 10 when angry
     }
-  };
+
+    return sentiment;
+};
+
+
+// Function to adjust happiness
+const adjustHappiness = async (amount) => {
+    if (!selectedPet) return;
+
+    try {
+        const response = await fetch(`/api/pets-stats/reduce-happiness/${selectedPet.pet_id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount }),
+        });
+
+        if (response.ok) {
+            const updatedPetStats = await response.json();
+            setPetStats(updatedPetStats); // Update pet stats with the new happiness value
+            console.log(`Happiness adjusted by ${amount}. New happiness level: ${updatedPetStats.happiness}`);
+        } else {
+            console.error('Failed to adjust happiness');
+        }
+    } catch (error) {
+        console.error('Error adjusting happiness:', error);
+    }
+};
+
+
   
   // Function to simulate chatbot response
   const getChatResponse = (input) => {
@@ -626,7 +657,7 @@ const analyzeSentiment = (text) => {
     
         // await updatePetMood(petId, 1); // Set the mood to 10
         // await fetchPetSprite(petId, 1); // Update the sprite for mood_id = 10
-    
+    console.log("is waiting for response")
        
       }
     } catch (error) {
@@ -667,7 +698,7 @@ const analyzeSentiment = (text) => {
                     <div className="pet-details-container">
 
                         <div className="left-section">
-                        <div className="bot-message">{messages[messages.length - 1].bot}</div>
+                        <div className="bot-message">{messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}</div>
                             <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
                             <div className="chatbot-container">
 
