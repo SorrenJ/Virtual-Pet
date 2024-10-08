@@ -594,12 +594,12 @@ const analyzeSentiment = (text) => {
   // Function to simulate chatbot response
   const getChatResponse = (input) => {
     const responses = {
-      happy: 'I’m so glad you’re happy! 😊',
-      angry: 'Why are you angry? 😞',
-      neutral: 'I see. Tell me more.',
+      happy: `${selectedPet.pet_name} is jumping for joy from what you said`,
+      angry: `${selectedPet.pet_name} is hurt from what you said`,
+      neutral: `${selectedPet.pet_name} is listening`,
     };
     const sentiment = analyzeSentiment(input);
-    return responses[sentiment] || 'Hmm, I don’t quite understand that.';
+    return responses[sentiment] || `${selectedPet.pet_name} doesn't understand`;
   };
   
     //Function to display dog emotion
@@ -613,7 +613,7 @@ const analyzeSentiment = (text) => {
         await updatePetMood(petId, 3); // Set the mood to 10
         await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 10
         
-        return '🐕😊'; // Happy dog
+        // return '🐕😊'; // Happy dog
       
     
     } else if (sentiment === 'angry') {
@@ -622,13 +622,13 @@ const analyzeSentiment = (text) => {
         await fetchPetSprite(petId, 12); // Update the sprite for mood_id = 10
         
         
-        return '🐕😡'; // Sad dog
+        // return '🐕😡'; // Sad dog
       } else {
     
         // await updatePetMood(petId, 1); // Set the mood to 10
         // await fetchPetSprite(petId, 1); // Update the sprite for mood_id = 10
     
-        return '🐕😐'; // Neutral dog
+        // return '🐕😐'; // Neutral dog
       }
     } catch (error) {
         console.error('Error playing with pet:', error);
@@ -679,7 +679,7 @@ const analyzeSentiment = (text) => {
         {messages.map((msg, index) => (
           <div key={index} className="message">
             <div className="user-message">You: {msg.user}</div>
-            <div className="bot-message">Bot: {msg.bot}</div>
+            <div className="bot-message">{msg.bot}</div>
           </div>
         ))}
       </div>
@@ -703,6 +703,18 @@ const analyzeSentiment = (text) => {
                                     Admin Controls
                                 </button>
                             </div>
+                        
+                            <div style={{ marginTop: '20px' }}>
+                    {visibleComponent === 4 && (
+                     <>
+                     <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
+                     <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
+                    <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
+                    <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
+                    </>
+                    )}
+                        </div>
+                        
                         </div>
                         <div className="right-section">
                             <h2>Meet {selectedPet.pet_name}</h2>
