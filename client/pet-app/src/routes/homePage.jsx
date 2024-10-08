@@ -9,39 +9,6 @@ import '../styles/home.css';  // Assuming the CSS is in the same directory as yo
 
 const sentimentAnalyzer = new Sentiment();
 
-// Function to analyze sentiment
-const analyzeSentiment = (text) => {
-  const result = sentimentAnalyzer.analyze(text);
-  if (result.score > 0) {
-    return 'happy';
-  } else if (result.score < 0) {
-    return 'angry';
-  } else {
-    return 'neutral';
-  }
-};
-
-// Function to simulate chatbot response
-const getChatResponse = (input) => {
-  const responses = {
-    happy: 'I’m so glad you’re happy! 😊',
-    angry: 'Why are you angry? 😞',
-    neutral: 'I see. Tell me more.',
-  };
-  const sentiment = analyzeSentiment(input);
-  return responses[sentiment] || 'Hmm, I don’t quite understand that.';
-};
-
-// Function to display dog emotion
-const getDogEmotion = (sentiment) => {
-  if (sentiment === 'happy') {
-    return '🐕😊'; // Happy dog
-  } else if (sentiment === 'angry') {
-    return '🐕😡'; // Sad dog
-  } else {
-    return '🐕😐'; // Neutral dog
-  }
-};
 
 
  
@@ -87,17 +54,19 @@ const HomePage = () => {
     }, []);
 
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (input.trim() === '') return;
     
         const sentiment = analyzeSentiment(input);
         const response = getChatResponse(input);
-        const emotion = getDogEmotion(sentiment);
+    
+        // Wait for the async function to complete before updating state
+        const emotion = await getDogEmotion(sentiment, selectedPet.pet_id);
     
         setMessages([...messages, { user: input, bot: response }]);
-        setDogEmotion(emotion);
+        setDogEmotion(emotion); // Update the dog emotion state after the async call
         setInput('');
-      };
+    };
     
     
 
@@ -610,8 +579,64 @@ const deletePet = async (petId) => {
         fetchGeneralData();
     }, []);
 
-   
+   // Function to analyze sentiment
+const analyzeSentiment = (text) => {
+    const result = sentimentAnalyzer.analyze(text);
+    if (result.score > 0) {
+      return 'happy';
+    } else if (result.score < 0) {
+      return 'angry';
+    } else {
+      return 'neutral';
+    }
+  };
+  
+  // Function to simulate chatbot response
+  const getChatResponse = (input) => {
+    const responses = {
+      happy: 'I’m so glad you’re happy! 😊',
+      angry: 'Why are you angry? 😞',
+      neutral: 'I see. Tell me more.',
+    };
+    const sentiment = analyzeSentiment(input);
+    return responses[sentiment] || 'Hmm, I don’t quite understand that.';
+  };
+  
+    //Function to display dog emotion
+    const  getDogEmotion = async (sentiment, petId) => {
+        try {
+    
+            if (!petId) throw new Error('Missing petId');
+    
+       
+      if (sentiment === 'happy') {
+        await updatePetMood(petId, 3); // Set the mood to 10
+        await fetchPetSprite(petId, 3); // Update the sprite for mood_id = 10
+        
+        return '🐕😊'; // Happy dog
+      
+    
+    } else if (sentiment === 'angry') {
+        
+        await updatePetMood(petId, 12); // Set the mood to 10
+        await fetchPetSprite(petId, 12); // Update the sprite for mood_id = 10
+        
+        
+        return '🐕😡'; // Sad dog
+      } else {
+    
+        // await updatePetMood(petId, 1); // Set the mood to 10
+        // await fetchPetSprite(petId, 1); // Update the sprite for mood_id = 10
+    
+        return '🐕😐'; // Neutral dog
+      }
+    } catch (error) {
+        console.error('Error playing with pet:', error);
+    
+    }
 
+    };
+    
 
 
 
