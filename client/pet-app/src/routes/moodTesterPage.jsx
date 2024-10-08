@@ -588,14 +588,50 @@ const deletePet = async (petId) => {
                             <p>Personality: {selectedPet.personality_name}</p>
 
                             {/* Button to reduce hunger */}
-                            <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
-                            <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
-                            <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
-                            <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
+                    
+                            <button
+    onClick={() =>
+        setVisibleComponent(visibleComponent === 4 ? null : 4)
+    }
+>
+    Admin Controls
+</button>
+
+                   
+
                            <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
                            <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet to the wild</button>
-                        </div>
+                        
+             
+
+                           <div style={{ marginTop: '20px' }}>
+                    {visibleComponent === 4 && (
+                     <>
+                     <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
+                     <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
+                    <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
+                    <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
+                    </>
                     )}
+                        </div>
+
+
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+                    )}
+
+                    
                 </>
             ) : (
                 <p>No pets available at the moment.</p>
