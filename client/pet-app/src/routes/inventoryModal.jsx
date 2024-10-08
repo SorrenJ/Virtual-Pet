@@ -20,7 +20,6 @@ const InventoryModal = ({ isOpen, onRequestClose }) => {
         try {
             const response = await fetch(`/api/inventory`);
             const data = await response.json();
-            console.log('General data received:', data);
             setPets(data.pets || []);
             setUserFood(data.userFood.filter(item => item.count > 0) || []);
             setUserToiletries(data.userToiletries.filter(item => item.count > 0) || []);

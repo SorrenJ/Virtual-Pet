@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import ShopPage from './routes/shopPage';
 import HomePage from './routes/homePage'; // Default home page
 import AdoptPage from './routes/adoptPage'; // Default adopt page
@@ -12,31 +12,43 @@ import MoodTesterPage from './routes/moodTesterPage';
 import NavBar from './routes/navBar';
 import './App.css';
 import PetPage from './routes/petPage';
+import FrontPage from './routes/frontPage';
 
 function App() {
+  const location = useLocation(); // Get the current location
+
   return (
-    <Router>
-      <div className="App">
+    <div className="App">
+      {/* Render NavBar only if not on the FrontPage */}
+      {location.pathname !== '/' && (
         <header className="NavBar">
-        <NavBar />
+          <NavBar />
         </header>
-        <body>
-          <Routes> {/* Use Routes to create paths*/}
-            <Route path="/home" element={<HomePage />} /> {/* Home page */}
-            <Route path="/shop" element={<ShopPage />} /> {/* Shop page */}
-            <Route path="/adopt" element={<AdoptPage />} />
-            <Route path="/playPet" element={<PlayPetPage />} />
-            <Route path="/feedPet" element={<FeedPetPage />} />
-            <Route path="/cleanPet" element={<CleanPetPage />} />
-            <Route path="/homeTester" element={<HomeTesterPage />} />
-            <Route path="/homeTester2" element={<HomeTesterPage2 />} />
-            <Route path="/sprites" element={<PetPage />} />
-            <Route path="/mood" element={<MoodTesterPage />} />
-          </Routes>
-          </body>
-      </div>
-    </Router>
+      )}
+      <main> {/* Use <main> instead of <body> for semantic HTML */}
+        <Routes>
+          <Route path="/" element={<FrontPage />} />
+          <Route path="/home" element={<HomePage />} /> {/* Home page */}
+          <Route path="/shop" element={<ShopPage />} /> {/* Shop page */}
+          <Route path="/adopt" element={<AdoptPage />} />
+          <Route path="/playPet" element={<PlayPetPage />} />
+          <Route path="/feedPet" element={<FeedPetPage />} />
+          <Route path="/cleanPet" element={<CleanPetPage />} />
+          <Route path="/homeTester" element={<HomeTesterPage />} />
+          <Route path="/homeTester2" element={<HomeTesterPage2 />} />
+          <Route path="/sprites" element={<PetPage />} />
+          <Route path="/mood" element={<MoodTesterPage />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
-export default App;
+// Wrap App in Router to use useLocation
+const AppWithRouter = () => (
+  <Router>
+    <App />
+  </Router>
+);
+
+export default AppWithRouter;
