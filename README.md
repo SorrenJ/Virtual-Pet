@@ -7,9 +7,13 @@ Install dependencies with `npm install` in each respective `/client/pet-app` and
 
 ## How To Run
 
-### Running Front-end Server
+### Setup anf run Front-end Server
 
-Go to the path: `/client/pet-app` and `npm run` in the terminal
+1. Install `npm install sass`
+
+2. Install `npm install react-modal`
+
+2. Go to the path: `/client/pet-app` and `npm run` in the terminal
 
 ### Setup and run Back-end Server
 

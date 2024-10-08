@@ -12,5 +12,6 @@ VALUES
 ('clean'), 
 ('angry'), 
 ('sad'),
-('pet');
+('pet'),
+('dead');
 
