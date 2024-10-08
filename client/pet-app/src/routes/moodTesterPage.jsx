@@ -500,6 +500,33 @@ const feedPet = async (petId, foodId) => {
 
     };
 
+// Function to delete the pet
+const deletePet = async (petId) => {
+    if (!petId) return;
+
+    const confirmDelete = window.confirm('Are you sure you want to delete this pet?');
+    console.log("delete:",petId);
+    if (!confirmDelete) return;
+
+    try {
+        const response = await fetch(`/api/delete-pet/${petId}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            alert('Pet deleted successfully!');
+            setPets(pets.filter(pet => pet.pet_id !== petId)); // Remove the deleted pet from the state
+            setSelectedPet(null); // Reset the selected pet after deletion
+        } else {
+            const errorData = await response.json();
+            alert(`Error: ${errorData.error}`);
+        }
+    } catch (error) {
+        console.error('Error deleting pet:', error);
+    }
+};
+
+
     // UseEffect to fetch stats when selected pet changes
     useEffect(() => {
         if (selectedPet) {
@@ -566,7 +593,7 @@ const feedPet = async (petId, foodId) => {
                             <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
                             <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
                            <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
-
+                           <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet to the wild</button>
                         </div>
                     )}
                 </>

@@ -35,8 +35,8 @@ function App() {
             <Route path="/sprites" element={<PetPage />} />
             <Route path="/mood" element={<MoodTesterPage />} />
           
-            <Route path="/gallery" element={<PetGallery />} />
-            <Route path="/pet/:id" element={<PetDetail />} />
+            {/* <Route path="/gallery" element={<PetGallery />} />
+            <Route path="/pet/:id" element={<PetDetail />} /> */}
             
           </Routes>
           </body>
