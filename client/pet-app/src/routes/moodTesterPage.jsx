@@ -591,14 +591,9 @@ const deletePet = async (petId) => {
                     
                             <button
     onClick={() =>
-        setVisibleComponent(visibleComponent === 4 ? null : 4)
-    }
->
+        setVisibleComponent(visibleComponent === 4 ? null : 4)}>
     Admin Controls
 </button>
-
-                   
-
                            <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
                            <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet to the wild</button>
                         
@@ -614,24 +609,9 @@ const deletePet = async (petId) => {
                     </>
                     )}
                         </div>
-
-
-
-
                         </div>
 
-
-
-
-
-
-
-
-
-
-                    )}
-
-                    
+                    )}        
                 </>
             ) : (
                 <p>No pets available at the moment.</p>
