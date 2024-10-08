@@ -3,8 +3,48 @@ import React, { useState, useEffect, useRef } from 'react';
 import UserFoodTable from '../components/UserFoodTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserToysTable from '../components/UserToysTable';
+import Sentiment from 'sentiment';
 import '../styles/home.css';  // Assuming the CSS is in the same directory as your JSX file
 
+
+const sentimentAnalyzer = new Sentiment();
+
+// Function to analyze sentiment
+const analyzeSentiment = (text) => {
+  const result = sentimentAnalyzer.analyze(text);
+  if (result.score > 0) {
+    return 'happy';
+  } else if (result.score < 0) {
+    return 'angry';
+  } else {
+    return 'neutral';
+  }
+};
+
+// Function to simulate chatbot response
+const getChatResponse = (input) => {
+  const responses = {
+    happy: 'I’m so glad you’re happy! 😊',
+    angry: 'Why are you angry? 😞',
+    neutral: 'I see. Tell me more.',
+  };
+  const sentiment = analyzeSentiment(input);
+  return responses[sentiment] || 'Hmm, I don’t quite understand that.';
+};
+
+// Function to display dog emotion
+const getDogEmotion = (sentiment) => {
+  if (sentiment === 'happy') {
+    return '🐕😊'; // Happy dog
+  } else if (sentiment === 'angry') {
+    return '🐕😡'; // Sad dog
+  } else {
+    return '🐕😐'; // Neutral dog
+  }
+};
+
+
+ 
 const HomePage = () => {
     const [pets, setPets] = useState([]); // To store all pets and their stats
     const [selectedPet, setSelectedPet] = useState(null); // Track the selected pet
@@ -21,6 +61,10 @@ const HomePage = () => {
     const [toysCount, setToysCount] = useState(0);
     const [forceRender, setForceRender] = useState(0); // State to force re-render
     const spriteRef = useRef(null);
+
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+    const [dogEmotion, setDogEmotion] = useState('🐕😐');
     // UseEffect to fetch stats when selected pet changes
     useEffect(() => {
         let intervalId;
@@ -41,6 +85,21 @@ const HomePage = () => {
         const savedSelectedPetId = localStorage.getItem('selectedPetId');
         fetchGeneralData(savedSelectedPetId);
     }, []);
+
+
+    const handleSendMessage = () => {
+        if (input.trim() === '') return;
+    
+        const sentiment = analyzeSentiment(input);
+        const response = getChatResponse(input);
+        const emotion = getDogEmotion(sentiment);
+    
+        setMessages([...messages, { user: input, bot: response }]);
+        setDogEmotion(emotion);
+        setInput('');
+      };
+    
+    
 
     // Fetch general data (pets and user resources)
     const fetchGeneralData = async (savedSelectedPetId) => {
@@ -551,6 +610,14 @@ const deletePet = async (petId) => {
         fetchGeneralData();
     }, []);
 
+   
+
+
+
+
+
+
+
     return (
         <div className="homepage-container">
         {pets.length > 0 ? (
@@ -576,6 +643,34 @@ const deletePet = async (petId) => {
                     <div className="pet-details-container">
                         <div className="left-section">
                             <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
+                            <div className="chatbot-container">
+      {/* Dog Emotion */}
+      <div className="dog-emotion" style={{ fontSize: '48px' }}>
+        {dogEmotion}
+      </div>
+
+      {/* Chat Window */}
+      <div className="chat-window">
+        {messages.map((msg, index) => (
+          <div key={index} className="message">
+            <div className="user-message">You: {msg.user}</div>
+            <div className="bot-message">Bot: {msg.bot}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Input Section */}
+      <div className="input-section">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
+    </div>
+                            
                             <div className="buttons-section">
                                 <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
                                 <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet</button>
