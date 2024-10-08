@@ -2,6 +2,7 @@ const Shop = ({ money, toys, toiletries, foods, onBuy, onAddMoney }) => {
   return (
     <div>
       <h2>Your Balance: ${money}</h2>
+      <img src="https://res.cloudinary.com/deszclhtq/image/upload/v1728147784/Shopkeeper_Neutral_grmlj6.png" alt="shopkeeper" />
       <button onClick={onAddMoney}>Add $100</button>
 
       <h1>Toys</h1>

@@ -1,9 +1,12 @@
-/* src/components/NavBar.scss */
-
 nav {
   padding: 10px;
   background-color: #333;
   color: #fff;
+  position: fixed; // Make the navbar fixed
+  top: 0; // Position it at the top
+  left: 0; // Align it to the left edge
+  right: 0; // Stretch it to the right edge
+  z-index: 1000; // Ensure it appears above other content
 
   ul {
     list-style: none;

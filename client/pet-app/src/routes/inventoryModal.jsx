@@ -168,8 +168,6 @@ const InventoryModal = ({ isOpen, onRequestClose }) => {
                 {/* Display the pet details */}
                 {pets.length > 0 ? (
                     <>
-                        <h1>Welcome {pets[0]?.user_name}</h1>
-
                         <h2>Select Your Pet</h2>
                         <select
                             id="petSelector"
