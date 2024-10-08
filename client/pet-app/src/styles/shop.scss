@@ -12,6 +12,25 @@
   padding-top: 44px;
 }
 
+.shopkeeper {
+  @apply w-full; // Make shopkeeper image full width of container
+  height: auto; // Keep aspect ratio
+  border: 15px solid black;
+}
+
+.shopkeeper-text {
+  position: absolute; // Position text absolutely
+  top: 75px; // Adjust this value to position text vertically
+  left: 10px; // Adjust this value to position text horizontally
+  color: white; // Change text color as needed
+  background-color: rgba(0, 0, 0, 0.5); // Optional: add a semi-transparent background for better readability
+  padding: 5px; // Optional: add padding around the text
+  border-radius: 4px; // Optional: rounded corners
+  z-index: 10; // Ensure it appears above other elements
+  font-size: 24px; // Increase text size (adjust the value as needed)
+  font-weight: bold; // Optional: make the text bold
+}
+
 .items-container {
   margin-left: 30%; // Leave space for the shopkeeper
   display: flex;
@@ -26,25 +45,6 @@
   position: relative; // Position absolutely
   top: 10px; // Adjust as needed
   right: 0em; // Adjust as needed
-}
-
-.shopkeeper {
-  @apply w-full; // Make shopkeeper image full width of container
-  height: auto; // Keep aspect ratio
-  border: 15px solid black;
-}
-
-.shopkeeper-text {
-  position: absolute; // Position text absolutely
-  top: 75px; // Adjust this value to position text vertically
-  left: 75px; // Adjust this value to position text horizontally
-  color: white; // Change text color as needed
-  background-color: rgba(0, 0, 0, 0.5); // Optional: add a semi-transparent background for better readability
-  padding: 5px; // Optional: add padding around the text
-  border-radius: 4px; // Optional: rounded corners
-  z-index: 10; // Ensure it appears above other elements
-  font-size: 24px; // Increase text size (adjust the value as needed)
-  font-weight: bold; // Optional: make the text bold
 }
 
 .category-container {

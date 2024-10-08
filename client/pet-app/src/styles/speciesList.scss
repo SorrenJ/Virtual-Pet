@@ -1,0 +1,129 @@
+.species-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+
+  .adopt-text{
+    position:relative;
+    top: -70px;
+    font-size: 50px;
+    margin-bottom: 10px;
+  }
+
+  .species-list {
+    width: 30%;
+    padding-top: 140px;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      display: flex; // Make the species list horizontal
+      flex-wrap: wrap; // Wrap the images if they overflow the container
+      gap: 10px; // Adds spacing between images
+
+      li {
+        cursor: pointer;
+
+        img {
+          width: 150px; // Fixed width
+          height: 150px; // Fixed height
+          object-fit: contain; // Ensures the image fits within the box
+          border: 2px solid #ccc;
+          border-radius: 8px;
+          &:hover {
+            border-color: #007bff; // Highlight on hover
+          }
+        }
+      }
+    }
+  }
+
+  .species-details {
+    width: 65%;
+    padding-left: 20px;
+    border-left: 1px solid #ddd;
+
+    .details-image {
+      position: relative;
+        left: 390px;
+        top: 15px;
+      img {
+        width: auto; // Larger image size
+        height: 450px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+    }
+
+    .species-info {
+      h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      p {
+        margin: 5px 0;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      select {
+        margin: 10px 0;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        position:relative;
+        top: 25px;
+        cursor: pointer;
+        &:hover {
+          background-color: #218838;
+        }
+      }
+    }
+  }
+}
+
+.species-item {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+
+  img {
+    display: block;
+    max-width: 100%;
+    transition: transform 0.3s;
+  }
+
+  &:hover img {
+    transform: scale(1.1);
+  }
+
+  .tooltip {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position the tooltip above the image */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap; /* Keep the tooltip in one line */
+  }
+
+  &:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+}

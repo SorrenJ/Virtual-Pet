@@ -248,7 +248,7 @@ app.post('/buy', async (req, res) => {
           `, [itemCount, userId, itemId]);
       }
 
-      res.status(200).json({ message: 'Item purchased successfully' });
+      res.status(200).json();
   } catch (err) {
       console.error('Error purchasing item:', err);
       res.status(500).json({ error: 'Server error' });

@@ -22,7 +22,7 @@ function App() {
         </header>
         <body>
           <Routes> {/* Use Routes to create paths*/}
-            <Route path="/" element={<HomePage />} /> {/* Home page */}
+            <Route path="/home" element={<HomePage />} /> {/* Home page */}
             <Route path="/shop" element={<ShopPage />} /> {/* Shop page */}
             <Route path="/adopt" element={<AdoptPage />} />
             <Route path="/playPet" element={<PlayPetPage />} />

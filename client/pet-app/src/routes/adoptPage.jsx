@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import SpeciesList from '../components/SpeciesList';  // Import the SpeciesList component
-import PetsList from '../components/PetList';        // Import the PetsList component
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import SpeciesList from '../components/SpeciesList';  
+import PetsList from '../components/PetList';        
 
 function AdoptPage() {
   const [speciesList, setSpeciesList] = useState([]);
   const [petsList, setPetsList] = useState([]);
+  const navigate = useNavigate();  // Initialize useNavigate hook for navigation
 
   useEffect(() => {
-    // Fetch species and pets data from the server
     const fetchData = async () => {
       try {
         const speciesResponse = await fetch('/api/species');
@@ -25,12 +26,8 @@ function AdoptPage() {
   
     fetchData();
   }, []);
-  
 
-  const adoptPet = async (speciesId) => {
-    const colorDropdown = document.getElementById(`color-${speciesId}`);
-    const colorId = colorDropdown.value;
-
+  const adoptPet = async (speciesId, petName, colorId) => {
     try {
       const response = await fetch('/adopt-pet', {
         method: 'POST',
@@ -42,17 +39,22 @@ function AdoptPage() {
 
       if (response.ok) {
         const adoptedPet = await response.json();
-        const petName = prompt('Enter a name for your new pet:');
-        if (petName) {
-          await fetch('/set-pet-name', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ pet_id: adoptedPet.id, name: petName }),
-          });
+        
+        const nameResponse = await fetch('/set-pet-name', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ pet_id: adoptedPet.id, name: petName }),
+        });
+
+        if (nameResponse.ok) {
           alert('Pet adopted and named successfully!');
-          window.location.reload();
+          
+          // Redirect to home page with the newest pet on display
+          navigate(`/home?newPetId=${adoptedPet.id}`);
+        } else {
+          alert('Error setting pet name.');
         }
       } else {
         alert('Error adopting pet.');
