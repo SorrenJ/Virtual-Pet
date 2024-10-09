@@ -52,7 +52,7 @@ function AdoptPage() {
           alert('Pet adopted and named successfully!');
           
           // Redirect to home page with the newest pet on display
-          navigate(`/home?newPetId=${adoptedPet.id}`);
+          navigate(`/home?newPetId=${adoptedPet.id}`);    
         } else {
           alert('Error setting pet name.');
         }
