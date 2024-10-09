@@ -1,0 +1,37 @@
+
+.moving-image-container {
+  position: relative;
+  overflow: hidden; /* Hide overflow */
+  width: 100vw; /* Full width of the viewport */
+  height: 50vw; /* Adjust height as needed */
+}
+
+.moving-image {
+  position: absolute;
+  width: 100%; /* Set the width to 100% of the container */
+  height: auto; /* Maintain aspect ratio */
+  animation: moveImage 8s linear infinite; /* Adjust duration for speed */
+}
+
+@keyframes moveImage {
+  0% {
+    left: 100%; /* Start off the screen to the right */
+  }
+  100% {
+    left: -100%; /* Move to the left off the screen */
+  }
+}
+
+/* Optional styles for the beastly-bond-logo */
+.beastly-bond-logo {
+  width: 400px; /* Adjust the logo size */
+  display: block;
+  margin: 0 auto; /* Center the logo horizontally */
+  padding-bottom: 20px; /* Add some spacing between the logo and moving image */
+}
+
+.logo{
+  text-align: center;
+  margin-top: 0;
+  padding-top: 0;
+}
