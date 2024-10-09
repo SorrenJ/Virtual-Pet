@@ -1,8 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
+
+body {
+    font-family: 'Permanent Marker', cursive;
+}
+
+
 .homepage-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    padding-top: 50px;
 }
 
 .pet-details-container {
