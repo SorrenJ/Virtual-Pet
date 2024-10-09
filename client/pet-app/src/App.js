@@ -14,6 +14,7 @@ import './App.css';
 import PetPage from './routes/petPage';
 import FrontPage from './routes/frontPage';
 
+
 function App() {
   const location = useLocation(); // Get the current location
 
@@ -24,6 +25,7 @@ function App() {
         <header className="NavBar">
           <NavBar />
         </header>
+
       )}
       <main> {/* Use <main> instead of <body> for semantic HTML */}
         <Routes>
@@ -41,6 +43,7 @@ function App() {
         </Routes>
       </main>
     </div>
+
   );
 }
 
