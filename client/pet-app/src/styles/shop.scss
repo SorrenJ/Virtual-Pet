@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Permanent+Marker&display=swap');
+
 .shop {
   display: flex; // Use flexbox for layout
 }
@@ -16,19 +18,19 @@
 .shopkeeper {
   width: 100%; // Make shopkeeper image full width of container
   height: auto; // Keep aspect ratio
-  border: 15px solid black;
 }
 
 .shopkeeper-text {
   position: absolute; // Position text absolutely
   top: 75px; // Adjust this value to position text vertically
-  left: 10px; // Adjust this value to position text horizontally
+   // Adjust this value to position text horizontally
   color: white; // Change text color as needed
   background-color: rgba(0, 0, 0, 0.5); // Optional: add a semi-transparent background for better readability
   padding: 5px; // Optional: add padding around the text
   border-radius: 4px; // Optional: rounded corners
   z-index: 10; // Ensure it appears above other elements
-  font-size: 24px; // Increase text size (adjust the value as needed)
+  font-family: "Amatic SC", sans-serif;
+  font-size: 45px; // Increase text size (adjust the value as needed)
   font-weight: bold; // Optional: make the text bold
 }
 
@@ -78,6 +80,10 @@
   text-align: center; // Center text within the item box
   background-color: #f9f9f9; // Light background for better visibility
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optional: subtle shadow for depth
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); // Blue shadow on hover
+    transform: scale(1.05); // Slightly expand on hover
+  }
 }
 
 .tooltip {
