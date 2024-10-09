@@ -4,7 +4,7 @@ import UserFoodTable from '../components/UserFoodTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserToysTable from '../components/UserToysTable';
 import Sentiment from 'sentiment';
-import '../styles/home.css';  // Assuming the CSS is in the same directory as your JSX file
+import '../styles/home.scss';  // Assuming the CSS is in the same directory as your JSX file
 
 
 const sentimentAnalyzer = new Sentiment();
