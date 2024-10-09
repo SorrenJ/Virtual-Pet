@@ -23,6 +23,16 @@ nav {
     }
   }
 
+  .title{
+    font-size: 50px;
+  font-weight: bold;
+  background: url('https://thumb.ac-illust.com/9e/9ea7c192d4d2066767f0637ffdf66702_t.jpeg') no-repeat center;
+  background-size: cover;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  }
   .game-link {
     background-color: #555;
     color: #fff;
