@@ -6,8 +6,10 @@ import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserToysTable from '../components/UserToysTable';
 import Sentiment from 'sentiment';
 import '../styles/home.scss';  // Assuming the CSS is in the same directory as your JSX file
+import '../styles/progressBars.scss';  // Assuming the CSS is in the same directory as your JSX file
 
 
+import '../styles/background.scss';
 const sentimentAnalyzer = new Sentiment();
 
 
@@ -735,6 +737,7 @@ const adjustHappiness = async (amount) => {
 
     return (
         <div className="homepage-container">
+            <div className="overlay"></div>
           <Helmet><title>Adopt</title></Helmet>
         {pets.length > 0 ? (
             <>
@@ -808,10 +811,46 @@ const adjustHappiness = async (amount) => {
                         </div>
                         <div className="right-section">
                             <h2>Meet {selectedPet.pet_name}</h2>
-                            <p>Energy: {petStats.energy}</p>
-                            <p>Happiness: {petStats.happiness}</p>
-                            <p>Hunger: {petStats.hunger}</p>
-                            <p>Cleanliness: {petStats.cleanliness}</p>
+                            <p>Energy: {petStats.energy}
+
+                            <div className="stat">
+                            
+                            <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${petStats.energy}%` }}></div>
+                           </div>
+                            </div>
+
+                            </p>
+                           
+                            <p>Happiness: {petStats.happiness}
+
+                            <div className="stat">
+                            
+                            <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${petStats.happiness}%` }}></div>
+                           </div>
+                            </div>
+
+                            </p>
+                        
+                            <p>Hunger: {petStats.hunger}
+                            <div className="stat">
+                            
+                             <div className="progress-bar">
+                             <div className="progress-fill" style={{ width: `${petStats.hunger}%` }}></div>
+                            </div>
+                             </div>
+                      </p>
+                            <p>Cleanliness: {petStats.cleanliness}
+
+                            <div className="stat">
+                            
+                            <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${petStats.cleanliness}%` }}></div>
+                           </div>
+                            </div>
+
+                            </p>
                             <p>Species: {selectedPet.species_name}</p>
                             <p>Diet: {selectedPet.diet_desc}</p>
                             <p>Personality: {selectedPet.personality_name}</p>

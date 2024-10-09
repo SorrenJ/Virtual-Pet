@@ -1,0 +1,22 @@
+.right-section {
+    width: 300px;
+}
+
+.stat {
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 20px;
+    width: 100%;
+}
+
+.progress-fill {
+    background-color: #4caf50; /* You can change the color based on the stat */
+    height: 100%;
+    width: 0;
+    transition: width 0.5s ease-in-out;
+}

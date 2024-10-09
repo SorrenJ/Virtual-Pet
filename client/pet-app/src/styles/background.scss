@@ -1,0 +1,47 @@
+body{
+    // background-color: #f4f49a;
+    // color: rgb(0, 0, 0);
+    
+    background-color: rgb(55, 71, 32); /* Your color with transparency */
+
+    position: relative;
+    // background-image: url('https://res.cloudinary.com/deszclhtq/image/upload/v1728515956/forest2_bg_poietm.png');
+    min-height: 100vh;
+    background-repeat: repeat-x; /* Repeats the background horizontally */
+    background-size: cover;
+    background-position: 0 0; /* Start the background at the top-left */
+    animation: moveBackground 60s linear infinite; /* 10s cycle, infinite repetition */
+
+    color:white;
+
+}
+
+.overlay {
+    position: fixed; /* Make the overlay cover the entire viewport */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    // background-color: rgba(220, 252, 205, 0.004); /* Your color with transparency */
+
+
+    background-image: url('https://res.cloudinary.com/deszclhtq/image/upload/v1728515956/forest2_bg_poietm.png');
+   opacity:0.25;
+    backdrop-filter: blur(10px); /* Blur effect */
+    z-index: -1; /* Puts the overlay behind the content */
+
+    min-height: 100vh;
+    background-repeat: repeat-x; /* Repeats the background horizontally */
+    background-size: cover;
+    background-position: 0 0; /* Start the background at the top-left */
+    animation: moveBackground 60s linear infinite; /* 10s cycle, infinite repetition */
+  }
+
+  @keyframes moveBackground {
+    0% {
+        background-position: 0 0; /* Starting position */
+      }
+      100% {
+        background-position: -1200px 0; /* Adjust based on image width */
+      }
+  }
