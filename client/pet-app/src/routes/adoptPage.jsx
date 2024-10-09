@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import {Helmet} from 'react-helmet'
 import SpeciesList from '../components/SpeciesList';  
 import PetsList from '../components/PetList';        
 
@@ -66,6 +67,7 @@ function AdoptPage() {
 
   return (
     <div>
+      <Helmet><title>Adopt</title></Helmet>
       <SpeciesList speciesList={speciesList} adoptPet={adoptPet} />
       <PetsList petsList={petsList} />
     </div>

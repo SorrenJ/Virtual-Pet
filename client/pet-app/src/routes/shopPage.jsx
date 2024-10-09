@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {Helmet} from 'react-helmet'
 import Shop from '../components/shop'; // Import the Shop component
 
 const ShopPage = () => {
@@ -80,6 +81,7 @@ const ShopPage = () => {
 
   return (
 <div>
+<Helmet><title>Shop</title></Helmet>
     <Shop 
       money={data.money}
       toys={data.toys}

@@ -13,6 +13,7 @@
   background-image: url("https://www.transparenttextures.com/patterns/old-map.png");
   padding-top: 44px;
   padding-right: 15px;
+  text-align: center;
 }
 
 .shopkeeper {
@@ -32,6 +33,7 @@
   font-family: "Amatic SC", sans-serif;
   font-size: 45px; // Increase text size (adjust the value as needed)
   font-weight: bold; // Optional: make the text bold
+  text-align: center;
 }
 
 .items-container {
@@ -69,6 +71,15 @@
   justify-content: center; // Center the title
   margin-bottom: 10px; // Space below the title
   padding-top: 12px;
+  .button{
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
 }
 
 .toys, .toiletries, .foods {
@@ -84,6 +95,7 @@
     box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); // Blue shadow on hover
     transform: scale(1.05); // Slightly expand on hover
   }
+
 }
 
 .tooltip {

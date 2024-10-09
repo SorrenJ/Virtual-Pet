@@ -109,7 +109,7 @@ const MathGame = ({ userId }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !gameOver) { // Check if the game is not over
+    if (e.key === 'Enter' && !gameOver) { 
       checkAnswer();
     }
   };

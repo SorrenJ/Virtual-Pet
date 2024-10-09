@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {Helmet} from 'react-helmet'
 // Import the required components for inventory display
 import UserFoodTable from '../components/UserFoodTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
@@ -734,6 +735,7 @@ const adjustHappiness = async (amount) => {
 
     return (
         <div className="homepage-container">
+          <Helmet><title>Adopt</title></Helmet>
         {pets.length > 0 ? (
             <>
                 <h1>Welcome {pets[0]?.user_name}</h1>

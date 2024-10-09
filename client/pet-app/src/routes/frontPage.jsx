@@ -21,7 +21,7 @@ const FrontPage = () => {
       {/* Moving Image Container */}
       <div className="moving-image-container">
         <img
-          src="https://res.cloudinary.com/deszclhtq/image/upload/v1728492155/Slugaboo_line-modified_1_p6srdw.png"
+          src="https://res.cloudinary.com/deszclhtq/image/upload/v1728506338/Slugaboo_line-modified_1_1_vw9wbq.png"
           alt="Moving"
           className="moving-image"
         />
