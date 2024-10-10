@@ -65,8 +65,7 @@ function AdoptPage() {
              navigate(`/home?newPetId=${adoptedPet.id}`);    
            }, 2000); // You can adjust or remove the delay as needed
           
-          // Redirect to home page with the newest pet on display
-          navigate(`/home?newPetId=${adoptedPet.id}`);    
+        
         } else {
           alert('Error setting pet name.');
         }

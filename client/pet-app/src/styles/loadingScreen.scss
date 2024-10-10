@@ -1,12 +1,43 @@
+/* LoadingScreen.scss */
 .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 100, 0, 0.9); /* Dark green with slight transparency */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f3f3f3;
-}
-
-.loading-screen h1 {
-    font-size: 24px;
-    color: #333;
-}
+    z-index: 1000; /* Ensure it stays on top of everything */
+  }
+  
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff; /* White text */
+  }
+  
+//   h1 {
+//     margin-top: 20px;
+//     font-size: 24px;
+//     font-family: Arial, sans-serif;
+//   }
+  
+  /* Loading Spinner Animation */
+  .spinner {
+    border: 8px solid #f3f3f324; /* Light gray border */
+    border-top: 8px solid #ffffff; /* White spinner */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Keyframes for spinning animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
