@@ -2,7 +2,7 @@ import React from "react";
 import {Helmet} from 'react-helmet'
 import {Navigate, useNavigate} from 'react-router-dom'
 import '../styles/frontPage.scss';
-
+// import '../styles/background.scss';
 const FrontPage = () => {
   const Navigate = useNavigate();
   const handleAdoptClick = () => {
@@ -14,20 +14,30 @@ const FrontPage = () => {
   };
 
   return (
-    <body>
+    
+    <div clasName="colored-bg">
+<div className="overlay"></div>
+
+<body>
       <Helmet>
         <title>Front Page</title>
       </Helmet>
+
       <img
           src="https://res.cloudinary.com/deszclhtq/image/upload/v1728533043/5-modified_bxuj8q.png"
           alt="Red"
           className="moving-image red-moving"
         />
+
+     
+
+      <h1 className="welcome-font">Welcome to</h1> 
+
       <div className="logo">
-        Welcome to
+   
       {/* Logo Image */}
       <img 
-        src="https://res.cloudinary.com/deszclhtq/image/upload/v1728492346/2-modified_qzohk3.png"
+        src="https://res.cloudinary.com/deszclhtq/image/upload/v1728533192/Beatly_Bonds_Hero_vtu813.png"
         alt="beastly-bond"
         className="beastly-bond-logo" 
       />
@@ -45,6 +55,7 @@ const FrontPage = () => {
           className="moving-image yellow-moving"
         />
 
+
         <img
           src="https://res.cloudinary.com/deszclhtq/image/upload/v1728533089/3-modified_xxva0o.png"
           alt="orange"
@@ -57,7 +68,13 @@ const FrontPage = () => {
           className="moving-image pink-image"
         />
       
+
+      </div>
+
+
     </body>
+    </div>
+    
   );
 };
 

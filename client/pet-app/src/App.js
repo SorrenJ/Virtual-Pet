@@ -40,6 +40,7 @@ function App() {
           <Route path="/homeTester2" element={<HomeTesterPage2 />} />
           <Route path="/sprites" element={<PetPage />} />
           <Route path="/mood" element={<MoodTesterPage />} />
+         
         </Routes>
       </main>
     </div>

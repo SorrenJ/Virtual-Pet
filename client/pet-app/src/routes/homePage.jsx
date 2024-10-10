@@ -6,17 +6,10 @@ import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserToysTable from '../components/UserToysTable';
 import Sentiment from 'sentiment';
 
-
-
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'; // Import the specific icon
 import '../styles/home.scss';  // Assuming the CSS is in the same directory as your JSX file
 import '../styles/progressBars.scss';  // Assuming the CSS is in the same directory as your JSX file
-
-
-
-
 import '../styles/background.scss';
 const sentimentAnalyzer = new Sentiment();
 
@@ -854,6 +847,7 @@ const adjustHappiness = async (amount) => {
     }
 
 
+
     };
  
    const renderTable = () => {
@@ -909,12 +903,14 @@ const adjustHappiness = async (amount) => {
               console.error('Unknown item type:', type);
       }
   };
-   
+  
+
+
       return (
         <div className="homepage-container">
           <div className="overlay"></div>
           <Helmet><title>Adopt</title></Helmet>
-   
+
           {pets.length > 0 ? (
             <>
               <h1>Welcome {pets[0]?.user_name}</h1>
@@ -933,7 +929,7 @@ const adjustHappiness = async (amount) => {
                   </option>
                 ))}
               </select>
-   
+
               <div className="pet-details-container">
                 {/* Left Section */}
                 <div className="left-section">
@@ -944,15 +940,18 @@ const adjustHappiness = async (amount) => {
                     <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
                   </div>
                   <div className="inventory-table">
+
                                   {renderTable()}
                               </div>
                 </div>
    
+
                 {/* Mid Section */}
                 <div className="mid-section">
                   <div className="bot-message">
                     {messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}
                   </div>
+
                     <img
                             ref={spriteRef}
                             className="pet-image"
@@ -961,6 +960,7 @@ const adjustHappiness = async (amount) => {
                             onDrop={handleDrop}
                             onDragOver={(e) => e.preventDefault()} // Allow drop
                               />
+
                   <div className="chatbot-container">
                     <div className="chat-window">
                       {messages.length > 0 && (
@@ -995,7 +995,7 @@ const adjustHappiness = async (amount) => {
                     )}
                   </div>
                 </div>
-   
+
                 {/* Right Section */}
                 <div className="right-section">
                   {selectedPet && petStats ? (
@@ -1041,5 +1041,7 @@ const adjustHappiness = async (amount) => {
         </div>
       );
     };
+
    
     export default HomePage;
+

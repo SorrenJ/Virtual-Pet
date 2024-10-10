@@ -90,7 +90,7 @@ const SpeciesList = ({ speciesList, adoptPet }) => {
             </div>
           </div>
         ) : (
-          <p>Select a species to see more details.</p>
+          <p></p>
         )}
       </div>
     </div>

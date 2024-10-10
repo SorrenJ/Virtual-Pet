@@ -9,11 +9,24 @@ Install dependencies with `npm install` in each respective `/client/pet-app` and
 
 ### Setup anf run Front-end Server
 
-1. Install `npm install sass`
+ Install `npm install sass`
 
-2. Install `npm install react-modal`
+ Install `npm install react-modal`
 
-2. Go to the path: `/client/pet-app` and `npm run` in the terminal
+ Install `npm i`
+
+ Install `npm install sentiment`
+
+```
+npm i --save @fortawesome/fontawesome-svg-core
+npm install --save @fortawesome/free-solid-svg-icons
+npm install --save @fortawesome/react-fontawesome
+
+npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+
+```
+
+ Go to the path: `/client/pet-app` and `npm run` in the terminal
 
 ### Setup and run Back-end Server
 
