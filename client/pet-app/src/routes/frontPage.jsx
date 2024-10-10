@@ -18,11 +18,11 @@ const FrontPage = () => {
     <div clasName="colored-bg">
 <div className="overlay"></div>
 
-<body>
+
       <Helmet>
         <title>Front Page</title>
       </Helmet>
-
+      <body>
       <img
           src="https://res.cloudinary.com/deszclhtq/image/upload/v1728533043/5-modified_bxuj8q.png"
           alt="Red"
@@ -68,12 +68,12 @@ const FrontPage = () => {
           className="moving-image pink-image"
         />
       
-
+      </body>
       </div>
 
 
-    </body>
-    </div>
+ 
+
     
   );
 };
