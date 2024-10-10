@@ -2,4 +2,4 @@ INSERT INTO pets (user_id, species_id, name, age, adopted_at, sprite_id, mood_id
 VALUES
 (1, 1, 'Glurb', 5, CURRENT_TIMESTAMP, 27, 1, 3, 2, CURRENT_TIMESTAMP, 100, 100, 100, 100),
 
-(1, 1, 'Jim', 5, CURRENT_TIMESTAMP, 1, 1, 1, 7, CURRENT_TIMESTAMP, 30, 30, 30, 30);
+(1, 2, 'Big Bertha', 5, CURRENT_TIMESTAMP, 127, 1, 4, 7, CURRENT_TIMESTAMP, 30, 30, 30, 30);
