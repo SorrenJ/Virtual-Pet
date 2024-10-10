@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Import useState
+import React, { useState, useEffect } from "react"; // Import useEffect to handle transition
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import '../styles/frontPage.scss';
@@ -6,26 +6,35 @@ import LoadingScreen from '../components/loadingScreen'; // Ensure you have the 
 
 const FrontPage = () => {
   const [loading, setLoading] = useState(false); // State to manage the loading screen
+  const [isTransitioning, setIsTransitioning] = useState(false); // State to manage the transition effect
   const navigate = useNavigate();
 
   const handleAdoptClick = () => {
     setLoading(true); // Show the loading screen
     setTimeout(() => {
-      navigate('/adopt'); // Redirect to /adopt page after a delay
+      setIsTransitioning(true); // Start transition after loading
+      setTimeout(() => {
+        setLoading(false); // Hide loading after the transition
+        navigate('/adopt'); // Redirect to /adopt page after a delay
+      }, 500); // Duration of transition (0.5s)
     }, 2000); // Simulate loading delay
   };
 
   const handleHomeClick = () => {
     setLoading(true); // Show the loading screen
     setTimeout(() => {
-      navigate('/home'); // Redirect to /home page after a delay
-    }, 5000); // Simulate loading delay
+      setIsTransitioning(true); // Start transition after loading
+      setTimeout(() => {
+        setLoading(false); // Hide loading after the transition
+        navigate('/home'); // Redirect to /home page after a delay
+      }, 500); // Duration of transition (0.5s)
+    }, 2000); // Simulate loading delay
   };
 
   return (
     <>
       {loading ? (
-        <LoadingScreen /> // Display the loading screen when loading state is true
+        <LoadingScreen isTransitioning={isTransitioning} /> // Pass the transition state to LoadingScreen component
       ) : (
         <div className="colored-bg">
           <div className="overlay"></div>

@@ -12,6 +12,8 @@ const NavBar = () => {
   const [selectedPet, setSelectedPet] = useState(null); // Placeholder for the selected pet
 
   const [loading, setLoading] = useState(false); // Loading state for the navigation
+  const [isTransitioning, setIsTransitioning] = useState(false); // State to manage the transition effect
+  const [whiteBackground, setWhiteBackground] = useState(false); // White background state
   const navigate = useNavigate();
 
   // Toggle Math Game modal
@@ -21,18 +23,32 @@ const NavBar = () => {
   const toggleInventoryModal = () => setShowInventory(!showInventory);
 
   // Function to handle link click with loading
+  // Handle link click with loading, swipe, and white background transition
   const handleLinkClick = (path) => {
     setLoading(true); // Show the loading screen
+
+ 
+  
+ 
+    // After swipe completes, show white background and fade out
     setTimeout(() => {
-      setLoading(false); // Hide the loading screen after a delay
+      setIsTransitioning(true); // End the swipe transition
+      setWhiteBackground(true); // Show white background
+    }, 1800); // Time for swipe transition to complete (adjustable)
+
+    // Fade out and navigate to the new page
+    setTimeout(() => {
       navigate(path); // Navigate to the new page
-    }, 2000); // Simulated delay for loading (you can adjust or remove this)
+      setIsTransitioning(false); // End the swipe transition
+      setLoading(false); // Hide the loading screen after navigation
+      setWhiteBackground(false); // Reset white background for future transitions
+    }, 2000); // Adjust for fade out timing
   };
 
   return (
     <>
       {loading ? (
-        <LoadingScreen />
+        <LoadingScreen isTransitioning={isTransitioning} />
       ) : (
         <nav>
           <ul>

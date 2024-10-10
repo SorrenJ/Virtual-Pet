@@ -1,4 +1,4 @@
-/* LoadingScreen.scss */
+/* loadingScreen.scss */
 .loading-screen {
     position: fixed;
     top: 0;
@@ -10,6 +10,26 @@
     justify-content: center;
     align-items: center;
     z-index: 1000; /* Ensure it stays on top of everything */
+    transform: translateX(0); /* Initially no translation */
+    transition: transform 0.5s ease-in-out; /* Add transition effect */
+  }
+  
+  .loading-screen.swipe-out {
+    transform: translateX(100vw); /* Swipe out to the right */
+  }
+  
+  .loading-screen.white-bg {
+    background-color: #ffffff; /* White background */
+    animation: fadeOut 1s forwards; /* Fade out after swipe */
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
   
   .loading-content {
@@ -18,12 +38,6 @@
     align-items: center;
     color: #fff; /* White text */
   }
-  
-//   h1 {
-//     margin-top: 20px;
-//     font-size: 24px;
-//     font-family: Arial, sans-serif;
-//   }
   
   /* Loading Spinner Animation */
   .spinner {

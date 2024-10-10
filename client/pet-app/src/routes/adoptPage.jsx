@@ -8,7 +8,7 @@ function AdoptPage() {
   const [speciesList, setSpeciesList] = useState([]);
   const [petsList, setPetsList] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [isTransitioning, setIsTransitioning] = useState(false); // State to manage the transition effect
   const navigate = useNavigate();  // Initialize useNavigate hook for navigation
 
   useEffect(() => {
@@ -59,11 +59,14 @@ function AdoptPage() {
 
            // Trigger loading after the alert is confirmed
            setLoading(true);
-
+           setTimeout(() => {
+           setIsTransitioning(true); // Start transition after loading
            // Add a slight delay before navigating to simulate loading
            setTimeout(() => {
-             navigate(`/home?newPetId=${adoptedPet.id}`);    
-           }, 4000); // You can adjust or remove the delay as needed
+            setLoading(false); // Hide loading after the transition
+            navigate(`/home?newPetId=${adoptedPet.id}`);    
+            }, 500);
+            }, 4000); // You can adjust or remove the delay as needed
           
         
         } else {
@@ -80,7 +83,7 @@ function AdoptPage() {
   return (
     <>
       {loading ? (
-        <LoadingScreen /> // Show loading screen while loading after alert
+        <LoadingScreen isTransitioning={isTransitioning} /> // Show loading screen while loading after alert
       ) : (
         <div>
           <div className="overlay"></div>
