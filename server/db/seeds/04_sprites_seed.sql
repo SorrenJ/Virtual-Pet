@@ -200,3 +200,99 @@ VALUES
 (6, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
 (6, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
 (6, 2, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728148089/Hippo_Dead_zrmf4i.png');
+
+-- Yellow Vulinquent
+(1, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728523679/Vulture_Yellow_Neutral_phptuf.gif'),  -- default
+(1, 3, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147652/Vulture_Yellow_Acknowlege_rfvtq3.png'), -- acknowledge
+(1, 3, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147652/Vulture_Yellow_Acknowlege_rfvtq3.png'), -- happy (missing URL)
+(1, 3, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728523677/Vulure_Yellow_Feeding_ssd0ou.gif'), -- feeding
+(1, 3, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147645/Vulture_Yellow_Hungry_op5zlu.png'), -- hungry
+(1, 3, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147645/Vulture_Yellow_Tired_buouau.png'), -- tired
+(1, 3, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147651/Vulture_Yellow_Sleeping_vmsi9b.png'), -- sleeping
+(1, 3, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147650/Vulture_Yellow_Wake_vgyrn1.png'), -- wake
+(1, 3, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147644/Vulture_Yellow_Dirty_vzcxrw.png'), -- dirty
+(1, 3, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147651/Vulture_Yellow_Cleaned_to9qjk.png'), -- clean
+(1, 3, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147647/Vulture_Yellow_Mad_xr9q1d.png'), -- angry
+(1, 3, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147646/Vulture_Yellow_Sad_cxtylp.png'), -- sad (missing URL)
+(1, 3, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147652/Vulture_Yellow_Acknowlege_rfvtq3.png'), -- pet (missing URL)
+(1, 3, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147643/Vulture_dead_cfyjrd.png'), -- dead (missing URL)
+
+-- Red Vulinquent 
+(2, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728522238/Vulture_Red_Neutral_hrnapj.gif'),  -- default
+(2, 3, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147663/Vulture_Red_Acknowlege_rsyka0.png'), -- acknowledge
+(2, 3, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147663/Vulture_Red_Acknowlege_rsyka0.png'), -- happy (missing URL)
+(2, 3, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728522454/Vulture_Red_Feeding_kdjgs1.gif'), -- feeding
+(2, 3, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147655/Vulture_Red_Hungry_dxq9df.png'), -- hungry
+(2, 3, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147656/Vulture_Red_Tired_cqczdt.png'), -- tired
+(2, 3, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147661/Vulture_Red_Sleeping_jluel4.png'), -- sleeping
+(2, 3, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147660/Vulture_Red_Wake_mze5qk.png'), -- wake
+(2, 3, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147654/Vulture_Red_Dirty_bfrmyv.png'), -- dirty
+(2, 3, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147662/Vulture_Red_Cleaned_ngiwqd.png'), -- clean
+(2, 3, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147657/Vulture_Red_Mad_jxd3d1.png'), -- angry
+(2, 3, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147657/Vulture_Red_Sad_dmyffh.png'), -- sad
+(2, 3, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147663/Vulture_Red_Acknowlege_rsyka0.png'), -- pet (missing URL)
+(2, 3, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147643/Vulture_dead_cfyjrd.png'), -- dead
+
+-- Blue Vulinquent
+(3, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728522938/Vulture_Blue_Neutral_h6r9it.gif'),  -- default
+(3, 3, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147689/Vulture_Blue_Acknowlege_clbguo.png'), -- acknowledge
+(3, 3, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147689/Vulture_Blue_Acknowlege_clbguo.png'), -- happy (missing URL)
+(3, 3, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728523021/Vulture_Blue_Feeding_vpbsra.gif'), -- feeding
+(3, 3, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147680/Vulture_Blue_Hungry_sfodnj.png'), -- hungry
+(3, 3, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147681/Vulture_Blue_Tired_abq65x.png'), -- tired
+(3, 3, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147686/Vulture_Blue_Sleeping_hihtup.png'), -- sleeping
+(3, 3, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147686/Vulture_Blue_Wake_i7tatd.png'), -- wake
+(3, 3, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147679/Vulture_Blue_Dirty_jsv0ie.png'), -- dirty
+(3, 3, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147688/Vulture_Blue_Cleaned_ztbafc.png'), -- clean
+(3, 3, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147682/Vulture_Blue_Mad_pddtmj.png'), -- angry
+(3, 3, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147682/Vulture_Blue_Sad_dlxz2p.png'), -- sad
+(3, 3, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147689/Vulture_Blue_Acknowlege_clbguo.png'), -- pet (missing URL)
+(3, 3, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147643/Vulture_dead_cfyjrd.png'), -- dead (missing URL)
+
+-- Green Vulinquent
+(4, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728522692/Vulture_Green_Neutral_tpcf0m.gif'),  -- default
+(4, 3, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147676/Vulture_Green_Acknowlege_aqh9ww.png'), -- acknowledge
+(4, 3, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147676/Vulture_Green_Acknowlege_aqh9ww.png'), -- happy (missing URL)
+(4, 3, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728522715/Vulture_Green_Feeding_jcdesf.gif'), -- feeding
+(4, 3, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147666/Vulture_Green_Hungry_eozlrf.png'), -- hungry
+(4, 3, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147667/Vulture_Green_Tired_w0n7tf.png'), -- tired
+(4, 3, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147673/Vulture_Green_Sleeping_cwvkqu.png'), -- sleeping
+(4, 3, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147672/Vulture_Green_Wake_aq6pgk.png'), -- wake
+(4, 3, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147666/Vulture_Green_Dirty_x1nnrb.png'), -- dirty
+(4, 3, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147674/Vulture_Green_Cleaned_eonyss.png'), -- clean
+(4, 3, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147670/Vulture_Green_Mad_rdhhr9.png'), -- angry
+(4, 3, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147669/Vulture_Green_Sad_lknsbr.png'), -- sad
+(4, 3, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147676/Vulture_Green_Acknowlege_aqh9ww.png'), -- pet (missing URL)
+(4, 3, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147643/Vulture_dead_cfyjrd.png'), -- dead (missing URL)
+
+-- Pink
+(5, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728521781/Vulture_Neutral_fve8gz.gif'),  -- default
+(5, 3, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147702/Vulture_Approval_lw6bhl.png'), -- acknowledge
+(5, 3, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147702/Vulture_Approval_lw6bhl.png'), -- happy (missing URL)
+(5, 3, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728521928/Vulture_Feeding_q9krr9.gif'), -- feeding
+(5, 3, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147692/Vulture_Hungry_nsimov.png'), -- hungry
+(5, 3, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147691/Vulture_Tired_mskkro.png'), -- tired
+(5, 3, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147701/Vulture_Sleep_pn6v8a.png'), -- sleeping
+(5, 3, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147700/Vulture_Wake_rg9jvh.png'), -- wake
+(5, 3, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147695/Vulture_Dirty_w5dix2.png'), -- dirty
+(5, 3, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147701/Vulture_Bath_mib7ty.png'), -- clean
+(5, 3, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147697/Vulture_Mad_a8znkc.png'), -- angry
+(5, 3, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147695/Vulture_Sad_srpyon.png'), -- sad
+(5, 3, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147702/Vulture_Approval_lw6bhl.png'), -- pet (missing URL)
+(5, 3, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147643/Vulture_dead_cfyjrd.png'), -- dead (missing URL)
+
+-- Orange Vulinquent
+(6, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728521781/Vulture_Neutral_fve8gz.gif'),  -- default
+(6, 3, 2, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147702/Vulture_Approval_lw6bhl.png'), -- acknowledge
+(6, 3, 3, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147702/Vulture_Approval_lw6bhl.png'), -- happy (missing URL)
+(6, 3, 4, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728521928/Vulture_Feeding_q9krr9.gif'), -- feeding
+(6, 3, 5, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147692/Vulture_Hungry_nsimov.png'), -- hungry
+(6, 3, 6, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147691/Vulture_Tired_mskkro.png'), -- tired
+(6, 3, 7, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147701/Vulture_Sleep_pn6v8a.png'), -- sleeping
+(6, 3, 8, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147700/Vulture_Wake_rg9jvh.png'), -- wake
+(6, 3, 9, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147695/Vulture_Dirty_w5dix2.png'), -- dirty
+(6, 3, 10, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147701/Vulture_Bath_mib7ty.png'), -- clean
+(6, 3, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147697/Vulture_Mad_a8znkc.png'), -- angry
+(6, 3, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147695/Vulture_Sad_srpyon.png'), -- sad
+(6, 3, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147702/Vulture_Approval_lw6bhl.png'), -- pet (missing URL)
+(6, 3, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728147643/Vulture_dead_cfyjrd.png'); -- dead (missing URL)
