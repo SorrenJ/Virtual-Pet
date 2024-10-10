@@ -23,6 +23,10 @@
     animation: fadeOut 1s forwards; /* Fade out after swipe */
   }
   
+
+  .loading-text{
+    font-size:2em;
+  }
   @keyframes fadeOut {
     0% {
       opacity: 1;
@@ -32,6 +36,11 @@
     }
   }
   
+
+  .lil-shopkeeper{
+    width:250px;
+    height:auto;
+  }
   .loading-content {
     display: flex;
     flex-direction: column;
