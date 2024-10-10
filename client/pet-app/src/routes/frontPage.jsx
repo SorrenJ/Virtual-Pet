@@ -19,7 +19,7 @@ const FrontPage = () => {
     setLoading(true); // Show the loading screen
     setTimeout(() => {
       navigate('/home'); // Redirect to /home page after a delay
-    }, 2000); // Simulate loading delay
+    }, 5000); // Simulate loading delay
   };
 
   return (

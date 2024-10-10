@@ -63,7 +63,7 @@ function AdoptPage() {
            // Add a slight delay before navigating to simulate loading
            setTimeout(() => {
              navigate(`/home?newPetId=${adoptedPet.id}`);    
-           }, 2000); // You can adjust or remove the delay as needed
+           }, 4000); // You can adjust or remove the delay as needed
           
         
         } else {
