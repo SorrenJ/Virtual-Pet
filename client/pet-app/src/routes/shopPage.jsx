@@ -81,6 +81,7 @@ const ShopPage = () => {
 
   return (
 <div>
+<div className="overlay"></div>
 <Helmet><title>Shop</title></Helmet>
     <Shop 
       money={data.money}

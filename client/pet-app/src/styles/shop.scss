@@ -89,10 +89,10 @@
   margin: 10px; // Margin outside each item
   width: 150px; // Set a consistent width for each item
   text-align: center; // Center text within the item box
-  background-color: #f9f9f9; // Light background for better visibility
+  background-color: #f9f9f998; // Light background for better visibility
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optional: subtle shadow for depth
   &:hover {
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); // Blue shadow on hover
+    box-shadow: 0 4px 8px #4caf4fa9; // Blue shadow on hover
     transform: scale(1.05); // Slightly expand on hover
   }
 

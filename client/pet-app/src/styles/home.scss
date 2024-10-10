@@ -52,6 +52,7 @@ body {
     margin-bottom: 20px;
     // border: 2px solid #ccc;
     border-radius: 10px;
+    position:relative;
 }
 
 
@@ -82,7 +83,8 @@ button{
     justify-content: center;
     width: 30%;
     padding-left: 20px;
-    margin-top:-25%;
+    margin-top:-15%;
+    font-size:1.25em;
     // border-left: 2px solid #ccc;
 }
 
@@ -91,11 +93,13 @@ button{
     display: flex;
     justify-content: center;
     gap: 15px;
+  
 }
 
 .inventory-table {
     margin-top: 20px;
     width: 80%;
+    
 }
 
 #petSelector{
