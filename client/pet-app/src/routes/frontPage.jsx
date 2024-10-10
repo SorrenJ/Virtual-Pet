@@ -1,13 +1,18 @@
 import React from "react";
 import {Helmet} from 'react-helmet'
 import '../styles/frontPage.scss';
-
+// import '../styles/background.scss';
 const FrontPage = () => {
   return (
-    <body>
+    
+    <div clasName="colored-bg">
+<div className="overlay"></div>
+
+<body>
       <Helmet>
         <title>Front Page</title>
       </Helmet>
+     
       <div className="logo">
         Welcome to
       {/* Logo Image */}
@@ -27,6 +32,8 @@ const FrontPage = () => {
         />
       </div>
     </body>
+    </div>
+    
   );
 };
 
