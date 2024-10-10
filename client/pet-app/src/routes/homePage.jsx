@@ -28,6 +28,7 @@ const HomePage = () => {
     const [toiletriesCount, setToiletriesCount] = useState(0);
     const [toysCount, setToysCount] = useState(0);
     const [forceRender, setForceRender] = useState(0); // State to force re-render
+    const [showAdminControls, setShowAdminControls] = useState(false);
     const spriteRef = useRef(null);
 
     const [messages, setMessages] = useState([]);
@@ -729,114 +730,130 @@ const adjustHappiness = async (amount) => {
     
 
 
-
-
+    const renderTable = () => {
+      if (visibleComponent === 4) {
+          // Show all items when the "All Items" button is clicked
+          return (
+              <>
+                  <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />
+                  <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />
+                  <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />
+              </>
+          );
+      } else {
+          // Show specific tables based on the visibleComponent
+          switch (visibleComponent) {
+              case 1:
+                  return <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />;
+              case 2:
+                  return <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />;
+              case 3:
+                  return <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />;
+              default:
+                  return null;
+          }
+      }
+    };
 
 
     return (
-        <div className="homepage-container">
+      <div className="homepage-container">
           <Helmet><title>Adopt</title></Helmet>
-        {pets.length > 0 ? (
-            <>
-                <h1>Welcome {pets[0]?.user_name}</h1>
-                <h2>Select Your Pet</h2>
-                <select
-                    id="petSelector"
-                    value={selectedPet?.pet_id || ''}
-                    onChange={(e) => {
-                        const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
-                        setSelectedPet(pet);
-                    }}
-                >
-                    {pets.map((pet) => (
-                        <option key={pet.pet_id} value={pet.pet_id}>
-                            {pet.pet_name}
-                        </option>
-                    ))}
-                </select>
+          {pets.length > 0 ? (
+              <>
+                  <h1>Welcome {pets[0]?.user_name}</h1>
+                  <h2>Select Your Pet</h2>
+                  <select
+                      id="petSelector"
+                      value={selectedPet?.pet_id || ''}
+                      onChange={(e) => {
+                          const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
+                          setSelectedPet(pet);
+                      }}
+                  >
+                      {pets.map((pet) => (
+                          <option key={pet.pet_id} value={pet.pet_id}>
+                              {pet.pet_name}
+                          </option>
+                      ))}
+                  </select>
 
-                {selectedPet && petStats && (
-                    <div className="pet-details-container">
+                  {selectedPet && petStats && (
+                      <div className="pet-details-container">
 
-                        <div className="left-section">
-                        <div className="bot-message">{messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}</div>
-                            <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
-                            <div className="chatbot-container">
+                          <div className="left-section">
+                              <div className="bot-message">{messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}</div>
+                              <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
+                              <div className="chatbot-container">
+                                  {/* Chat Window */}
+                                  <div className="chat-window">
+                                      {messages.length > 0 && (
+                                          <div className="message">
+                                              <div className="user-message">You: {messages[messages.length - 1].user}</div>
+                                          </div>
+                                      )}
+                                  </div>
 
+                                  {/* Input Section */}
+                                  <div className="input-section">
+                                      <input
+                                          type="text"
+                                          value={input}
+                                          onChange={(e) => setInput(e.target.value)}
+                                          placeholder="Type a message..."
+                                      />
+                                      <button onClick={handleSendMessage}>Send</button>
+                                  </div>
+                              </div>
 
-      {/* Chat Window */}
-      <div className="chat-window">
-  {messages.length > 0 && (
-    <div className="message">
-      <div className="user-message">You: {messages[messages.length - 1].user}</div>
-     
-    </div>
-  )}
-</div>
+                              <div className="buttons-section">
+                                  <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
+                                  <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet</button>
+                                  <button onClick={() => setShowAdminControls(!showAdminControls)}>
+                                      Admin Controls
+                                  </button>
+                              </div>
 
-      {/* Input Section */}
-      <div className="input-section">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button onClick={handleSendMessage}>Send</button>
+                              {showAdminControls && (
+                                  <div style={{ marginTop: '20px' }}>
+                                      <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
+                                      <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
+                                      <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
+                                      <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
+                                  </div>
+                              )}
+                          </div>
+
+                          <div className="right-section">
+                              <h2>Meet {selectedPet.pet_name}</h2>
+                              <p>Energy: {petStats.energy}</p>
+                              <p>Happiness: {petStats.happiness}</p>
+                              <p>Hunger: {petStats.hunger}</p>
+                              <p>Cleanliness: {petStats.cleanliness}</p>
+                              <p>Species: {selectedPet.species_name}</p>
+                              <p>Diet: {selectedPet.diet_desc}</p>
+                              <p>Personality: {selectedPet.personality_name}</p>
+                          </div>
+                      </div>
+                  )}
+              </>
+          ) : (
+              <p>No pets available at the moment.</p>
+          )}
+
+          <h2>Inventory</h2>
+          <div className="inventory-section">
+              <button onClick={() => setVisibleComponent(4)} disabled={visibleComponent === 4}>All Items</button> 
+              <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>Pet Treats</button>
+              <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>Pet Toiletries</button>
+              <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
+          </div>
+
+          <div className="inventory-table">
+              {renderTable()}
+          </div>
       </div>
-    </div>
-                            
-                            <div className="buttons-section">
-                                <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
-                                <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet</button>
-                                <button onClick={() => setVisibleComponent(visibleComponent === 4 ? null : 4)}>
-                                    Admin Controls
-                                </button>
-                            </div>
-                        
-                            <div style={{ marginTop: '20px' }}>
-                    {visibleComponent === 4 && (
-                     <>
-                     <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
-                     <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
-                    <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
-                    <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
-                    </>
-                    )}
-                        </div>
-                        
-                        </div>
-                        <div className="right-section">
-                            <h2>Meet {selectedPet.pet_name}</h2>
-                            <p>Energy: {petStats.energy}</p>
-                            <p>Happiness: {petStats.happiness}</p>
-                            <p>Hunger: {petStats.hunger}</p>
-                            <p>Cleanliness: {petStats.cleanliness}</p>
-                            <p>Species: {selectedPet.species_name}</p>
-                            <p>Diet: {selectedPet.diet_desc}</p>
-                            <p>Personality: {selectedPet.personality_name}</p>
-                        </div>
-                    </div>
-                )}
-            </>
-        ) : (
-            <p>No pets available at the moment.</p>
-        )}
-
-        <h2>Inventory</h2>
-        <div className="inventory-section">
-            <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>Pet Treats</button>
-            <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>Pet Toiletries</button>
-            <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
-        </div>
-
-        <div className="inventory-table">
-            {visibleComponent === 1 && <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />}
-            {visibleComponent === 2 && <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />}
-            {visibleComponent === 3 && <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />}
-        </div>
-    </div>
-);
+  );
 };
 
 export default HomePage;
