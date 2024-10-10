@@ -1026,8 +1026,8 @@ const adjustHappiness = async (amount) => {
                         </div>
                       </div>
                       <p>Species: {selectedPet.species_name}</p>
-                      <p>Personality: {selectedPet.personality_name}</p>
-                      <p>Description: {selectedPet.diet_desc}</p>
+                      {/* <p>Personality: {selectedPet.personality_name}</p> */}
+                      {/* <p>Description: {selectedPet.diet_desc}</p> */}
                     </>
                   ) : (
                     <p>No stats available for the selected pet.</p>

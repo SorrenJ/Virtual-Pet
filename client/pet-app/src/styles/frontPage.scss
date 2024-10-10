@@ -47,7 +47,7 @@ margin-top: 25px;
 }
 
 .yellow-moving {
-  animation-delay: 1s; /* Delay for yellow moving image */
+  animation: moveLeft 10s linear infinite; /* Delay for yellow moving image */
 }
 
 .orange-moving {
@@ -65,7 +65,7 @@ margin-top: 25px;
 
 .pink-image {
   padding-top: 10px;
-  animation: moveLeft 7s linear infinite; /* Move left at a speed of 7s */
+  animation: moveLeft 17s linear infinite; /* Move left at a speed of 7s */
 }
 
 /* Optional styles for the beastly-bond-logo */
