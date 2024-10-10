@@ -67,7 +67,13 @@ function AdoptPage() {
 
   return (
     <div>
+      <div className="overlay"></div>
       <Helmet><title>Adopt</title></Helmet>
+      <br/>
+      <br/>
+      <br/>
+      <h1 style={{ fontSize: '32px' }}>Choose a species to adopt</h1>
+
       <SpeciesList speciesList={speciesList} adoptPet={adoptPet} />
       <PetsList petsList={petsList} />
     </div>
