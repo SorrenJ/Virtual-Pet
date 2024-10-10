@@ -531,6 +531,33 @@ const feedPet = async (petId, foodId) => {
 
     };
 
+    const handleDrop = async (e) => {
+      e.preventDefault();
+      const itemData = e.dataTransfer.getData('item');
+      const { id, type, effect } = JSON.parse(itemData);
+      
+      if (!selectedPet) {
+          alert('Please select a pet first.');
+          return;
+      }
+  
+      const petId = selectedPet.pet_id;
+  
+      switch (type) {
+          case 'food':
+              await feedPet(petId, id);
+              break;
+          case 'toiletry':
+              await cleanPet(petId, id);
+              break;
+          case 'toy':
+              await playWithPet(petId, id);
+              break;
+          default:
+              console.error('Unknown item type:', type);
+      }
+  };
+
 // Function to delete the pet
 const deletePet = async (petId) => {
     if (!petId) return;
@@ -753,12 +780,15 @@ const adjustHappiness = async (amount) => {
                   return null;
           }
       }
+
     };
 
 
     return (
       <div className="homepage-container">
-          <Helmet><title>Adopt</title></Helmet>
+          <Helmet>
+              <title>Home</title>
+          </Helmet>
           {pets.length > 0 ? (
               <>
                   <h1>Welcome {pets[0]?.user_name}</h1>
@@ -777,15 +807,35 @@ const adjustHappiness = async (amount) => {
                           </option>
                       ))}
                   </select>
-
+  
                   {selectedPet && petStats && (
                       <div className="pet-details-container">
-
                           <div className="left-section">
-                              <div className="bot-message">{messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}</div>
-                              <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
+                              <h2 className='inventory-header'>Inventory</h2>
+                              <div className="inventory-section">
+                                  <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>Pet Treats</button>
+                                  <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>Pet Toiletries</button>
+                                  <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
+                              </div>
+  
+                              <div className="inventory-table">
+                                  {renderTable()}
+                              </div>
+                          </div>
+  
+                          <div className="right-section">
+                              <div className="bot-message">
+                                  {messages.length > 0 ? messages[messages.length - 1].bot : "No response yet."}
+                              </div>
+                              <img 
+                            ref={spriteRef} 
+                            className="pet-image" 
+                            src={sprite || selectedPet.pet_image} 
+                            alt={selectedPet.pet_name} 
+                            onDrop={handleDrop} 
+                            onDragOver={(e) => e.preventDefault()} // Allow drop
+                              />
                               <div className="chatbot-container">
-                                  {/* Chat Window */}
                                   <div className="chat-window">
                                       {messages.length > 0 && (
                                           <div className="message">
@@ -793,8 +843,7 @@ const adjustHappiness = async (amount) => {
                                           </div>
                                       )}
                                   </div>
-
-                                  {/* Input Section */}
+  
                                   <div className="input-section">
                                       <input
                                           type="text"
@@ -805,7 +854,7 @@ const adjustHappiness = async (amount) => {
                                       <button onClick={handleSendMessage}>Send</button>
                                   </div>
                               </div>
-
+  
                               <div className="buttons-section">
                                   <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
                                   <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet</button>
@@ -813,7 +862,7 @@ const adjustHappiness = async (amount) => {
                                       Admin Controls
                                   </button>
                               </div>
-
+  
                               {showAdminControls && (
                                   <div style={{ marginTop: '20px' }}>
                                       <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
@@ -822,9 +871,7 @@ const adjustHappiness = async (amount) => {
                                       <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
                                   </div>
                               )}
-                          </div>
-
-                          <div className="right-section">
+  
                               <h2>Meet {selectedPet.pet_name}</h2>
                               <p>Energy: {petStats.energy}</p>
                               <p>Happiness: {petStats.happiness}</p>
@@ -840,18 +887,6 @@ const adjustHappiness = async (amount) => {
           ) : (
               <p>No pets available at the moment.</p>
           )}
-
-          <h2>Inventory</h2>
-          <div className="inventory-section">
-              <button onClick={() => setVisibleComponent(4)} disabled={visibleComponent === 4}>All Items</button> 
-              <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>Pet Treats</button>
-              <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>Pet Toiletries</button>
-              <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
-          </div>
-
-          <div className="inventory-table">
-              {renderTable()}
-          </div>
       </div>
   );
 };
