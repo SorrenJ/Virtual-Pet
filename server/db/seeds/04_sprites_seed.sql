@@ -199,7 +199,7 @@ VALUES
 (6, 2, 11, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813860/Hippostyx_Angry.png'),
 (6, 2, 12, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813919/Hippostyx_Sad.png'),
 (6, 2, 13, 'https://res.cloudinary.com/deszclhtq/image/upload/v1727813865/Hippostyx_Pet.png'),
-(6, 2, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728148089/Hippo_Dead_zrmf4i.png');
+(6, 2, 14, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728148089/Hippo_Dead_zrmf4i.png'),
 
 -- Yellow Vulinquent
 (1, 3, 1, 'https://res.cloudinary.com/deszclhtq/image/upload/v1728523679/Vulture_Yellow_Neutral_phptuf.gif'),  -- default

@@ -20,17 +20,12 @@ const NavBar = () => {
   return (
     <nav>
       <ul>
-        <li>Beastly Bonds</li>
+        <li><Link to="/">Beastly Bonds</Link></li>
         <li>
-          <Link to="/home">Home</Link>
+          <Link to="/home">Pet</Link>
         </li>
         <li>
           <Link to="/shop">Shop</Link>
-        </li>
-        <li>
-          <a href="javascript:void(0);" onClick={toggleInventoryModal} className="inventory-link">
-            Inventory
-          </a>
         </li>
         <li>
           <Link to="/adopt">Adopt</Link>

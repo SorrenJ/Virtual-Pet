@@ -31,7 +31,7 @@ const FrontPage = () => {
 
      
 
-      <h1 className="welcome-font">Welcome to</h1> 
+     
 
       <div className="logo">
    

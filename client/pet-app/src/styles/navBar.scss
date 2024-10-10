@@ -1,6 +1,6 @@
 nav {
   padding: 10px;
-  background-color: #333;
+  background-color: #4caf4f;
   color: #fff;
   position: fixed; // Make the navbar fixed
   top: 0; // Position it at the top
@@ -14,6 +14,10 @@ nav {
     gap: 15px;
   }
 
+  li {
+    margin-right: 80px;
+  }
+
   a {
     color: #fff;
     text-decoration: none;
@@ -24,7 +28,7 @@ nav {
   }
 
   .game-link {
-    background-color: #555;
+    background-color: #37a23a;
     color: #fff;
     padding: 5px 10px;
     text-decoration: none;
@@ -32,7 +36,7 @@ nav {
     cursor: pointer;
 
     &:hover {
-      background-color: #777;
+      background-color: #1b7c1e;
     }
   }
 }

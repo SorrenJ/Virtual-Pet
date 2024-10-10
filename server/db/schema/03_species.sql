@@ -10,6 +10,6 @@ CREATE TABLE species (
     clean_mod INT,
     lifespan INT,
     diet_type INT,
-    diet_desc VARCHAR(255),
+    diet_desc TEXT,
     image VARCHAR(255)
 );
