@@ -14,12 +14,48 @@
   padding-top: 44px;
   padding-right: 15px;
   text-align: center;
+
 }
 
 .shopkeeper {
   width: 100%; // Make shopkeeper image full width of container
   height: auto; // Keep aspect ratio
+  border-radius: 10px; /* Match the padding if you use rounded corners */
+ 
+
 }
+
+
+.moving-clouds {
+  position: absolute;
+  background-image: url('https://res.cloudinary.com/deszclhtq/image/upload/v1728558203/fog-3_ljd6pp.png');
+  background-color: rgba(38, 3, 52, 0.182); /* Dark overlay with transparency */
+  background-blend-mode: multiply; /* Blend the background color with the image */
+  z-index: 1;
+  bottom: 0;
+  left: -50%;
+  -webkit-transform: scale(2);
+  transform: scale(2);
+  margin-top: -800px;
+  width: 550.625em;
+  height: 2000em;
+  -webkit-animation: cloudLoop 100s linear alternate infinite;
+  animation: cloudLoop 100s linear alternate infinite;
+}
+
+@keyframes cloudLoop {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+}
+
 
 .shopkeeper-text {
   position: absolute; // Position text absolutely
@@ -45,9 +81,9 @@
 }
 
 .money {
-  font-size: 1.875rem; // Equivalent to text-3xl in Tailwind
+  font-size:2em; // Equivalent to text-3xl in Tailwind
   font-weight: bold;
-  color: green;
+  color: rgb(123, 255, 0);
   position: relative; // Position relative
   top: 10px; // Adjust as needed
   right: 0em; // Adjust as needed

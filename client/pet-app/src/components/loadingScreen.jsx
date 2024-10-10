@@ -8,12 +8,12 @@ const LoadingScreen = ({ isTransitioning }) => {
   useEffect(() => {
     // Define an array of phrases
     const phrases = [
-      'Take your time ...',
       'Gotta adopt em all ...',
-      'Dont forget to come to my shop ...',
-      'The real beast is you for not caring for your pet ...',
+      'Remember to come to my shop ...',
+      'The real beast is you if you neglect your pet ...',
       'Daily math training keeps your pet sharp ...',
-      'Just a shoutout to Lighthouse ...'
+      'Just a shoutout to Lighthouse for the opportunity ...',
+      'And no, we are not associated with a particular youtuber ...'
     ];
 
     // Randomly select a phrase

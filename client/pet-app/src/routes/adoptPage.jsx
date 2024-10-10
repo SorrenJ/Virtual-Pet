@@ -87,6 +87,8 @@ function AdoptPage() {
       ) : (
         <div>
           <div className="overlay"></div>
+      
+        
           <Helmet><title>Adopt</title></Helmet>
           <br/>
           <br/>

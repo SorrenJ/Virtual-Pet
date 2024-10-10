@@ -38,7 +38,8 @@ const FrontPage = () => {
       ) : (
         <div className="colored-bg">
           <div className="overlay"></div>
-
+          <div className="light-clouds"></div>
+          <div className="light-clouds"></div>
           <Helmet>
             <title>Front Page</title>
           </Helmet>
@@ -57,6 +58,7 @@ const FrontPage = () => {
                 className="beastly-bond-logo"
               />
             </div>
+            
             <div className="button-container">
               <button onClick={handleAdoptClick} className="adopt-button">Adopt</button>
               <button onClick={handleHomeClick} className="home-button">Home</button>
@@ -80,6 +82,7 @@ const FrontPage = () => {
               className="moving-image pink-image"
             />
           </body>
+        
         </div>
       )}
     </>

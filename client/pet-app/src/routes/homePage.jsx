@@ -910,6 +910,8 @@ const adjustHappiness = async (amount) => {
       return (
         <div className="homepage-container">
           <div className="overlay"></div>
+          <div className="light-clouds"></div>
+        
           <Helmet><title>Adopt</title></Helmet>
 
           {pets.length > 0 ? (

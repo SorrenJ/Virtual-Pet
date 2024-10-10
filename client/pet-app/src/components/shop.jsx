@@ -77,6 +77,10 @@ const Shop = ({ money, toys, toiletries, foods, onBuy, onAddMoney }) => {
           alt="shopkeeper"
           className='shopkeeper'
         />
+        <div className="moving-clouds"> </div>
+        <div className="moving-clouds"> </div>
+      
+        <div className="moving-clouds"> </div>
       </div>  
       </div>
       <div className='items-container'>
