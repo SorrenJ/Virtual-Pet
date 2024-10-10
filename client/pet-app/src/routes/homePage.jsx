@@ -4,6 +4,7 @@ import {Helmet} from 'react-helmet'
 import UserFoodTable from '../components/UserFoodTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserToysTable from '../components/UserToysTable';
+
 import Sentiment from 'sentiment';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

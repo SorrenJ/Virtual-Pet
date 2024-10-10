@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import {Helmet} from 'react-helmet'
 import SpeciesList from '../components/SpeciesList';  
 import PetsList from '../components/PetList';        
-
+import LoadingScreen from '../components/loadingScreen';
 function AdoptPage() {
   const [speciesList, setSpeciesList] = useState([]);
   const [petsList, setPetsList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();  // Initialize useNavigate hook for navigation
 
   useEffect(() => {
@@ -27,6 +29,9 @@ function AdoptPage() {
   
     fetchData();
   }, []);
+
+
+
 
   const adoptPet = async (speciesId, petName, colorId) => {
     try {
@@ -51,6 +56,14 @@ function AdoptPage() {
 
         if (nameResponse.ok) {
           alert('Pet adopted and named successfully!');
+
+           // Trigger loading after the alert is confirmed
+           setLoading(true);
+
+           // Add a slight delay before navigating to simulate loading
+           setTimeout(() => {
+             navigate(`/home?newPetId=${adoptedPet.id}`);    
+           }, 2000); // You can adjust or remove the delay as needed
           
           // Redirect to home page with the newest pet on display
           navigate(`/home?newPetId=${adoptedPet.id}`);    
@@ -66,17 +79,23 @@ function AdoptPage() {
   };
 
   return (
-    <div>
-      <div className="overlay"></div>
-      <Helmet><title>Adopt</title></Helmet>
-      <br/>
-      <br/>
-      <br/>
-      <h1 style={{ fontSize: '32px' }}>Choose a species to adopt</h1>
+    <>
+      {loading ? (
+        <LoadingScreen /> // Show loading screen while loading after alert
+      ) : (
+        <div>
+          <div className="overlay"></div>
+          <Helmet><title>Adopt</title></Helmet>
+          <br/>
+          <br/>
+          <br/>
+          <h1 style={{ fontSize: '32px' }}>Choose a species to adopt</h1>
 
-      <SpeciesList speciesList={speciesList} adoptPet={adoptPet} />
-      <PetsList petsList={petsList} />
-    </div>
+          <SpeciesList speciesList={speciesList} adoptPet={adoptPet} />
+          <PetsList petsList={petsList} />
+        </div>
+      )}
+    </>
   );
 }
 
