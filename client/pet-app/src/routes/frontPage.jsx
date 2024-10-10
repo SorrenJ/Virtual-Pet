@@ -1,8 +1,18 @@
 import React from "react";
 import {Helmet} from 'react-helmet'
+import {Navigate, useNavigate} from 'react-router-dom'
 import '../styles/frontPage.scss';
 
 const FrontPage = () => {
+  const Navigate = useNavigate();
+  const handleAdoptClick = () => {
+    Navigate('/adopt'); // Redirect to /adopt page
+  };
+
+  const handleHomeClick = () => {
+    Navigate('/home'); // Redirect to /home page
+  };
+
   return (
     <body>
       <Helmet>
@@ -17,6 +27,10 @@ const FrontPage = () => {
         className="beastly-bond-logo" 
       />
       </div>
+      <div className="button-container">
+        <button onClick={handleAdoptClick} className="adopt-button">Adopt</button>
+        <button onClick={handleHomeClick} className="home-button">Home</button>
+        </div>
 
       {/* Moving Image Container */}
       <div className="moving-image-container">
