@@ -5,9 +5,15 @@ import UserFoodTable from '../components/UserFoodTable';
 import UserToiletriesTable from '../components/UserToiletriesTable';
 import UserToysTable from '../components/UserToysTable';
 import Sentiment from 'sentiment';
+
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'; // Import the specific icon
 import '../styles/home.scss';  // Assuming the CSS is in the same directory as your JSX file
+import '../styles/progressBars.scss';  // Assuming the CSS is in the same directory as your JSX file
 
 
+import '../styles/background.scss';
 const sentimentAnalyzer = new Sentiment();
 
 
@@ -728,115 +734,132 @@ const adjustHappiness = async (amount) => {
     };
     
 
-
-
-
-
-
-    return (
+      return (
         <div className="homepage-container">
+          <div className="overlay"></div>
           <Helmet><title>Adopt</title></Helmet>
-        {pets.length > 0 ? (
+    
+          {pets.length > 0 ? (
             <>
-                <h1>Welcome {pets[0]?.user_name}</h1>
-                <h2>Select Your Pet</h2>
-                <select
-                    id="petSelector"
-                    value={selectedPet?.pet_id || ''}
-                    onChange={(e) => {
-                        const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
-                        setSelectedPet(pet);
-                    }}
-                >
-                    {pets.map((pet) => (
-                        <option key={pet.pet_id} value={pet.pet_id}>
-                            {pet.pet_name}
-                        </option>
-                    ))}
-                </select>
-
-                {selectedPet && petStats && (
-                    <div className="pet-details-container">
-
-                        <div className="left-section">
-                        <div className="bot-message">{messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}</div>
-                            <img ref={spriteRef} className="pet-image" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
-                            <div className="chatbot-container">
-
-
-      {/* Chat Window */}
-      <div className="chat-window">
-  {messages.length > 0 && (
-    <div className="message">
-      <div className="user-message">You: {messages[messages.length - 1].user}</div>
-     
-    </div>
-  )}
-</div>
-
-      {/* Input Section */}
-      <div className="input-section">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
-    </div>
-                            
-                            <div className="buttons-section">
-                                <button onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
-                                <button onClick={() => deletePet(selectedPet.pet_id)}>Release Pet</button>
-                                <button onClick={() => setVisibleComponent(visibleComponent === 4 ? null : 4)}>
-                                    Admin Controls
-                                </button>
-                            </div>
-                        
-                            <div style={{ marginTop: '20px' }}>
-                    {visibleComponent === 4 && (
-                     <>
-                     <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
-                     <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
-                    <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
-                    <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
-                    </>
-                    )}
+              <h1>Welcome {pets[0]?.user_name}</h1>
+              <h2>Select Your Pet</h2>
+              <select
+                id="petSelector"
+                value={selectedPet?.pet_id || ''}
+                onChange={(e) => {
+                  const pet = pets.find(p => p.pet_id === parseInt(e.target.value));
+                  setSelectedPet(pet);
+                }}
+              >
+                {pets.map((pet) => (
+                  <option key={pet.pet_id} value={pet.pet_id}>
+                    {pet.pet_name}
+                  </option>
+                ))}
+              </select>
+    
+              <div className="pet-details-container">
+                {/* Left Section */}
+                <div className="left-section">
+                  <h2>Inventory</h2>
+                  <div className="inventory-section">
+                    <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>Pet Treats</button>
+                    <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>Pet Toiletries</button>
+                    <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
+                  </div>
+                  <div className="inventory-table">
+                    {visibleComponent === 1 && <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />}
+                    {visibleComponent === 2 && <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />}
+                    {visibleComponent === 3 && <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />}
+                  </div>
+                </div>
+    
+                {/* Mid Section */}
+                <div className="mid-section">
+                  <div className="bot-message">
+                    {messages.length > 0 && messages[messages.length - 1].bot ? messages[messages.length - 1].bot : "No response yet."}
+                  </div>
+                  <img ref={spriteRef} className="pet-image-home" src={sprite || selectedPet.pet_image} alt={selectedPet.pet_name} />
+                  <div className="chatbot-container">
+                    <div className="chat-window">
+                      {messages.length > 0 && (
+                        <div className="message">
+                          <div className="user-message">You: {messages[messages.length - 1].user}</div>
                         </div>
-                        
-                        </div>
-                        <div className="right-section">
-                            <h2>Meet {selectedPet.pet_name}</h2>
-                            <p>Energy: {petStats.energy}</p>
-                            <p>Happiness: {petStats.happiness}</p>
-                            <p>Hunger: {petStats.hunger}</p>
-                            <p>Cleanliness: {petStats.cleanliness}</p>
-                            <p>Species: {selectedPet.species_name}</p>
-                            <p>Diet: {selectedPet.diet_desc}</p>
-                            <p>Personality: {selectedPet.personality_name}</p>
-                        </div>
+                      )}
                     </div>
-                )}
+                    <div className="input-section">
+                      <input
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Chat to pet..."
+                      />
+                      <button onClick={handleSendMessage}> <FontAwesomeIcon icon={faPaperPlane} /></button>
+                    </div>
+                  </div>
+                  <div className="buttons-section">
+                    <span>
+                    <button className="action-button" onClick={() => sleepButton(100, selectedPet.pet_id)}>Sleep</button>
+                    <button className="action-button" onClick={() => deletePet(selectedPet.pet_id)}>Release Pet</button>
+                    <button className="action-button" onClick={() => setVisibleComponent(visibleComponent === 4 ? null : 4)}>Admin Controls</button>
+                    </span>
+                    {visibleComponent === 4 && (
+                      <div className="admin-controls">
+                        <button onClick={() => reduceHunger(10)}>Reduce Hunger by 10</button>
+                        <button onClick={() => reduceEnergy(10)}>Reduce Energy by 10</button>
+                        <button onClick={() => reduceHappiness(10)}>Reduce Happiness by 10</button>
+                        <button onClick={() => reduceCleanliness(10)}>Reduce Cleanliness by 10</button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+    
+                {/* Right Section */}
+                <div className="right-section">
+                  {selectedPet && petStats ? (
+                    <>
+                      <h2>Meet {selectedPet.pet_name}</h2>
+                      <p>Energy: {petStats.energy}</p>
+                      <div className="stat">
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${petStats.energy}%` }}></div>
+                        </div>
+                      </div>
+                      <p>Happiness: {petStats.happiness}</p>
+                      <div className="stat">
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${petStats.happiness}%` }}></div>
+                        </div>
+                      </div>
+                      <p>Hunger: {petStats.hunger}</p>
+                      <div className="stat">
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${petStats.hunger}%` }}></div>
+                        </div>
+                      </div>
+                      <p>Cleanliness: {petStats.cleanliness}</p>
+                      <div className="stat">
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${petStats.cleanliness}%` }}></div>
+                        </div>
+                      </div>
+                      <p>Species: {selectedPet.species_name}</p>
+                      <p>Personality: {selectedPet.personality_name}</p>
+                      <p>Description: {selectedPet.diet_desc}</p>
+                    </>
+                  ) : (
+                    <p>No stats available for the selected pet.</p>
+                  )}
+                </div>
+              </div>
             </>
-        ) : (
+          ) : (
             <p>No pets available at the moment.</p>
-        )}
-
-        <h2>Inventory</h2>
-        <div className="inventory-section">
-            <button onClick={() => setVisibleComponent(1)} disabled={visibleComponent === 1}>Pet Treats</button>
-            <button onClick={() => setVisibleComponent(2)} disabled={visibleComponent === 2}>Pet Toiletries</button>
-            <button onClick={() => setVisibleComponent(3)} disabled={visibleComponent === 3}>Pet Toys</button>
+          )}
         </div>
-
-        <div className="inventory-table">
-            {visibleComponent === 1 && <UserFoodTable userFood={userFood} feedPet={feedPet} selectedPet={selectedPet} />}
-            {visibleComponent === 2 && <UserToiletriesTable userToiletries={userToiletries} cleanPet={cleanPet} selectedPet={selectedPet} />}
-            {visibleComponent === 3 && <UserToysTable userToys={userToys} playWithPet={playWithPet} selectedPet={selectedPet} />}
-        </div>
-    </div>
-);
-};
-
-export default HomePage;
+      );
+    };
+    
+    export default HomePage;
+    
