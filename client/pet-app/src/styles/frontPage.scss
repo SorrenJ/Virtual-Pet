@@ -1,9 +1,14 @@
 
+.welcome-font{
+font-size:2em;
+margin-top: 25px;
+}
+
 .moving-image-container {
   position: relative;
   overflow: hidden; /* Hide overflow */
   width: 100vw; /* Full width of the viewport */
-  height: 50vw; /* Adjust height as needed */
+  height: 50vh; /* Adjust height as needed */
 }
 
 .moving-image {
@@ -24,7 +29,7 @@
 
 /* Optional styles for the beastly-bond-logo */
 .beastly-bond-logo {
-  width: 400px; /* Adjust the logo size */
+  width: 800px; /* Adjust the logo size */
   display: block;
   margin: 0 auto; /* Center the logo horizontally */
   padding-bottom: 20px; /* Add some spacing between the logo and moving image */
@@ -34,4 +39,5 @@
   text-align: center;
   margin-top: 0;
   padding-top: 0;
+  
 }

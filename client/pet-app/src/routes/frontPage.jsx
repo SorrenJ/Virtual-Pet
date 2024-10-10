@@ -13,11 +13,13 @@ const FrontPage = () => {
         <title>Front Page</title>
       </Helmet>
      
+
+      <h1 className="welcome-font">Welcome to</h1> 
       <div className="logo">
-        Welcome to
+   
       {/* Logo Image */}
       <img 
-        src="https://res.cloudinary.com/deszclhtq/image/upload/v1728492346/2-modified_qzohk3.png"
+        src="https://res.cloudinary.com/deszclhtq/image/upload/v1728533192/Beatly_Bonds_Hero_vtu813.png"
         alt="beastly-bond"
         className="beastly-bond-logo" 
       />
@@ -31,6 +33,7 @@ const FrontPage = () => {
           className="moving-image"
         />
       </div>
+
     </body>
     </div>
     
