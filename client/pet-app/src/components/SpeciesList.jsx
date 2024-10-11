@@ -48,19 +48,19 @@ const SpeciesList = ({ speciesList, adoptPet }) => {
             </div>
             <div className="species-info">
               <h2>{selectedSpecies.species_name}</h2>
-              <p>Diet Description: {selectedSpecies.diet_desc}</p>
+              <p>{selectedSpecies.diet_desc}</p>
               <div className='color-selector'>
-              <label htmlFor={`color-${selectedSpecies.id}`}>Select Color:</label>
+              <label htmlFor={`color-${selectedSpecies.id}`}>Select Color: </label>
               <select 
                 id={`color-${selectedSpecies.id}`} 
                 onChange={(e) => setSelectedColor(e.target.value)} 
               >
-                <option value="1">Yellow</option>
-                <option value="2">Red</option>
-                <option value="3">Blue</option>
-                <option value="4">Green</option>
-                <option value="5">Purple</option>
-                <option value="6">Orange</option>
+                <option value="1"> Yellow</option>
+                <option value="2"> Red</option>
+                <option value="3"> Blue</option>
+                <option value="4"> Green</option>
+                <option value="5"> Purple</option>
+                <option value="6"> Orange</option>
               </select>
               </div>
               {/* Input field for pet name */}
